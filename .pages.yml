@@ -1,0 +1,76 @@
+media:
+  - name: images
+    label: Images
+    input: assets/images
+    output: /assets/images
+
+content:
+  - name: homepage
+    label: Homepage
+    type: file
+    path: content/site.json
+    format: json
+    fields:
+      - name: announcement
+        label: Announcement bar
+        type: string
+      - name: eyebrow
+        label: Small hero heading
+        type: string
+      - name: headline
+        label: Main headline (use line breaks)
+        type: text
+      - name: intro
+        label: Intro paragraph
+        type: text
+      - name: primaryCtaLabel
+        label: Main button text
+        type: string
+      - name: primaryCtaUrl
+        label: Main button link
+        type: string
+      - name: secondaryCtaLabel
+        label: Second button text
+        type: string
+      - name: secondaryCtaUrl
+        label: Second button link
+        type: string
+      - name: challengeLabel
+        label: 100-Footer small heading
+        type: string
+      - name: challengeTitle
+        label: 100-Footer title
+        type: string
+      - name: challengeText
+        label: 100-Footer description
+        type: text
+      - name: challengeCtaLabel
+        label: 100-Footer button text
+        type: string
+      - name: challengeCtaUrl
+        label: 100-Footer button link
+        type: string
+      - name: causeTitle
+        label: Fundraising heading
+        type: string
+      - name: causeText
+        label: Fundraising description
+        type: text
+      - name: experienceTitle
+        label: Experiences heading
+        type: string
+      - name: experienceText
+        label: Experiences description
+        type: text
+      - name: email
+        label: Contact email
+        type: string
+      - name: instagramUrl
+        label: Instagram URL
+        type: string
+      - name: facebookUrl
+        label: Facebook URL
+        type: string
+      - name: footerLine
+        label: Footer tagline
+        type: string
