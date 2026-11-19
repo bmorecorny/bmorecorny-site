@@ -1,0 +1,473 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BmoreCorny | Game Management</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #101114;
+      color: #f5f5f5;
+      font-family: Arial, sans-serif;
+    }
+    header {
+      background: #191a1f;
+      border-bottom: 1px solid #303137;
+      padding: 20px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .brand { color: #f4bd35; font-size: 22px; font-weight: 900; }
+    main { max-width: 1100px; margin: auto; padding: 30px 20px; }
+    h1 { margin: 0 0 8px; }
+    h2 { font-size: 18px; margin: 0 0 15px; }
+    .muted { color: #999ba5; font-size: 13px; line-height: 1.5; }
+    .panel {
+      background: #191a1f;
+      border: 1px solid #303137;
+      border-radius: 12px;
+      padding: 22px;
+      margin-top: 20px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      color: #c7c8ce;
+      margin: 16px 0 8px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 13px;
+      background: #101114;
+      color: white;
+      border: 1px solid #41434c;
+      border-radius: 7px;
+      font: inherit;
+      font-size: 14px;
+    }
+    textarea { min-height: 85px; resize: vertical; }
+    button {
+      background: #f4bd35;
+      color: #171717;
+      border: 0;
+      border-radius: 7px;
+      padding: 11px 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button.secondary { background: #303137; color: white; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    a { color: #f4bd35; text-decoration: none; }
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0 16px;
+    }
+    .message { margin-top: 14px; font-size: 13px; line-height: 1.5; }
+    .error { color: #ff8585; }
+    .success { color: #77dfa0; }
+    .hidden { display: none !important; }
+    .game-list { display: grid; gap: 12px; margin-top: 16px; }
+    .game {
+      background: #101114;
+      border: 1px solid #303137;
+      border-radius: 9px;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .game-title { font-weight: bold; margin-bottom: 6px; }
+    .game-meta { color: #999ba5; font-size: 12px; line-height: 1.6; }
+    .status {
+      display: inline-block;
+      background: #303137;
+      color: #f4bd35;
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    .notice {
+      margin-top: 14px;
+      padding: 13px;
+      background: #25231b;
+      border: 1px solid #554a2c;
+      border-radius: 8px;
+      color: #e5d39d;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    @media(max-width: 650px) {
+      main { padding: 20px 14px; }
+      .panel { padding: 17px; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="brand">🌽 BmoreCorny</div>
+    <div class="muted">GAME MANAGEMENT</div>
+  </div>
+  <div>
+    <a href="./operations.html" style="margin-right:15px;">Event Operations</a>
+    <a href="./events.html" style="margin-right:15px;">Events</a>
+    <button id="logoutButton" class="secondary hidden">Sign Out</button>
+  </div>
+</header>
+
+<main>
+  <h1>Game Management</h1>
+  <p class="muted">Create games and manage the competition attached to each event.</p>
+
+  <section id="loginPanel" class="panel">
+    <h2>Staff Sign In</h2>
+    <form id="loginForm">
+      <label for="email">Email</label>
+      <input id="email" type="email" value="bmorecorny@gmail.com"
+        autocomplete="username" required>
+      <label for="password">Password</label>
+      <input id="password" type="password"
+        autocomplete="current-password" required>
+      <button id="loginButton" type="submit" style="margin-top:16px;">Sign In</button>
+    </form>
+    <div id="loginMessage" class="message"></div>
+  </section>
+
+  <section id="gamePanel" class="hidden">
+    <section class="panel">
+      <h2>Choose Event</h2>
+      <label for="eventSelect">Event</label>
+      <select id="eventSelect">
+        <option value="">Loading events...</option>
+      </select>
+      <div id="eventMessage" class="message"></div>
+    </section>
+
+    <section id="createPanel" class="panel hidden">
+      <h2>Create New Game</h2>
+      <p class="muted">Every game belongs to an event. Official and alternate formats are tracked separately.</p>
+
+      <form id="createGameForm">
+        <label for="ruleset">Game Format</label>
+        <select id="ruleset" required>
+          <option value="official_100_footer">Official 100-Footer</option>
+          <option value="alternate_distance">Alternate Distance</option>
+        </select>
+
+        <div class="form-grid">
+          <div>
+            <label for="maxDistance">Maximum Distance</label>
+            <select id="maxDistance" required>
+              <option value="100">100 feet</option>
+              <option value="90">90 feet</option>
+              <option value="80">80 feet</option>
+              <option value="70">70 feet</option>
+              <option value="60">60 feet</option>
+              <option value="50">50 feet</option>
+              <option value="40">40 feet</option>
+              <option value="30">30 feet</option>
+            </select>
+          </div>
+          <div>
+            <label for="gameNotes">Game Notes</label>
+            <input id="gameNotes" type="text" placeholder="Optional notes">
+          </div>
+        </div>
+
+        <div id="formatNotice" class="notice">
+          Official 100-Footer games use the full 100-foot course and official verification rules.
+        </div>
+
+        <div style="margin-top:18px;">
+          <button id="createGameButton" type="submit">Create Game</button>
+        </div>
+      </form>
+
+      <div id="createMessage" class="message"></div>
+    </section>
+
+    <section id="gamesPanel" class="panel hidden">
+      <div class="toolbar">
+        <div>
+          <h2>Event Games</h2>
+          <p class="muted">Games currently associated with this event.</p>
+        </div>
+        <button id="refreshGamesButton" class="secondary" type="button">Refresh Games</button>
+      </div>
+      <div id="gamesMessage" class="message"></div>
+      <div id="gameList" class="game-list"></div>
+    </section>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./config.js"></script>
+<script>
+(() => {
+  const config = window.BMORECORNY_CONFIG;
+  const $ = id => document.getElementById(id);
+
+  if (!config?.SUPABASE_URL || !config?.SUPABASE_ANON_KEY) {
+    $("loginMessage").textContent = "Configuration missing. Check admin/config.js.";
+    return;
+  }
+
+  const db = window.supabase.createClient(
+    config.SUPABASE_URL,
+    config.SUPABASE_ANON_KEY
+  );
+
+  let events = [];
+  let selectedEventId = null;
+
+  function message(id, text, type = "") {
+    $(id).textContent = text;
+    $(id).className = "message " + type;
+  }
+
+  function pretty(value) {
+    return (value || "Not set")
+      .replaceAll("_", " ")
+      .replace(/\b\w/g, c => c.toUpperCase());
+  }
+
+  function formatDate(value) {
+    return value ? new Date(value).toLocaleString() : "Not started";
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;",
+      '"': "&quot;", "'": "&#39;"
+    })[char]);
+  }
+
+  function updateFormatControls() {
+    const official = $("ruleset").value === "official_100_footer";
+    $("maxDistance").disabled = official;
+
+    if (official) {
+      $("maxDistance").value = "100";
+      $("formatNotice").textContent =
+        "Official 100-Footer games use the full 100-foot course and official verification rules.";
+    } else {
+      $("formatNotice").textContent =
+        "Alternate-distance games are tracked separately and do not qualify for official Hall of Drain records.";
+    }
+  }
+
+  async function loadEvents() {
+    message("eventMessage", "Loading events...");
+
+    const { data, error } = await db
+      .from("events")
+      .select("id,event_name,event_type,status,start_at")
+      .order("start_at", { ascending: true });
+
+    if (error) {
+      message("eventMessage", "Could not load events: " + error.message, "error");
+      return;
+    }
+
+    events = data || [];
+    const select = $("eventSelect");
+
+    select.innerHTML = '<option value="">Choose an event...</option>' +
+      events.map(event =>
+        `<option value="${event.id}">${escapeHtml(event.event_name)} — ${escapeHtml(pretty(event.status))}</option>`
+      ).join("");
+
+    if (!events.length) {
+      message("eventMessage", "No events found. Create an event first.");
+      return;
+    }
+
+    message("eventMessage", `${events.length} event(s) available.`, "success");
+
+    if (selectedEventId && events.some(event => event.id === selectedEventId)) {
+      select.value = selectedEventId;
+      await selectEvent(selectedEventId);
+    }
+  }
+
+  async function selectEvent(eventId) {
+    selectedEventId = eventId || null;
+
+    $("createPanel").classList.toggle("hidden", !selectedEventId);
+    $("gamesPanel").classList.toggle("hidden", !selectedEventId);
+
+    if (!selectedEventId) return;
+
+    const selectedEvent = events.find(event => event.id === selectedEventId);
+    if (!selectedEvent) return;
+
+    message(
+      "eventMessage",
+      `Selected: ${selectedEvent.event_name} · ${pretty(selectedEvent.status)}`,
+      "success"
+    );
+
+    await loadGames();
+  }
+
+  async function loadGames() {
+    if (!selectedEventId) return;
+
+    message("gamesMessage", "Loading games...");
+    $("gameList").innerHTML = "";
+
+    const { data, error } = await db
+      .from("games")
+      .select("id,ruleset,max_distance_ft,status,started_at,completed_at,created_at")
+      .eq("event_id", selectedEventId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      message("gamesMessage", "Could not load games: " + error.message, "error");
+      return;
+    }
+
+    const games = data || [];
+
+    if (!games.length) {
+      message("gamesMessage", "No games have been created for this event yet.");
+      $("gameList").innerHTML =
+        '<div class="muted">Create the first game using the form above.</div>';
+      return;
+    }
+
+    message("gamesMessage", `${games.length} game(s) found.`, "success");
+
+    $("gameList").innerHTML = games.map(game => `
+      <div class="game">
+        <div>
+          <div class="game-title">${escapeHtml(pretty(game.ruleset))}</div>
+          <div class="game-meta">
+            Maximum distance: ${escapeHtml(game.max_distance_ft)} feet<br>
+            Created: ${escapeHtml(formatDate(game.created_at))}<br>
+            ${game.started_at ? "Started: " + escapeHtml(formatDate(game.started_at)) : ""}
+            ${game.completed_at ? "<br>Completed: " + escapeHtml(formatDate(game.completed_at)) : ""}
+          </div>
+        </div>
+        <span class="status">${escapeHtml(pretty(game.status).toUpperCase())}</span>
+      </div>
+    `).join("");
+  }
+
+  $("ruleset").addEventListener("change", updateFormatControls);
+
+  $("eventSelect").addEventListener("change", async () => {
+    await selectEvent($("eventSelect").value);
+  });
+
+  $("refreshGamesButton").addEventListener("click", loadGames);
+
+  $("createGameForm").addEventListener("submit", async event => {
+    event.preventDefault();
+
+    if (!selectedEventId) {
+      message("createMessage", "Choose an event first.", "error");
+      return;
+    }
+
+    const ruleset = $("ruleset").value;
+    const maxDistance = Number($("maxDistance").value);
+    const notes = $("gameNotes").value.trim() || null;
+
+    $("createGameButton").disabled = true;
+    $("createGameButton").textContent = "Creating...";
+    message("createMessage", "Creating game...");
+
+    const { data, error } = await db.rpc("create_event_game", {
+      _event_id: selectedEventId,
+      _ruleset: ruleset,
+      _max_distance_ft: maxDistance,
+      _notes: notes
+    });
+
+    $("createGameButton").disabled = false;
+    $("createGameButton").textContent = "Create Game";
+
+    if (error) {
+      message("createMessage", "Game creation failed: " + error.message, "error");
+      return;
+    }
+
+    $("gameNotes").value = "";
+    message("createMessage", "Game created successfully.", "success");
+    await loadGames();
+  });
+
+  async function updateScreen() {
+    const { data: { session } } = await db.auth.getSession();
+
+    $("loginPanel").classList.toggle("hidden", !!session);
+    $("gamePanel").classList.toggle("hidden", !session);
+    $("logoutButton").classList.toggle("hidden", !session);
+
+    if (session) {
+      await loadEvents();
+    } else {
+      selectedEventId = null;
+      $("createPanel").classList.add("hidden");
+      $("gamesPanel").classList.add("hidden");
+    }
+  }
+
+  $("loginForm").addEventListener("submit", async event => {
+    event.preventDefault();
+
+    $("loginButton").disabled = true;
+    message("loginMessage", "Signing in...");
+
+    const { error } = await db.auth.signInWithPassword({
+      email: $("email").value.trim(),
+      password: $("password").value
+    });
+
+    $("loginButton").disabled = false;
+
+    if (error) {
+      message("loginMessage", "Sign-in failed: " + error.message, "error");
+      return;
+    }
+
+    $("password").value = "";
+    message("loginMessage", "");
+    await updateScreen();
+  });
+
+  $("logoutButton").addEventListener("click", async () => {
+    await db.auth.signOut();
+    await updateScreen();
+  });
+
+  db.auth.onAuthStateChange(() => {
+    updateScreen();
+  });
+
+  updateFormatControls();
+  updateScreen();
+})();
+</script>
+</body>
+</html>
