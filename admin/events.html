@@ -1,0 +1,447 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BmoreCorny | Event Management</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #101114;
+      color: #f5f5f5;
+      font-family: Arial, sans-serif;
+    }
+    header {
+      background: #191a1f;
+      border-bottom: 1px solid #303137;
+      padding: 20px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .brand { color: #f4bd35; font-size: 22px; font-weight: 900; }
+    main { max-width: 1100px; margin: auto; padding: 30px 20px; }
+    h1 { margin: 0 0 8px; }
+    h2 { font-size: 19px; margin: 0 0 20px; }
+    .muted { color: #999ba5; font-size: 13px; }
+    .panel {
+      background: #191a1f;
+      border: 1px solid #303137;
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 22px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      color: #c7c8ce;
+      margin-bottom: 7px;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      background: #101114;
+      color: white;
+      border: 1px solid #41434c;
+      border-radius: 7px;
+      font-size: 14px;
+    }
+    .field { margin-bottom: 16px; }
+    button {
+      background: #f4bd35;
+      color: #171717;
+      border: 0;
+      border-radius: 7px;
+      padding: 12px 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button.secondary {
+      background: #303137;
+      color: white;
+    }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .event {
+      border: 1px solid #383a43;
+      border-radius: 9px;
+      padding: 17px;
+      margin-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .event h3 { margin: 0 0 7px; }
+    .event p { margin: 4px 0; }
+    .status {
+      display: inline-block;
+      background: #303137;
+      border-radius: 20px;
+      padding: 6px 10px;
+      font-size: 11px;
+      color: #f4bd35;
+    }
+    .hidden { display: none !important; }
+    #message { margin-top: 15px; font-size: 13px; }
+    .error { color: #ff8585; }
+    .success { color: #77dfa0; }
+    @media(max-width: 650px) {
+      .grid { grid-template-columns: 1fr; }
+      main { padding: 20px 14px; }
+      .panel { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="brand">🌽 BmoreCorny</div>
+    <div class="muted">EVENT MANAGEMENT</div>
+  </div>
+  <div>
+    <a href="./" style="color:#f4bd35;text-decoration:none;margin-right:15px;">Dashboard</a>
+    <button id="logoutButton" class="secondary hidden">Sign Out</button>
+  </div>
+</header>
+
+<main>
+  <div>
+    <h1>Event Management</h1>
+    <p class="muted">Create, organize and manage BmoreCorny events.</p>
+  </div>
+
+  <section id="loginPanel" class="panel">
+    <h2>Staff Sign In</h2>
+    <p class="muted">Sign in with your authorized BmoreCorny account.</p>
+
+    <form id="loginForm">
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" autocomplete="username"
+          value="bmorecorny@gmail.com" required>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password"
+          autocomplete="current-password" required>
+      </div>
+      <button type="submit">Sign In</button>
+    </form>
+    <div id="loginMessage"></div>
+  </section>
+
+  <section id="managementPanel" class="hidden">
+    <div class="panel">
+      <div class="toolbar">
+        <div>
+          <h2 id="formHeading">Create New Event</h2>
+          <p class="muted">Add an event to the BmoreCorny calendar.</p>
+        </div>
+        <span class="status">ADMIN CONSOLE</span>
+      </div>
+
+      <form id="eventForm">
+        <div class="grid">
+          <div class="field">
+            <label for="eventName">Event Name *</label>
+            <input id="eventName" required maxlength="150"
+              placeholder="Example: BmoreCorny Summer Showdown">
+          </div>
+          <div class="field">
+            <label for="eventType">Event Type *</label>
+            <select id="eventType" required>
+              <option value="tour_stop">Tour Stop</option>
+              <option value="pop_up">Pop-Up</option>
+              <option value="featured_appearance">Featured Appearance</option>
+              <option value="community_event">Community Event</option>
+              <option value="championship">Championship</option>
+              <option value="private_event">Private Event</option>
+              <option value="fundraiser">Fundraiser</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="venue">Venue</label>
+            <input id="venue" placeholder="Venue name">
+          </div>
+          <div class="field">
+            <label for="city">City</label>
+            <input id="city" placeholder="City">
+          </div>
+          <div class="field">
+            <label for="state">State</label>
+            <input id="state" placeholder="State">
+          </div>
+          <div class="field">
+            <label for="eventStatus">Event Status</label>
+            <select id="eventStatus">
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+              <option value="registration_open">Registration Open</option>
+              <option value="in_progress">In Progress</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="startAt">Start Date & Time</label>
+            <input id="startAt" type="datetime-local">
+          </div>
+          <div class="field">
+            <label for="endAt">End Date & Time</label>
+            <input id="endAt" type="datetime-local">
+          </div>
+        </div>
+
+        <button id="saveButton" type="submit">Create Event</button>
+        <button id="cancelEditButton" type="button"
+          class="secondary hidden">Cancel Edit</button>
+        <div id="formMessage"></div>
+      </form>
+    </div>
+
+    <div class="panel">
+      <div class="toolbar">
+        <div>
+          <h2>Event Directory</h2>
+          <p class="muted">Events currently stored in Supabase.</p>
+        </div>
+        <button id="refreshButton" class="secondary" type="button">
+          Refresh Events
+        </button>
+      </div>
+      <div id="eventList">
+        <p class="muted">Loading events...</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./config.js"></script>
+
+<script>
+(() => {
+  const config = window.BMORECORNY_CONFIG;
+
+  if (!config?.SUPABASE_URL || !config?.SUPABASE_ANON_KEY) {
+    document.getElementById("loginMessage").textContent =
+      "Configuration missing. Check admin/config.js.";
+    return;
+  }
+
+  const db = window.supabase.createClient(
+    config.SUPABASE_URL,
+    config.SUPABASE_ANON_KEY
+  );
+
+  const $ = id => document.getElementById(id);
+  let editingId = null;
+
+  function showMessage(id, message, type = "") {
+    $(id).textContent = message;
+    $(id).className = type;
+  }
+
+  function dateForInput(value) {
+    if (!value) return "";
+    const date = new Date(value);
+    const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+    return local.toISOString().slice(0, 16);
+  }
+
+  function formatDate(value) {
+    if (!value) return "Date not set";
+    return new Date(value).toLocaleString();
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;",
+      '"': "&quot;", "'": "&#39;"
+    })[char]);
+  }
+
+  async function loadEvents() {
+    $("eventList").textContent = "Loading events...";
+
+    const { data, error } = await db
+      .from("events")
+      .select("id,event_name,event_type,venue_name,city,state,start_at,end_at,status")
+      .order("start_at", { ascending: false });
+
+    if (error) {
+      $("eventList").textContent = "Could not load events: " + error.message;
+      return;
+    }
+
+    if (!data.length) {
+      $("eventList").textContent = "No events yet. Create your first event above.";
+      return;
+    }
+
+    $("eventList").innerHTML = data.map(event => `
+      <div class="event">
+        <div>
+          <h3>${escapeHtml(event.event_name)}</h3>
+          <p class="muted">
+            ${escapeHtml(event.venue_name || "Venue TBD")}
+            ${event.city ? " · " + escapeHtml(event.city) : ""}
+            ${event.state ? ", " + escapeHtml(event.state) : ""}
+          </p>
+          <p class="muted">${escapeHtml(formatDate(event.start_at))}</p>
+          <span class="status">${escapeHtml(event.status.replaceAll("_", " ").toUpperCase())}</span>
+        </div>
+        <button class="secondary" data-edit="${event.id}">Edit Event</button>
+      </div>
+    `).join("");
+
+    $("eventList").querySelectorAll("[data-edit]").forEach(button => {
+      button.addEventListener("click", () => {
+        const event = data.find(item => item.id === button.dataset.edit);
+        beginEdit(event);
+      });
+    });
+  }
+
+  function beginEdit(event) {
+    editingId = event.id;
+    $("eventName").value = event.event_name || "";
+    $("eventType").value = event.event_type || "tour_stop";
+    $("venue").value = event.venue_name || "";
+    $("city").value = event.city || "";
+    $("state").value = event.state || "";
+    $("eventStatus").value = event.status || "draft";
+    $("startAt").value = dateForInput(event.start_at);
+    $("endAt").value = dateForInput(event.end_at);
+
+    $("formHeading").textContent = "Edit Event";
+    $("saveButton").textContent = "Save Event Changes";
+    $("cancelEditButton").classList.remove("hidden");
+    $("formHeading").scrollIntoView({ behavior: "smooth" });
+  }
+
+  function resetForm() {
+    editingId = null;
+    $("eventForm").reset();
+    $("formHeading").textContent = "Create New Event";
+    $("saveButton").textContent = "Create Event";
+    $("cancelEditButton").classList.add("hidden");
+    showMessage("formMessage", "");
+  }
+
+  $("eventForm").addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const start = $("startAt").value;
+    const end = $("endAt").value;
+
+    if (start && end && new Date(end) < new Date(start)) {
+      showMessage("formMessage", "End date cannot be before start date.", "error");
+      return;
+    }
+
+    const payload = {
+      event_name: $("eventName").value.trim(),
+      event_type: $("eventType").value,
+      venue_name: $("venue").value.trim() || null,
+      city: $("city").value.trim() || null,
+      state: $("state").value.trim() || null,
+      status: $("eventStatus").value,
+      start_at: start ? new Date(start).toISOString() : null,
+      end_at: end ? new Date(end).toISOString() : null
+    };
+
+    $("saveButton").disabled = true;
+    showMessage("formMessage", "Saving event...");
+
+    const result = editingId
+      ? await db.from("events").update(payload).eq("id", editingId).select()
+      : await db.from("events").insert(payload).select();
+
+    $("saveButton").disabled = false;
+
+    if (result.error) {
+      showMessage("formMessage", "Could not save event: " + result.error.message, "error");
+      return;
+    }
+
+    if (!result.data?.length) {
+      showMessage("formMessage",
+        "No event was returned. Check your account permissions.", "error");
+      return;
+    }
+
+    showMessage("formMessage",
+      editingId ? "Event updated successfully!" : "Event created successfully!",
+      "success");
+
+    resetForm();
+    await loadEvents();
+  });
+
+  $("cancelEditButton").addEventListener("click", resetForm);
+  $("refreshButton").addEventListener("click", loadEvents);
+
+  async function updateScreen() {
+    const { data: { session } } = await db.auth.getSession();
+
+    $("loginPanel").classList.toggle("hidden", !!session);
+    $("managementPanel").classList.toggle("hidden", !session);
+    $("logoutButton").classList.toggle("hidden", !session);
+
+    if (session) await loadEvents();
+  }
+
+  $("loginForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    showMessage("loginMessage", "Signing in...");
+
+    const { error } = await db.auth.signInWithPassword({
+      email: $("email").value.trim(),
+      password: $("password").value
+    });
+
+    if (error) {
+      showMessage("loginMessage", "Sign-in failed: " + error.message, "error");
+      return;
+    }
+
+    $("password").value = "";
+    showMessage("loginMessage", "");
+    await updateScreen();
+  });
+
+  $("logoutButton").addEventListener("click", async () => {
+    await db.auth.signOut();
+    resetForm();
+    await updateScreen();
+  });
+
+  db.auth.onAuthStateChange(() => {
+    updateScreen();
+  });
+
+  updateScreen();
+})();
+</script>
+
+</body>
+</html>
