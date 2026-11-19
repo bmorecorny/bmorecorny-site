@@ -298,11 +298,21 @@
       ).join("");
 
     if (currentEvents.length) {
-      $("eventSelect").value = currentEvents[0].id;
-      await loadEventWorkspace();
-    } else {
-      $("eventInfo").textContent = "No events found.";
-    }
+  const requestedEventId =
+    new URLSearchParams(window.location.search).get("event");
+
+  const matchingEvent = currentEvents.find(
+    event => event.id === requestedEventId
+  );
+
+  $("eventSelect").value = matchingEvent
+    ? matchingEvent.id
+    : currentEvents[0].id;
+
+  await loadEventWorkspace();
+} else {
+  $("eventInfo").textContent = "No events found.";
+}
   }
 
   async function loadEventWorkspace() {
