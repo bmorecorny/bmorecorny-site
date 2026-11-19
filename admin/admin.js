@@ -1,10 +1,11 @@
 
-// BmoreCorny Admin - Supabase connection
+// BmoreCorny Admin - Supabase connection and database test
 
 const script = document.createElement("script");
 script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+
 script.onload = initializeBmoreCorny;
-document.head.appendChild(script);
+script.onerror = () => console.error("Could not load Supabase library.");
 
 function initializeBmoreCorny() {
   const config = window.BMORECORNY_CONFIG;
@@ -20,4 +21,23 @@ function initializeBmoreCorny() {
   );
 
   console.log("BmoreCorny Supabase client initialized.");
+
+  testDatabaseConnection();
 }
+
+async function testDatabaseConnection() {
+  const { data, error } = await window.bmorecornySupabase
+    .from("events")
+    .select("id")
+    .limit(1);
+
+  if (error) {
+    console.error("Database test failed:", error.message);
+    return;
+  }
+
+  console.log("SUCCESS: Supabase database is responding.");
+  console.log("Visible event records:", data.length);
+}
+
+document.head.appendChild(script);
