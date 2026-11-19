@@ -117,6 +117,21 @@
     }
     .item small { display: block; color: var(--muted); margin-top: 5px; }
     .item button { margin-top: 10px; }
+    .game-card {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-top: 10px;
+      background: #17191e;
+    }
+    .game-card.selected {
+      border-color: var(--accent);
+      background: #222019;
+    }
+    .game-card .row { align-items: flex-start; }
+    .game-card button { margin-top: 12px; }
+    .game-card-title { font-weight: 800; font-size: 15px; }
+    .game-card-meta { color: var(--muted); font-size: 12px; margin-top: 7px; }
     .notice {
       padding: 12px 14px;
       border-radius: 8px;
@@ -130,6 +145,31 @@
     .muted { color: var(--muted); }
     #message { margin: 12px 0; min-height: 20px; }
     .hidden { display: none !important; }
+    .workspace-heading {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+    }
+    .workspace-heading h2 { margin-bottom: 8px; }
+    .workspace-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .workspace-meta span {
+      background: var(--panel2);
+      border-radius: 6px;
+      padding: 7px 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .workspace-id {
+      color: var(--muted);
+      font-size: 11px;
+      overflow-wrap: anywhere;
+      margin-top: 12px;
+    }
     @media (max-width: 600px) {
       body { padding: 16px; }
       h1 { font-size: 23px; }
@@ -149,7 +189,7 @@
   <nav class="nav">
     <a href="index.html">Dashboard</a>
     <a href="events.html">Events</a>
-    <a href="operations.html">Event Operations</a>
+    <a id="operationsLink" href="operations.html">Event Operations</a>
   </nav>
 
   <section class="panel" id="loginPanel">
@@ -179,7 +219,7 @@
       <div id="eventInfo" class="muted"></div>
     </section>
 
-    <section class="panel">
+    <section class="panel" id="createGamePanel">
       <h2>2. Create a Game</h2>
       <div class="grid">
         <div>
@@ -207,34 +247,54 @@
       <p class="muted">Games are created in Draft status. Players must be added before a game can start.</p>
     </section>
 
-    <section class="panel">
-      <h2>3. Select Game</h2>
-      <label for="gameSelect">Games for this event</label>
-      <select id="gameSelect">
-        <option value="">Select an event first</option>
-      </select>
-      <div id="gameInfo"></div>
+    <section class="panel" id="gameDirectoryPanel">
+      <h2>3. Event Games</h2>
+      <p>Every game has its own workspace. Open a game to manage its roster and status.</p>
+      <div id="gameDirectory">
+        <p class="muted">Select an event to view its games.</p>
+      </div>
     </section>
 
-    <section class="grid">
-      <div class="panel">
+    <section class="panel" id="gameWorkspacePanel">
+      <div class="workspace-heading">
         <div class="row">
-          <h2>4. Checked-In Attendees</h2>
-          <button id="refreshBtn">Refresh</button>
+          <div>
+            <p class="accent" style="margin:0 0 7px;font-weight:bold;">INDIVIDUAL GAME WORKSPACE</p>
+            <h2 id="workspaceGameName">Select a game</h2>
+            <p id="workspaceEventName" style="margin:0;"></p>
+          </div>
+          <span id="workspaceStatus" class="status">No game selected</span>
         </div>
-        <p>Only attendees who have checked in can be added to a game.</p>
-        <div id="attendeeList" class="muted">Select an event and game.</div>
+        <div class="workspace-meta">
+          <span id="workspaceFormat">Format: —</span>
+          <span id="workspaceRules">Rules version: —</span>
+        </div>
+        <div id="workspaceGameId" class="workspace-id"></div>
+        <div class="nav" style="margin:14px 0 0;">
+          <button id="backToGamesBtn" type="button">← Back to Event Games</button>
+        </div>
       </div>
 
-      <div class="panel">
-        <div class="row">
-          <h2>5. Game Roster</h2>
-          <span id="rosterCount" class="status">0 players</span>
-        </div>
-        <p>Each player begins with four bags.</p>
-        <div id="rosterList" class="muted">Select a game to view its roster.</div>
-        <div id="startNotice"></div>
-        <button class="primary" id="startGameBtn" disabled>Start Game</button>
+      <div class="grid">
+        <section class="panel">
+          <div class="row">
+            <h2>Game Roster</h2>
+            <span id="rosterCount" class="status">0 players</span>
+          </div>
+          <p>Each player begins with four bags. The roster locks when the game starts.</p>
+          <div id="rosterList" class="muted">Open a game to view its roster.</div>
+          <div id="startNotice"></div>
+          <button class="primary" id="startGameBtn" disabled>Start Game</button>
+        </section>
+
+        <section class="panel">
+          <div class="row">
+            <h2>Checked-In Attendees</h2>
+            <button id="refreshBtn" type="button">Refresh</button>
+          </div>
+          <p>Only attendees who have checked in can be added to a game.</p>
+          <div id="attendeeList" class="muted">Open a game to see eligible attendees.</div>
+        </section>
       </div>
     </section>
   </div>
@@ -255,6 +315,7 @@
   );
 
   const $ = id => document.getElementById(id);
+
   let currentEvents = [];
   let currentGames = [];
   let currentAttendees = [];
@@ -279,7 +340,38 @@
   }
 
   function selectedGame() {
-    return currentGames.find(g => g.id === $("gameSelect").value) || null;
+    return currentGames.find(g => g.id === $("gameSelect")?.value) || currentGame;
+  }
+
+  function updateUrl(eventId, gameId = null) {
+    const url = new URL(window.location.href);
+
+    if (eventId) {
+      url.searchParams.set("event", eventId);
+    } else {
+      url.searchParams.delete("event");
+    }
+
+    if (gameId) {
+      url.searchParams.set("game", gameId);
+    } else {
+      url.searchParams.delete("game");
+    }
+
+    window.history.replaceState({}, "", url);
+  }
+
+  function gameFormat(game) {
+    return game.ruleset === "official_100_footer"
+      ? "Official 100-Footer"
+      : `Alternate Distance · ${game.max_distance_ft} ft`;
+  }
+
+  function statusClass(status) {
+    if (status === "completed") return "good";
+    if (status === "in_progress") return "warn";
+    if (status === "voided") return "bad";
+    return "";
   }
 
   async function loadEvents() {
@@ -297,22 +389,25 @@
         `<option value="${e.id}">${escapeHTML(e.event_name)} (${escapeHTML(e.status)})</option>`
       ).join("");
 
-    if (currentEvents.length) {
-  const requestedEventId =
-    new URLSearchParams(window.location.search).get("event");
+    if (!currentEvents.length) {
+      $("eventInfo").textContent = "No events found.";
+      $("gameDirectory").innerHTML = '<p class="muted">Create an event first.</p>';
+      return;
+    }
 
-  const matchingEvent = currentEvents.find(
-    event => event.id === requestedEventId
-  );
+    const params = new URLSearchParams(window.location.search);
+    const requestedEventId = params.get("event");
+    const matchingEvent = currentEvents.find(e => e.id === requestedEventId);
 
-  $("eventSelect").value = matchingEvent
-    ? matchingEvent.id
-    : currentEvents[0].id;
+    $("eventSelect").value = matchingEvent
+      ? matchingEvent.id
+      : currentEvents[0].id;
 
-  await loadEventWorkspace();
-} else {
-  $("eventInfo").textContent = "No events found.";
-}
+    if (!matchingEvent && params.has("event")) {
+      updateUrl($("eventSelect").value);
+    }
+
+    await loadEventWorkspace();
   }
 
   async function loadEventWorkspace() {
@@ -321,27 +416,42 @@
     currentRoster = [];
     currentAttendees = [];
 
+    if (currentEvent) {
+      updateUrl(currentEvent.id);
+      $("operationsLink").href = `operations.html?event=${encodeURIComponent(currentEvent.id)}`;
+    }
+
     $("eventInfo").textContent = currentEvent
       ? `${currentEvent.venue_name || "Venue TBD"} · ${[currentEvent.city, currentEvent.state].filter(Boolean).join(", ") || "Location TBD"} · Event status: ${currentEvent.status}`
       : "";
 
-    $("gameInfo").innerHTML = "";
-    $("rosterList").textContent = "Select a game to view its roster.";
-    $("attendeeList").textContent = "Loading attendees...";
-    $("rosterCount").textContent = "0 players";
-    $("startGameBtn").disabled = true;
-    $("startNotice").innerHTML = "";
+    $("gameDirectory").innerHTML = '<p class="muted">Loading games...</p>';
+    resetGameWorkspace();
 
     if (!currentEvent) {
-      $("gameSelect").innerHTML = '<option value="">Choose an event first</option>';
-      $("attendeeList").textContent = "Select an event first.";
+      $("gameDirectory").innerHTML = '<p class="muted">Select an event first.</p>';
       return;
     }
 
     await Promise.all([loadGames(), loadAttendees()]);
   }
 
-  async function loadGames() {
+  function resetGameWorkspace() {
+    $("workspaceGameName").textContent = "Select a game";
+    $("workspaceEventName").textContent = "";
+    $("workspaceStatus").textContent = "No game selected";
+    $("workspaceStatus").className = "status";
+    $("workspaceFormat").textContent = "Format: —";
+    $("workspaceRules").textContent = "Rules version: —";
+    $("workspaceGameId").textContent = "";
+    $("rosterList").textContent = "Open a game to view its roster.";
+    $("attendeeList").textContent = "Open a game to see eligible attendees.";
+    $("rosterCount").textContent = "0 players";
+    $("startGameBtn").disabled = true;
+    $("startNotice").innerHTML = "";
+  }
+
+  async function loadGames(preferredGameId = null) {
     const { data, error } = await db
       .from("games")
       .select("id,event_id,ruleset,max_distance_ft,rules_version,status,started_at,completed_at,created_at")
@@ -351,67 +461,114 @@
     if (error) throw error;
     currentGames = data || [];
 
-    $("gameSelect").innerHTML =
-      '<option value="">Choose a game...</option>' +
-      currentGames.map(g => {
-        const label = g.ruleset === "official_100_footer"
-          ? "Official 100-Footer"
-          : `Alternate · ${g.max_distance_ft} ft`;
-        return `<option value="${g.id}">${label} · ${escapeHTML(g.status)}</option>`;
-      }).join("");
+    renderGameDirectory();
 
-    if (currentGames.length) {
-      $("gameSelect").value = currentGames[0].id;
-      await loadGameWorkspace();
-    } else {
-      $("gameInfo").textContent = "No games created for this event yet.";
-      $("rosterList").textContent = "Create a game to begin building its roster.";
-      renderAttendees();
-    }
-  }
-
-  async function loadAttendees() {
-    const { data, error } = await db
-      .from("event_attendance")
-      .select("id,participant_id,attendance_status,checked_in_at,participants(display_name,username)")
-      .eq("event_id", currentEvent.id)
-      .eq("attendance_status", "checked_in")
-      .order("created_at", { ascending: true });
-
-    if (error) throw error;
-    currentAttendees = data || [];
-    renderAttendees();
-  }
-
-  async function loadGameWorkspace() {
-    currentGame = selectedGame();
-    if (!currentGame) {
-      currentRoster = [];
-      $("gameInfo").textContent = "";
-      $("rosterList").textContent = "Select a game to view its roster.";
-      $("rosterCount").textContent = "0 players";
-      $("startGameBtn").disabled = true;
-      renderAttendees();
+    if (!currentGames.length) {
+      currentGame = null;
+      updateUrl(currentEvent.id);
+      resetGameWorkspace();
+      $("gameDirectory").innerHTML =
+        '<div class="item">No games created for this event yet. Use Create a Game above to get started.</div>';
       return;
     }
 
-    const format = currentGame.ruleset === "official_100_footer"
-      ? "Official 100-Footer"
-      : `Alternate Distance · ${currentGame.max_distance_ft} ft`;
+    const params = new URLSearchParams(window.location.search);
+    const requestedGameId = preferredGameId || params.get("game");
+    const matchingGame = currentGames.find(g => g.id === requestedGameId);
 
-    $("gameInfo").innerHTML =
-      `<div class="item"><strong>${format}</strong>` +
-      `<small>Status: ${escapeHTML(currentGame.status)} · Rules version: ${escapeHTML(currentGame.rules_version || "1.0")}</small></div>`;
+    const gameToOpen = matchingGame || currentGames[0];
+
+    if (!matchingGame && requestedGameId) {
+      updateUrl(currentEvent.id);
+    }
+
+    await openGame(gameToOpen.id);
+  }
+
+  function renderGameDirectory() {
+    if (!currentGames.length) {
+      $("gameDirectory").innerHTML =
+        '<div class="item">No games created for this event yet.</div>';
+      return;
+    }
+
+    $("gameDirectory").innerHTML = currentGames.map(game => {
+      const isSelected = currentGame && currentGame.id === game.id;
+      return `
+        <div class="game-card ${isSelected ? "selected" : ""}">
+          <div class="row">
+            <div>
+              <div class="game-card-title">${escapeHTML(gameFormat(game))}</div>
+              <div class="game-card-meta">
+                Created: ${escapeHTML(game.created_at ? new Date(game.created_at).toLocaleString() : "Date unavailable")}
+              </div>
+            </div>
+            <span class="status ${statusClass(game.status)}">${escapeHTML(game.status.replaceAll("_", " ").toUpperCase())}</span>
+          </div>
+          <button type="button" class="primary openGameBtn" data-game-id="${escapeHTML(game.id)}">
+            ${isSelected ? "Open Current Workspace" : "Open Game Workspace"}
+          </button>
+        </div>
+      `;
+    }).join("");
+  }
+
+  async function openGame(gameId) {
+    const game = currentGames.find(g => g.id === gameId);
+
+    if (!game) {
+      currentGame = null;
+      currentRoster = [];
+      updateUrl(currentEvent?.id || null);
+      resetGameWorkspace();
+      renderGameDirectory();
+      return;
+    }
+
+    currentGame = game;
+    updateUrl(currentEvent.id, game.id);
+    renderGameDirectory();
+
+    $("workspaceGameName").textContent = gameFormat(game);
+    $("workspaceEventName").textContent = currentEvent.event_name;
+    $("workspaceStatus").textContent = game.status.replaceAll("_", " ").toUpperCase();
+    $("workspaceStatus").className = "status " + statusClass(game.status);
+    $("workspaceFormat").textContent = "Format: " + gameFormat(game);
+    $("workspaceRules").textContent = "Rules version: " + (game.rules_version || "1.0");
+    $("workspaceGameId").textContent = "Game ID: " + game.id;
+
+    $("rosterList").textContent = "Loading roster...";
+    $("attendeeList").textContent = "Loading eligible attendees...";
 
     const { data, error } = await db
       .from("game_participants")
       .select("id,game_id,participant_id,starting_bags,joined_at,participants(display_name,username)")
-      .eq("game_id", currentGame.id)
+      .eq("game_id", game.id)
       .order("joined_at", { ascending: true });
 
     if (error) throw error;
+
+    if (!currentGame || currentGame.id !== game.id) return;
+
     currentRoster = data || [];
     renderRoster();
+    renderAttendees();
+  }
+
+  async function loadAttendees() {
+    const eventId = currentEvent.id;
+
+    const { data, error } = await db
+      .from("event_attendance")
+      .select("id,participant_id,attendance_status,checked_in_at,participants(display_name,username)")
+      .eq("event_id", eventId)
+      .eq("attendance_status", "checked_in")
+      .order("created_at", { ascending: true });
+
+    if (error) throw error;
+    if (!currentEvent || currentEvent.id !== eventId) return;
+
+    currentAttendees = data || [];
     renderAttendees();
   }
 
@@ -424,7 +581,7 @@
       return;
     }
     if (!currentGame) {
-      $("attendeeList").textContent = "Select or create a game to add attendees.";
+      $("attendeeList").textContent = "Open a game to add attendees.";
       return;
     }
     if (!currentAttendees.length) {
@@ -442,10 +599,11 @@
       const person = a.participants || {};
       const name = person.display_name || person.username || "Participant";
       const disabled = currentGame.status !== "draft";
+
       return `<div class="item">
         <strong>${escapeHTML(name)}</strong>
         <small>Checked in · Ready to play</small>
-        <button class="primary addPlayerBtn" data-participant="${a.participant_id}" ${disabled ? "disabled" : ""}>Add to Game</button>
+        <button class="primary addPlayerBtn" data-participant="${escapeHTML(a.participant_id)}" ${disabled ? "disabled" : ""}>Add to Game</button>
       </div>`;
     }).join("");
 
@@ -455,14 +613,17 @@
   }
 
   function renderRoster() {
-    $("rosterCount").textContent = `${currentRoster.length} player${currentRoster.length === 1 ? "" : "s"}`;
+    $("rosterCount").textContent =
+      `${currentRoster.length} player${currentRoster.length === 1 ? "" : "s"}`;
 
     if (!currentRoster.length) {
-      $("rosterList").innerHTML = "<p>No players added yet. Add checked-in attendees to build the roster.</p>";
+      $("rosterList").innerHTML =
+        "<p>No players added yet. Add checked-in attendees to build the roster.</p>";
     } else {
       $("rosterList").innerHTML = currentRoster.map((p, index) => {
         const person = p.participants || {};
         const name = person.display_name || person.username || "Participant";
+
         return `<div class="item">
           <strong>${index + 1}. ${escapeHTML(name)}</strong>
           <small>${escapeHTML(p.starting_bags)} starting bags · Added to game</small>
@@ -477,7 +638,8 @@
     $("startGameBtn").disabled = !ready;
 
     if (currentGame && currentGame.status !== "draft") {
-      $("startNotice").innerHTML = `<div class="notice">This game is ${escapeHTML(currentGame.status)}. Its roster is locked.</div>`;
+      $("startNotice").innerHTML =
+        `<div class="notice">This game is ${escapeHTML(currentGame.status)}. Its roster is locked.</div>`;
     } else if (currentEvent && !eventCanStart) {
       $("startNotice").innerHTML =
         '<div class="notice">The event must be marked <strong>In Progress</strong> in Event Management before this game can start.</div>';
@@ -519,10 +681,7 @@
     }
 
     message("Game created successfully.", "success");
-    await loadGames();
-
-    if (data) $("gameSelect").value = data;
-    await loadGameWorkspace();
+    await loadGames(data || null);
   }
 
   async function addPlayer(participantId) {
@@ -546,7 +705,7 @@
     }
 
     message("Participant added to the game roster.", "success");
-    await loadGameWorkspace();
+    await openGame(currentGame.id);
   }
 
   async function startGame() {
@@ -566,25 +725,30 @@
     $("startGameBtn").disabled = true;
     message("Starting game...");
 
+    const gameId = currentGame.id;
+
     const { error } = await db.rpc("start_event_game", {
-      _game_id: currentGame.id
+      _game_id: gameId
     });
 
     if (error) {
       message(error.message, "error");
-      await loadGameWorkspace();
+      await loadGames(gameId);
       return;
     }
 
     message("Game started. Let's play!", "success");
-    await loadGames();
-    await loadGameWorkspace();
+    await loadGames(gameId);
   }
 
   async function refreshWorkspace() {
     if (!currentEvent) return;
     message("Refreshing...");
+    const gameId = currentGame?.id || null;
     await loadEventWorkspace();
+    if (gameId && currentGames.some(g => g.id === gameId)) {
+      await openGame(gameId);
+    }
     message("Workspace refreshed.", "success");
   }
 
@@ -605,6 +769,7 @@
       message(error.message, "error");
       return;
     }
+
     try {
       await showApp();
     } catch (err) {
@@ -626,13 +791,23 @@
     }
   });
 
-  $("gameSelect").addEventListener("change", async () => {
+  $("gameDirectory").addEventListener("click", async event => {
+    const button = event.target.closest("[data-game-id]");
+    if (!button) return;
+
     try {
-      await loadGameWorkspace();
+      await openGame(button.dataset.gameId);
       message("");
     } catch (err) {
       message(err.message, "error");
     }
+  });
+
+  $("backToGamesBtn").addEventListener("click", () => {
+    if (!currentEvent) return;
+    updateUrl(currentEvent.id);
+    message("Back at the event game directory.");
+    renderGameDirectory();
   });
 
   $("ruleset").addEventListener("change", () => {
@@ -643,18 +818,28 @@
   });
 
   $("createGameBtn").addEventListener("click", async () => {
-    try { await createGame(); }
-    catch (err) { message(err.message, "error"); }
+    try {
+      await createGame();
+    } catch (err) {
+      $("createGameBtn").disabled = false;
+      message(err.message, "error");
+    }
   });
 
   $("startGameBtn").addEventListener("click", async () => {
-    try { await startGame(); }
-    catch (err) { message(err.message, "error"); }
+    try {
+      await startGame();
+    } catch (err) {
+      message(err.message, "error");
+    }
   });
 
   $("refreshBtn").addEventListener("click", async () => {
-    try { await refreshWorkspace(); }
-    catch (err) { message(err.message, "error"); }
+    try {
+      await refreshWorkspace();
+    } catch (err) {
+      message(err.message, "error");
+    }
   });
 
   db.auth.getSession().then(async ({ data, error }) => {
@@ -662,9 +847,13 @@
       message(error.message, "error");
       return;
     }
+
     if (data.session) {
-      try { await showApp(); }
-      catch (err) { message(err.message, "error"); }
+      try {
+        await showApp();
+      } catch (err) {
+        message(err.message, "error");
+      }
     }
   });
 })();
