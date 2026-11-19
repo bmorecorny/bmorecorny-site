@@ -1,0 +1,425 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BmoreCorny | Event Operations</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #101114;
+      color: #f5f5f5;
+      font-family: Arial, sans-serif;
+    }
+    header {
+      background: #191a1f;
+      border-bottom: 1px solid #303137;
+      padding: 20px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .brand { color: #f4bd35; font-size: 22px; font-weight: 900; }
+    main { max-width: 1150px; margin: auto; padding: 30px 20px; }
+    h1 { margin: 0 0 8px; }
+    h2 { font-size: 18px; margin: 0 0 16px; }
+    h3 { margin: 0 0 8px; }
+    .muted { color: #999ba5; font-size: 13px; line-height: 1.5; }
+    .panel {
+      background: #191a1f;
+      border: 1px solid #303137;
+      border-radius: 12px;
+      padding: 22px;
+      margin-top: 20px;
+    }
+    select {
+      width: 100%;
+      padding: 13px;
+      background: #101114;
+      color: white;
+      border: 1px solid #41434c;
+      border-radius: 7px;
+      font-size: 14px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      color: #c7c8ce;
+      margin-bottom: 8px;
+    }
+    button {
+      background: #f4bd35;
+      color: #171717;
+      border: 0;
+      border-radius: 7px;
+      padding: 11px 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button.secondary { background: #303137; color: white; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    a { color: #f4bd35; text-decoration: none; }
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .stat {
+      background: #101114;
+      border: 1px solid #303137;
+      border-radius: 9px;
+      padding: 17px;
+    }
+    .stat-number {
+      color: #f4bd35;
+      font-size: 28px;
+      font-weight: 800;
+      margin-top: 7px;
+    }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 15px;
+    }
+    .detail {
+      background: #101114;
+      border: 1px solid #303137;
+      padding: 14px;
+      border-radius: 8px;
+    }
+    .detail-label { color: #999ba5; font-size: 12px; margin-bottom: 6px; }
+    .detail-value { font-size: 14px; overflow-wrap: anywhere; }
+    .status {
+      display: inline-block;
+      background: #303137;
+      color: #f4bd35;
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    .hidden { display: none !important; }
+    .message { margin-top: 14px; font-size: 13px; line-height: 1.5; }
+    .error { color: #ff8585; }
+    .success { color: #77dfa0; }
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+    @media(max-width: 650px) {
+      main { padding: 20px 14px; }
+      .panel { padding: 17px; }
+      .stats { grid-template-columns: 1fr; }
+      .detail-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="brand">🌽 BmoreCorny</div>
+    <div class="muted">EVENT OPERATIONS</div>
+  </div>
+  <div>
+    <a href="./events.html" style="margin-right:15px;">Event Management</a>
+    <button id="logoutButton" class="secondary hidden">Sign Out</button>
+  </div>
+</header>
+
+<main>
+  <h1>Event Operations</h1>
+  <p class="muted">Your event-day command center. Select an event to manage its operations.</p>
+
+  <section id="loginPanel" class="panel">
+    <h2>Staff Sign In</h2>
+    <p class="muted">Use your authorized BmoreCorny account.</p>
+    <form id="loginForm">
+      <label for="email">Email</label>
+      <input id="email" type="email" value="bmorecorny@gmail.com"
+        autocomplete="username" required
+        style="width:100%;padding:12px;margin-bottom:14px;background:#101114;color:white;border:1px solid #41434c;border-radius:7px;">
+      <label for="password">Password</label>
+      <input id="password" type="password" autocomplete="current-password"
+        required style="width:100%;padding:12px;margin-bottom:14px;background:#101114;color:white;border:1px solid #41434c;border-radius:7px;">
+      <button id="loginButton" type="submit">Sign In</button>
+    </form>
+    <div id="loginMessage" class="message"></div>
+  </section>
+
+  <section id="operationsPanel" class="hidden">
+    <div class="panel">
+      <div class="toolbar">
+        <div>
+          <h2>Select Event</h2>
+          <p class="muted">Choose an event to open its operations workspace.</p>
+        </div>
+        <button id="refreshButton" class="secondary" type="button">Refresh</button>
+      </div>
+      <label for="eventSelect">Available Events</label>
+      <select id="eventSelect">
+        <option value="">Loading events...</option>
+      </select>
+      <div id="eventMessage" class="message"></div>
+    </div>
+
+    <section id="eventWorkspace" class="hidden">
+      <div class="panel">
+        <div class="toolbar">
+          <div>
+            <h2 id="selectedEventName">Event Name</h2>
+            <p id="selectedEventLocation" class="muted"></p>
+          </div>
+          <span id="selectedEventStatus" class="status"></span>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail">
+            <div class="detail-label">Event Type</div>
+            <div id="eventType" class="detail-value"></div>
+          </div>
+          <div class="detail">
+            <div class="detail-label">Start</div>
+            <div id="eventStart" class="detail-value"></div>
+          </div>
+          <div class="detail">
+            <div class="detail-label">End</div>
+            <div id="eventEnd" class="detail-value"></div>
+          </div>
+          <div class="detail">
+            <div class="detail-label">Event ID</div>
+            <div id="eventId" class="detail-value muted"></div>
+          </div>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="muted">Registered</div>
+            <div id="registeredCount" class="stat-number">—</div>
+          </div>
+          <div class="stat">
+            <div class="muted">Checked In</div>
+            <div id="checkedInCount" class="stat-number">—</div>
+          </div>
+          <div class="stat">
+            <div class="muted">Games</div>
+            <div id="gameCount" class="stat-number">—</div>
+          </div>
+        </div>
+
+        <div id="countMessage" class="message muted"></div>
+
+        <div class="actions">
+          <a href="./events.html"><button type="button" class="secondary">Event Management</button></a>
+        </div>
+      </div>
+    </section>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./config.js"></script>
+<script>
+(() => {
+  const config = window.BMORECORNY_CONFIG;
+  const $ = id => document.getElementById(id);
+
+  if (!config?.SUPABASE_URL || !config?.SUPABASE_ANON_KEY) {
+    $("loginMessage").textContent = "Configuration missing. Check admin/config.js.";
+    return;
+  }
+
+  const db = window.supabase.createClient(
+    config.SUPABASE_URL,
+    config.SUPABASE_ANON_KEY
+  );
+
+  let events = [];
+  let selectedEventId = null;
+
+  function message(id, text, type = "") {
+    $(id).textContent = text;
+    $(id).className = "message " + type;
+  }
+
+  function formatDate(value) {
+    return value ? new Date(value).toLocaleString() : "Not set";
+  }
+
+  function pretty(value) {
+    return (value || "Not set").replaceAll("_", " ").replace(/\b\w/g, c => c.toUpperCase());
+  }
+
+  async function loadEvents() {
+    message("eventMessage", "Loading events...");
+
+    const { data, error } = await db
+      .from("events")
+      .select("id,event_name,event_type,venue_name,city,state,start_at,end_at,status")
+      .order("start_at", { ascending: true });
+
+    if (error) {
+      message("eventMessage", "Could not load events: " + error.message, "error");
+      return;
+    }
+
+    events = data || [];
+    const select = $("eventSelect");
+    select.innerHTML = "";
+
+    if (!events.length) {
+      select.innerHTML = '<option value="">No events found</option>';
+      message("eventMessage", "Create an event in Event Management first.");
+      $("eventWorkspace").classList.add("hidden");
+      return;
+    }
+
+    select.innerHTML = '<option value="">Choose an event...</option>' +
+      events.map(event =>
+        `<option value="${event.id}">${escapeHtml(event.event_name)} — ${escapeHtml(pretty(event.status))}</option>`
+      ).join("");
+
+    message("eventMessage", `${events.length} event(s) available.`, "success");
+
+    if (selectedEventId && events.some(e => e.id === selectedEventId)) {
+      select.value = selectedEventId;
+      await selectEvent(selectedEventId);
+    } else {
+      selectedEventId = null;
+      $("eventWorkspace").classList.add("hidden");
+    }
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;",
+      '"': "&quot;", "'": "&#39;"
+    })[char]);
+  }
+
+  async function selectEvent(id) {
+    const event = events.find(item => item.id === id);
+    if (!event) {
+      selectedEventId = null;
+      $("eventWorkspace").classList.add("hidden");
+      return;
+    }
+
+    selectedEventId = id;
+    $("selectedEventName").textContent = event.event_name;
+    $("selectedEventLocation").textContent =
+      [event.venue_name, event.city, event.state].filter(Boolean).join(" · ") || "Location not set";
+    $("selectedEventStatus").textContent = pretty(event.status).toUpperCase();
+    $("eventType").textContent = pretty(event.event_type);
+    $("eventStart").textContent = formatDate(event.start_at);
+    $("eventEnd").textContent = formatDate(event.end_at);
+    $("eventId").textContent = event.id;
+
+    $("registeredCount").textContent = "…";
+    $("checkedInCount").textContent = "…";
+    $("gameCount").textContent = "…";
+    $("eventWorkspace").classList.remove("hidden");
+    message("countMessage", "Loading event activity...");
+
+    const [attendanceResult, gamesResult] = await Promise.all([
+      db.from("event_attendance")
+        .select("attendance_status")
+        .eq("event_id", id),
+      db.from("games")
+        .select("id,status")
+        .eq("event_id", id)
+    ]);
+
+    if (attendanceResult.error || gamesResult.error) {
+      $("registeredCount").textContent = "—";
+      $("checkedInCount").textContent = "—";
+      $("gameCount").textContent = "—";
+      const errors = [
+        attendanceResult.error?.message,
+        gamesResult.error?.message
+      ].filter(Boolean).join(" | ");
+      message("countMessage", "Event details loaded, but activity counts could not be read: " + errors, "error");
+      return;
+    }
+
+    const attendance = attendanceResult.data || [];
+    const games = gamesResult.data || [];
+
+    $("registeredCount").textContent =
+      attendance.filter(row => ["registered", "checked_in", "attended"].includes(row.attendance_status)).length;
+
+    $("checkedInCount").textContent =
+      attendance.filter(row => row.attendance_status === "checked_in").length;
+
+    $("gameCount").textContent = games.length;
+
+    message("countMessage", "Live counts loaded from the event database.", "success");
+  }
+
+  $("eventSelect").addEventListener("change", async () => {
+    await selectEvent($("eventSelect").value);
+  });
+
+  $("refreshButton").addEventListener("click", loadEvents);
+
+  async function updateScreen() {
+    const { data: { session } } = await db.auth.getSession();
+
+    $("loginPanel").classList.toggle("hidden", !!session);
+    $("operationsPanel").classList.toggle("hidden", !session);
+    $("logoutButton").classList.toggle("hidden", !session);
+
+    if (session) await loadEvents();
+  }
+
+  $("loginForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    $("loginButton").disabled = true;
+    message("loginMessage", "Signing in...");
+
+    const { error } = await db.auth.signInWithPassword({
+      email: $("email").value.trim(),
+      password: $("password").value
+    });
+
+    $("loginButton").disabled = false;
+
+    if (error) {
+      message("loginMessage", "Sign-in failed: " + error.message, "error");
+      return;
+    }
+
+    $("password").value = "";
+    message("loginMessage", "");
+    await updateScreen();
+  });
+
+  $("logoutButton").addEventListener("click", async () => {
+    await db.auth.signOut();
+    selectedEventId = null;
+    await updateScreen();
+  });
+
+  db.auth.onAuthStateChange(() => {
+    updateScreen();
+  });
+
+  updateScreen();
+})();
+</script>
+</body>
+</html>
