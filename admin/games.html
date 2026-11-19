@@ -2,319 +2,269 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BmoreCorny | Game Management</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js"></script>
-  <style>
-    :root {
-      --bg: #101114;
-      --panel: #1b1d22;
-      --panel2: #24272e;
-      --text: #f5f5f5;
-      --muted: #a3a7b0;
-      --accent: #ffbd35;
-      --green: #43c78a;
-      --red: #ff6868;
-      --border: #343740;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      padding: 28px;
-      background: var(--bg);
-      color: var(--text);
-      font: 15px Arial, sans-serif;
-    }
-    .wrap { max-width: 1100px; margin: auto; }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    h1 { margin: 0; font-size: 28px; }
-    h2 { margin: 0 0 16px; font-size: 19px; }
-    h3 { margin: 0 0 10px; font-size: 16px; }
-    p { color: var(--muted); line-height: 1.5; }
-    .accent { color: var(--accent); }
-    .nav { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
-    a, button {
-      display: inline-block;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 14px;
-      color: var(--text);
-      background: var(--panel2);
-      text-decoration: none;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    button.primary {
-      background: var(--accent);
-      color: #171717;
-      border-color: var(--accent);
-    }
-    button:disabled { opacity: .4; cursor: not-allowed; }
-    a:hover, button:not(:disabled):hover { filter: brightness(1.15); }
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 18px;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-    }
-    label {
-      display: block;
-      margin-bottom: 7px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-    input, select {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: #111318;
-      color: var(--text);
-      margin-bottom: 14px;
-      font-size: 14px;
-    }
-    .row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .status {
-      display: inline-block;
-      border-radius: 20px;
-      padding: 5px 10px;
-      font-size: 12px;
-      font-weight: 700;
-      background: var(--panel2);
-      color: var(--muted);
-    }
-    .status.good { color: var(--green); }
-    .status.warn { color: var(--accent); }
-    .status.bad { color: var(--red); }
-    .item {
-      padding: 14px;
-      border: 1px solid var(--border);
-      border-radius: 9px;
-      margin-top: 10px;
-      background: #17191e;
-    }
-    .item small { display: block; color: var(--muted); margin-top: 5px; }
-    .item button { margin-top: 10px; }
-    .game-card {
-      padding: 16px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      margin-top: 10px;
-      background: #17191e;
-    }
-    .game-card.selected {
-      border-color: var(--accent);
-      background: #222019;
-    }
-    .game-card .row { align-items: flex-start; }
-    .game-card button { margin-top: 12px; }
-    .game-card-title { font-weight: 800; font-size: 15px; }
-    .game-card-meta { color: var(--muted); font-size: 12px; margin-top: 7px; }
-    .notice {
-      padding: 12px 14px;
-      border-radius: 8px;
-      background: #29251a;
-      color: #ffdb8a;
-      margin: 12px 0;
-      line-height: 1.5;
-    }
-    .success { color: var(--green); }
-    .error { color: var(--red); }
-    .muted { color: var(--muted); }
-    #message { margin: 12px 0; min-height: 20px; }
-    .hidden { display: none !important; }
-    .workspace-heading {
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 16px;
-      margin-bottom: 16px;
-    }
-    .workspace-heading h2 { margin-bottom: 8px; }
-    .workspace-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
-    }
-    .workspace-meta span {
-      background: var(--panel2);
-      border-radius: 6px;
-      padding: 7px 10px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-    .workspace-id {
-      color: var(--muted);
-      font-size: 11px;
-      overflow-wrap: anywhere;
-      margin-top: 12px;
-    }
-    @media (max-width: 600px) {
-      body { padding: 16px; }
-      h1 { font-size: 23px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BmoreCorny | Game Management</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<style>
+:root {
+  --bg:#101114;--panel:#1b1d22;--panel2:#24272e;
+  --text:#f5f5f5;--muted:#a3a7b0;--accent:#ffbd35;
+  --green:#43c78a;--red:#ff6868;--border:#343740;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:28px;background:var(--bg);color:var(--text);font:15px Arial,sans-serif}
+.wrap{max-width:1200px;margin:auto}
+header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;margin-bottom:24px}
+h1{margin:0;font-size:28px}h2{margin:0 0 16px;font-size:19px}h3{margin:0 0 10px;font-size:16px}
+p{color:var(--muted);line-height:1.5}
+.accent{color:var(--accent)}
+.nav{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px}
+a,button{display:inline-block;border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);background:var(--panel2);text-decoration:none;font-weight:600;cursor:pointer;font-size:14px}
+button.primary{background:var(--accent);color:#171717;border-color:var(--accent)}
+button:disabled{opacity:.4;cursor:not-allowed}
+a:hover,button:not(:disabled):hover{filter:brightness(1.15)}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+label{display:block;margin-bottom:7px;color:var(--muted);font-size:13px}
+input,select{width:100%;padding:12px;border-radius:8px;border:1px solid var(--border);background:#111318;color:var(--text);margin-bottom:14px;font-size:14px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.status{display:inline-block;border-radius:20px;padding:5px 10px;font-size:12px;font-weight:700;background:var(--panel2);color:var(--muted)}
+.status.good{color:var(--green)}.status.warn{color:var(--accent)}.status.bad{color:var(--red)}
+.item,.game-card{padding:14px;border:1px solid var(--border);border-radius:9px;margin-top:10px;background:#17191e}
+.item small{display:block;color:var(--muted);margin-top:5px}
+.item button{margin-top:10px}
+.game-card{padding:16px;border-radius:10px}
+.game-card.selected{border-color:var(--accent);background:#222019}
+.game-card .row{align-items:flex-start}
+.game-card button{margin-top:12px}
+.game-card-title{font-weight:800;font-size:15px}
+.game-card-meta{color:var(--muted);font-size:12px;margin-top:7px}
+.notice{padding:12px 14px;border-radius:8px;background:#29251a;color:#ffdb8a;margin:12px 0;line-height:1.5}
+.success{color:var(--green)}.error{color:var(--red)}.muted{color:var(--muted)}
+#message{margin:12px 0;min-height:20px}
+.hidden{display:none!important}
+.workspace-heading{border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:16px}
+.workspace-heading h2{margin-bottom:8px}
+.workspace-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.workspace-meta span{background:var(--panel2);border-radius:6px;padding:7px 10px;color:var(--muted);font-size:12px}
+.workspace-id{color:var(--muted);font-size:11px;overflow-wrap:anywhere;margin-top:12px}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin:14px 0}
+.metric{background:#17191e;border:1px solid var(--border);border-radius:9px;padding:14px}
+.metric strong{display:block;font-size:25px;margin-top:5px}
+.metric span{font-size:12px;color:var(--muted)}
+.throw-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;align-items:end}
+.throw-controls label{margin-bottom:7px}
+.throw-controls select{margin-bottom:0}
+.throw-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.result-btn{min-width:125px;padding:14px 18px;font-size:15px}
+.result-btn.board{border-color:#4389d1}
+.result-btn.hole{border-color:var(--green)}
+.result-btn.miss{border-color:var(--red)}
+.result-btn.board.selected{background:#23466b}
+.result-btn.hole.selected{background:#174b35}
+.result-btn.miss.selected{background:#572727}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:520px}
+th,td{text-align:left;padding:11px 9px;border-bottom:1px solid var(--border);font-size:13px}
+th{color:var(--muted);font-weight:600}
+.progress-row{display:grid;grid-template-columns:65px 1fr 1fr;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.progress-tag{font-size:12px;color:var(--muted)}
+.achievement{font-size:12px;padding:5px 8px;border-radius:6px;background:var(--panel2);display:inline-block}
+.achievement.yes{background:#174b35;color:var(--green)}
+.achievement.no{color:var(--muted)}
+.workspace-section{margin-top:20px}
+.section-note{font-size:13px;color:var(--muted);margin-top:-7px}
+@media(max-width:600px){
+ body{padding:16px}h1{font-size:23px}
+ .panel{padding:15px}
+ .progress-row{grid-template-columns:48px 1fr 1fr;gap:6px}
+ .result-btn{flex:1;min-width:90px}
+}
+</style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <div>
-      <h1><span class="accent">BmoreCorny</span> Game Management</h1>
-      <p>Create games, build rosters, and launch competition.</p>
-    </div>
-    <button id="logoutBtn" class="hidden">Log Out</button>
-  </header>
+<header>
+  <div>
+    <h1><span class="accent">BmoreCorny</span> Game Management</h1>
+    <p>Create games, build rosters, and run live competition.</p>
+  </div>
+  <button id="logoutBtn" class="hidden">Log Out</button>
+</header>
 
-  <nav class="nav">
-    <a href="index.html">Dashboard</a>
-    <a href="events.html">Events</a>
-    <a id="operationsLink" href="operations.html">Event Operations</a>
-  </nav>
+<nav class="nav">
+  <a href="index.html">Dashboard</a>
+  <a href="events.html">Events</a>
+  <a id="operationsLink" href="operations.html">Event Operations</a>
+</nav>
 
-  <section class="panel" id="loginPanel">
-    <h2>Admin Login</h2>
-    <div class="grid">
-      <div>
-        <label for="email">Email</label>
-        <input id="email" type="email" autocomplete="username">
-      </div>
-      <div>
-        <label for="password">Password</label>
-        <input id="password" type="password" autocomplete="current-password">
-      </div>
-    </div>
-    <button class="primary" id="loginBtn">Sign In</button>
+<section class="panel" id="loginPanel">
+  <h2>Admin Login</h2>
+  <div class="grid">
+    <div><label for="email">Email</label><input id="email" type="email" autocomplete="username"></div>
+    <div><label for="password">Password</label><input id="password" type="password" autocomplete="current-password"></div>
+  </div>
+  <button class="primary" id="loginBtn">Sign In</button>
+</section>
+
+<div id="app" class="hidden">
+  <div id="message" aria-live="polite"></div>
+
+  <section class="panel">
+    <h2>1. Select Event</h2>
+    <label for="eventSelect">Event</label>
+    <select id="eventSelect"><option value="">Loading events...</option></select>
+    <div id="eventInfo" class="muted"></div>
   </section>
 
-  <div id="app" class="hidden">
-    <div id="message" aria-live="polite"></div>
+  <section class="panel" id="createGamePanel">
+    <h2>2. Create a Game</h2>
+    <div class="grid">
+      <div>
+        <label for="ruleset">Game Format</label>
+        <select id="ruleset">
+          <option value="official_100_footer">Official 100-Footer</option>
+          <option value="alternate_distance">Alternate Distance</option>
+        </select>
+      </div>
+      <div id="maxDistanceWrap" class="hidden">
+        <label for="maxDistance">Maximum Distance</label>
+        <select id="maxDistance">
+          <option value="30">30 ft</option><option value="40">40 ft</option>
+          <option value="50">50 ft</option><option value="60">60 ft</option>
+          <option value="70">70 ft</option><option value="80">80 ft</option>
+          <option value="90">90 ft</option><option value="100">100 ft</option>
+        </select>
+      </div>
+    </div>
+    <button class="primary" id="createGameBtn">Create Game</button>
+    <p class="muted">Games begin in Draft status. Players must be added before starting.</p>
+  </section>
 
-    <section class="panel">
-      <h2>1. Select Event</h2>
-      <label for="eventSelect">Event</label>
-      <select id="eventSelect">
-        <option value="">Loading events...</option>
-      </select>
-      <div id="eventInfo" class="muted"></div>
-    </section>
+  <section class="panel" id="gameDirectoryPanel">
+    <h2>3. Event Games</h2>
+    <p>Open a game to manage its roster, record throws, and complete competition.</p>
+    <div id="gameDirectory"><p class="muted">Select an event to view its games.</p></div>
+  </section>
 
-    <section class="panel" id="createGamePanel">
-      <h2>2. Create a Game</h2>
-      <div class="grid">
+  <section class="panel hidden" id="gameWorkspacePanel">
+    <div class="workspace-heading">
+      <div class="row">
         <div>
-          <label for="ruleset">Game Format</label>
-          <select id="ruleset">
-            <option value="official_100_footer">Official 100-Footer</option>
-            <option value="alternate_distance">Alternate Distance</option>
-          </select>
+          <p class="accent" style="margin:0 0 7px;font-weight:bold">INDIVIDUAL GAME WORKSPACE</p>
+          <h2 id="workspaceGameName">Select a game</h2>
+          <p id="workspaceEventName" style="margin:0"></p>
         </div>
-        <div id="maxDistanceWrap" class="hidden">
-          <label for="maxDistance">Maximum Distance</label>
-          <select id="maxDistance">
-            <option value="30">30 ft</option>
-            <option value="40">40 ft</option>
-            <option value="50">50 ft</option>
-            <option value="60">60 ft</option>
-            <option value="70">70 ft</option>
-            <option value="80">80 ft</option>
-            <option value="90">90 ft</option>
-            <option value="100">100 ft</option>
-          </select>
-        </div>
+        <span id="workspaceStatus" class="status">No game selected</span>
       </div>
-      <button class="primary" id="createGameBtn">Create Game</button>
-      <p class="muted">Games are created in Draft status. Players must be added before a game can start.</p>
-    </section>
-
-    <section class="panel" id="gameDirectoryPanel">
-      <h2>3. Event Games</h2>
-      <p>Every game has its own workspace. Open a game to manage its roster and status.</p>
-      <div id="gameDirectory">
-        <p class="muted">Select an event to view its games.</p>
+      <div class="workspace-meta">
+        <span id="workspaceFormat">Format: —</span>
+        <span id="workspaceRules">Rules version: —</span>
       </div>
-    </section>
+      <div id="workspaceGameId" class="workspace-id"></div>
+      <div class="nav" style="margin:14px 0 0">
+        <button id="backToGamesBtn" type="button">← Back to Event Games</button>
+      </div>
+    </div>
 
-    <section class="panel" id="gameWorkspacePanel">
-      <div class="workspace-heading">
-        <div class="row">
-          <div>
-            <p class="accent" style="margin:0 0 7px;font-weight:bold;">INDIVIDUAL GAME WORKSPACE</p>
-            <h2 id="workspaceGameName">Select a game</h2>
-            <p id="workspaceEventName" style="margin:0;"></p>
-          </div>
-          <span id="workspaceStatus" class="status">No game selected</span>
+    <div class="grid" id="rosterManagement">
+      <section class="panel">
+        <div class="row"><h2>Game Roster</h2><span id="rosterCount" class="status">0 players</span></div>
+        <p>Each player begins with four bags. The roster locks when the game starts.</p>
+        <div id="rosterList" class="muted">Open a game to view its roster.</div>
+        <div id="startNotice"></div>
+        <button class="primary" id="startGameBtn" disabled>Start Game</button>
+      </section>
+      <section class="panel">
+        <div class="row"><h2>Checked-In Attendees</h2><button id="refreshBtn" type="button">Refresh</button></div>
+        <p>Only checked-in attendees can be added to a game.</p>
+        <div id="attendeeList" class="muted">Open a game to see eligible attendees.</div>
+      </section>
+    </div>
+
+    <section class="panel workspace-section hidden" id="liveGameplayPanel">
+      <div class="row">
+        <div><h2>4. Live Gameplay</h2><p class="section-note">Record each throw as it happens.</p></div>
+        <span class="status good">GAME IN PROGRESS</span>
+      </div>
+
+      <div class="throw-controls">
+        <div>
+          <label for="activePlayer">Player</label>
+          <select id="activePlayer"></select>
         </div>
-        <div class="workspace-meta">
-          <span id="workspaceFormat">Format: —</span>
-          <span id="workspaceRules">Rules version: —</span>
-        </div>
-        <div id="workspaceGameId" class="workspace-id"></div>
-        <div class="nav" style="margin:14px 0 0;">
-          <button id="backToGamesBtn" type="button">← Back to Event Games</button>
+        <div>
+          <label for="throwDistance">Distance</label>
+          <select id="throwDistance"></select>
         </div>
       </div>
 
-      <div class="grid">
-        <section class="panel">
-          <div class="row">
-            <h2>Game Roster</h2>
-            <span id="rosterCount" class="status">0 players</span>
-          </div>
-          <p>Each player begins with four bags. The roster locks when the game starts.</p>
-          <div id="rosterList" class="muted">Open a game to view its roster.</div>
-          <div id="startNotice"></div>
-          <button class="primary" id="startGameBtn" disabled>Start Game</button>
-        </section>
+      <div class="throw-actions">
+        <button type="button" class="result-btn board" data-result="ON BOARD">ON BOARD</button>
+        <button type="button" class="result-btn hole" data-result="IN HOLE">IN HOLE</button>
+        <button type="button" class="result-btn miss" data-result="MISS">MISS</button>
+      </div>
+      <p class="section-note">Select the result of the throw. Each successful throw is recorded immediately.</p>
+      <div style="margin-top:14px">
+        <label for="throwNotes">Optional throw notes</label>
+        <input id="throwNotes" type="text" maxlength="500" placeholder="Optional notes">
+      </div>
+      <button class="primary" id="recordThrowBtn" disabled>Record Throw</button>
+      <div id="throwFeedback" aria-live="polite" style="margin-top:12px"></div>
 
-        <section class="panel">
-          <div class="row">
-            <h2>Checked-In Attendees</h2>
-            <button id="refreshBtn" type="button">Refresh</button>
-          </div>
-          <p>Only attendees who have checked in can be added to a game.</p>
-          <div id="attendeeList" class="muted">Open a game to see eligible attendees.</div>
-        </section>
+      <div class="workspace-section">
+        <h3>Player Bag Balance</h3>
+        <div class="metric-grid" id="playerMetrics"></div>
+      </div>
+
+      <div class="workspace-section">
+        <h3>Distance Achievements</h3>
+        <p class="section-note">ON BOARD and IN HOLE are tracked independently.</p>
+        <div id="playerProgress"></div>
       </div>
     </section>
-  </div>
+
+    <section class="panel workspace-section hidden" id="gameSummaryPanel">
+      <h2>5. Game Summary</h2>
+      <div id="allPlayerBalances"></div>
+    </section>
+
+    <section class="panel workspace-section hidden" id="throwHistoryPanel">
+      <h2>Throw History</h2>
+      <div id="throwHistory"></div>
+    </section>
+
+    <section class="panel workspace-section hidden" id="completionPanel">
+      <h2>Complete Game</h2>
+      <p>Completing a game permanently records its final participant results. This action cannot be undone.</p>
+      <button class="primary" id="completeGameBtn">Complete Game</button>
+    </section>
+
+    <section class="panel workspace-section hidden" id="completedPanel">
+      <div class="row">
+        <h2>Game Completed</h2>
+        <span class="status good">FINAL</span>
+      </div>
+      <p>This game's final results have been permanently recorded.</p>
+      <div id="completedDetails"></div>
+    </section>
+  </section>
 </div>
 
 <script>
 (() => {
   const config = window.BMORECORNY_CONFIG;
+  const $ = id => document.getElementById(id);
+
   if (!config || !config.SUPABASE_URL || !config.SUPABASE_ANON_KEY) {
-    document.getElementById("message").textContent =
-      "Configuration is missing. Check admin/config.js.";
+    $("loginPanel").innerHTML = '<h2>Configuration missing</h2><p>Check admin/config.js.</p>';
     return;
   }
 
-  const db = window.supabase.createClient(
-    config.SUPABASE_URL,
-    config.SUPABASE_ANON_KEY
-  );
-
-  const $ = id => document.getElementById(id);
+  const db = window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY);
+  const DISTANCES = [30,40,50,60,70,80,90,100];
 
   let currentEvents = [];
   let currentGames = [];
@@ -322,43 +272,40 @@
   let currentRoster = [];
   let currentEvent = null;
   let currentGame = null;
+  let currentBalances = [];
+  let currentProgress = [];
+  let currentThrows = [];
+  let selectedResult = null;
+  let selectedPlayerId = null;
+  let busy = false;
 
   function escapeHTML(value) {
     return String(value ?? "").replace(/[&<>"']/g, char => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;",
-      '"': "&quot;", "'": "&#039;"
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
     })[char]);
   }
 
-  function message(text, type = "") {
+  function message(text,type="") {
     $("message").className = type;
     $("message").textContent = text;
+  }
+
+  function feedback(text,type="") {
+    $("throwFeedback").className = type;
+    $("throwFeedback").textContent = text;
   }
 
   function selectedEvent() {
     return currentEvents.find(e => e.id === $("eventSelect").value) || null;
   }
 
-  function selectedGame() {
-    return currentGames.find(g => g.id === $("gameSelect")?.value) || currentGame;
-  }
-
-  function updateUrl(eventId, gameId = null) {
+  function updateUrl(eventId,gameId=null) {
     const url = new URL(window.location.href);
-
-    if (eventId) {
-      url.searchParams.set("event", eventId);
-    } else {
-      url.searchParams.delete("event");
-    }
-
-    if (gameId) {
-      url.searchParams.set("game", gameId);
-    } else {
-      url.searchParams.delete("game");
-    }
-
-    window.history.replaceState({}, "", url);
+    if (eventId) url.searchParams.set("event",eventId);
+    else url.searchParams.delete("event");
+    if (gameId) url.searchParams.set("game",gameId);
+    else url.searchParams.delete("game");
+    window.history.replaceState({},"",url);
   }
 
   function gameFormat(game) {
@@ -374,20 +321,28 @@
     return "";
   }
 
+  function playerName(rosterEntry) {
+    const p = rosterEntry?.participants || {};
+    return p.display_name || p.username || "Participant";
+  }
+
+  function rosterEntryFor(gameParticipantId) {
+    return currentRoster.find(p => p.id === gameParticipantId);
+  }
+
+  function playerForParticipantId(participantId) {
+    return currentRoster.find(p => p.participant_id === participantId);
+  }
+
   async function loadEvents() {
-    const { data, error } = await db
-      .from("events")
+    const {data,error} = await db.from("events")
       .select("id,event_name,event_type,venue_name,city,state,status,start_at")
-      .order("start_at", { ascending: false });
-
+      .order("start_at",{ascending:false});
     if (error) throw error;
-    currentEvents = data || [];
 
-    $("eventSelect").innerHTML =
-      '<option value="">Choose an event...</option>' +
-      currentEvents.map(e =>
-        `<option value="${e.id}">${escapeHTML(e.event_name)} (${escapeHTML(e.status)})</option>`
-      ).join("");
+    currentEvents = data || [];
+    $("eventSelect").innerHTML = '<option value="">Choose an event...</option>' +
+      currentEvents.map(e => `<option value="${e.id}">${escapeHTML(e.event_name)} (${escapeHTML(e.status)})</option>`).join("");
 
     if (!currentEvents.length) {
       $("eventInfo").textContent = "No events found.";
@@ -395,18 +350,10 @@
       return;
     }
 
-    const params = new URLSearchParams(window.location.search);
-    const requestedEventId = params.get("event");
-    const matchingEvent = currentEvents.find(e => e.id === requestedEventId);
-
-    $("eventSelect").value = matchingEvent
-      ? matchingEvent.id
-      : currentEvents[0].id;
-
-    if (!matchingEvent && params.has("event")) {
-      updateUrl($("eventSelect").value);
-    }
-
+    const params = new URLSearchParams(location.search);
+    const requested = params.get("event");
+    const match = currentEvents.find(e => e.id === requested);
+    $("eventSelect").value = match ? match.id : currentEvents[0].id;
     await loadEventWorkspace();
   }
 
@@ -415,6 +362,9 @@
     currentGame = null;
     currentRoster = [];
     currentAttendees = [];
+    currentBalances = [];
+    currentProgress = [];
+    currentThrows = [];
 
     if (currentEvent) {
       updateUrl(currentEvent.id);
@@ -422,21 +372,18 @@
     }
 
     $("eventInfo").textContent = currentEvent
-      ? `${currentEvent.venue_name || "Venue TBD"} · ${[currentEvent.city, currentEvent.state].filter(Boolean).join(", ") || "Location TBD"} · Event status: ${currentEvent.status}`
+      ? `${currentEvent.venue_name || "Venue TBD"} · ${[currentEvent.city,currentEvent.state].filter(Boolean).join(", ") || "Location TBD"} · Event status: ${currentEvent.status}`
       : "";
 
     $("gameDirectory").innerHTML = '<p class="muted">Loading games...</p>';
     resetGameWorkspace();
 
-    if (!currentEvent) {
-      $("gameDirectory").innerHTML = '<p class="muted">Select an event first.</p>';
-      return;
-    }
-
-    await Promise.all([loadGames(), loadAttendees()]);
+    if (!currentEvent) return;
+    await Promise.all([loadGames(),loadAttendees()]);
   }
 
   function resetGameWorkspace() {
+    $("gameWorkspacePanel").classList.add("hidden");
     $("workspaceGameName").textContent = "Select a game";
     $("workspaceEventName").textContent = "";
     $("workspaceStatus").textContent = "No game selected";
@@ -449,89 +396,71 @@
     $("rosterCount").textContent = "0 players";
     $("startGameBtn").disabled = true;
     $("startNotice").innerHTML = "";
+    hideGameplayPanels();
   }
 
-  async function loadGames(preferredGameId = null) {
-    const { data, error } = await db
-      .from("games")
+  function hideGameplayPanels() {
+    ["liveGameplayPanel","gameSummaryPanel","throwHistoryPanel","completionPanel","completedPanel"]
+      .forEach(id => $(id).classList.add("hidden"));
+  }
+
+  async function loadGames(preferredGameId=null) {
+    const {data,error} = await db.from("games")
       .select("id,event_id,ruleset,max_distance_ft,rules_version,status,started_at,completed_at,created_at")
-      .eq("event_id", currentEvent.id)
-      .order("created_at", { ascending: false });
-
+      .eq("event_id",currentEvent.id)
+      .order("created_at",{ascending:false});
     if (error) throw error;
-    currentGames = data || [];
 
+    currentGames = data || [];
     renderGameDirectory();
 
     if (!currentGames.length) {
       currentGame = null;
       updateUrl(currentEvent.id);
       resetGameWorkspace();
-      $("gameDirectory").innerHTML =
-        '<div class="item">No games created for this event yet. Use Create a Game above to get started.</div>';
+      $("gameDirectory").innerHTML = '<div class="item">No games created for this event yet. Use Create a Game above to get started.</div>';
       return;
     }
 
-    const params = new URLSearchParams(window.location.search);
-    const requestedGameId = preferredGameId || params.get("game");
-    const matchingGame = currentGames.find(g => g.id === requestedGameId);
-
-    const gameToOpen = matchingGame || currentGames[0];
-
-    if (!matchingGame && requestedGameId) {
-      updateUrl(currentEvent.id);
-    }
-
-    await openGame(gameToOpen.id);
+    const params = new URLSearchParams(location.search);
+    const requested = preferredGameId || params.get("game");
+    const match = currentGames.find(g => g.id === requested);
+    if (requested && !match) updateUrl(currentEvent.id);
+    await openGame(match ? match.id : currentGames[0].id);
   }
 
   function renderGameDirectory() {
     if (!currentGames.length) {
-      $("gameDirectory").innerHTML =
-        '<div class="item">No games created for this event yet.</div>';
+      $("gameDirectory").innerHTML = '<div class="item">No games created for this event yet.</div>';
       return;
     }
-
     $("gameDirectory").innerHTML = currentGames.map(game => {
-      const isSelected = currentGame && currentGame.id === game.id;
-      return `
-        <div class="game-card ${isSelected ? "selected" : ""}">
-          <div class="row">
-            <div>
-              <div class="game-card-title">${escapeHTML(gameFormat(game))}</div>
-              <div class="game-card-meta">
-                Created: ${escapeHTML(game.created_at ? new Date(game.created_at).toLocaleString() : "Date unavailable")}
-              </div>
-            </div>
-            <span class="status ${statusClass(game.status)}">${escapeHTML(game.status.replaceAll("_", " ").toUpperCase())}</span>
+      const selected = currentGame && currentGame.id === game.id;
+      return `<div class="game-card ${selected ? "selected" : ""}">
+        <div class="row">
+          <div>
+            <div class="game-card-title">${escapeHTML(gameFormat(game))}</div>
+            <div class="game-card-meta">Created: ${escapeHTML(game.created_at ? new Date(game.created_at).toLocaleString() : "Date unavailable")}</div>
           </div>
-          <button type="button" class="primary openGameBtn" data-game-id="${escapeHTML(game.id)}">
-            ${isSelected ? "Open Current Workspace" : "Open Game Workspace"}
-          </button>
+          <span class="status ${statusClass(game.status)}">${escapeHTML(game.status.replaceAll("_"," ").toUpperCase())}</span>
         </div>
-      `;
+        <button type="button" class="primary" data-game-id="${escapeHTML(game.id)}">${selected ? "Open Current Workspace" : "Open Game Workspace"}</button>
+      </div>`;
     }).join("");
   }
 
   async function openGame(gameId) {
     const game = currentGames.find(g => g.id === gameId);
-
-    if (!game) {
-      currentGame = null;
-      currentRoster = [];
-      updateUrl(currentEvent?.id || null);
-      resetGameWorkspace();
-      renderGameDirectory();
-      return;
-    }
+    if (!game) return;
 
     currentGame = game;
-    updateUrl(currentEvent.id, game.id);
-    renderGameDirectory();
-
+    selectedResult = null;
+    selectedPlayerId = null;
+    updateUrl(currentEvent.id,game.id);
+    $("gameWorkspacePanel").classList.remove("hidden");
     $("workspaceGameName").textContent = gameFormat(game);
     $("workspaceEventName").textContent = currentEvent.event_name;
-    $("workspaceStatus").textContent = game.status.replaceAll("_", " ").toUpperCase();
+    $("workspaceStatus").textContent = game.status.replaceAll("_"," ").toUpperCase();
     $("workspaceStatus").className = "status " + statusClass(game.status);
     $("workspaceFormat").textContent = "Format: " + gameFormat(game);
     $("workspaceRules").textContent = "Rules version: " + (game.rules_version || "1.0");
@@ -540,34 +469,34 @@
     $("rosterList").textContent = "Loading roster...";
     $("attendeeList").textContent = "Loading eligible attendees...";
 
-    const { data, error } = await db
-      .from("game_participants")
+    const {data,error} = await db.from("game_participants")
       .select("id,game_id,participant_id,starting_bags,joined_at,participants(display_name,username)")
-      .eq("game_id", game.id)
-      .order("joined_at", { ascending: true });
-
+      .eq("game_id",game.id)
+      .order("joined_at",{ascending:true});
     if (error) throw error;
-
     if (!currentGame || currentGame.id !== game.id) return;
 
     currentRoster = data || [];
     renderRoster();
     renderAttendees();
+
+    if (game.status === "in_progress" || game.status === "completed") {
+      await loadGameplayData();
+    } else {
+      hideGameplayPanels();
+    }
+    renderGameDirectory();
   }
 
   async function loadAttendees() {
     const eventId = currentEvent.id;
-
-    const { data, error } = await db
-      .from("event_attendance")
+    const {data,error} = await db.from("event_attendance")
       .select("id,participant_id,attendance_status,checked_in_at,participants(display_name,username)")
-      .eq("event_id", eventId)
-      .eq("attendance_status", "checked_in")
-      .order("created_at", { ascending: true });
-
+      .eq("event_id",eventId)
+      .eq("attendance_status","checked_in")
+      .order("created_at",{ascending:true});
     if (error) throw error;
     if (!currentEvent || currentEvent.id !== eventId) return;
-
     currentAttendees = data || [];
     renderAttendees();
   }
@@ -576,169 +505,348 @@
     const rosterIds = new Set(currentRoster.map(p => p.participant_id));
     const available = currentAttendees.filter(a => !rosterIds.has(a.participant_id));
 
-    if (!currentEvent) {
-      $("attendeeList").textContent = "Select an event first.";
-      return;
-    }
-    if (!currentGame) {
+    if (!currentEvent || !currentGame) {
       $("attendeeList").textContent = "Open a game to add attendees.";
       return;
     }
     if (!currentAttendees.length) {
-      $("attendeeList").innerHTML =
-        '<p>No checked-in attendees yet. Check in registered participants through Event Operations.</p>';
+      $("attendeeList").innerHTML = "<p>No checked-in attendees yet. Check in participants through Event Operations.</p>";
       return;
     }
     if (!available.length) {
-      $("attendeeList").innerHTML =
-        '<p>All checked-in attendees are already on this game roster.</p>';
+      $("attendeeList").innerHTML = "<p>All checked-in attendees are already on this game roster.</p>";
       return;
     }
 
     $("attendeeList").innerHTML = available.map(a => {
-      const person = a.participants || {};
-      const name = person.display_name || person.username || "Participant";
-      const disabled = currentGame.status !== "draft";
-
+      const p = a.participants || {};
+      const name = p.display_name || p.username || "Participant";
       return `<div class="item">
         <strong>${escapeHTML(name)}</strong>
         <small>Checked in · Ready to play</small>
-        <button class="primary addPlayerBtn" data-participant="${escapeHTML(a.participant_id)}" ${disabled ? "disabled" : ""}>Add to Game</button>
+        <button class="primary addPlayerBtn" data-participant="${escapeHTML(a.participant_id)}" ${currentGame.status !== "draft" ? "disabled" : ""}>Add to Game</button>
       </div>`;
     }).join("");
-
-    document.querySelectorAll(".addPlayerBtn").forEach(btn => {
-      btn.addEventListener("click", () => addPlayer(btn.dataset.participant));
-    });
   }
 
   function renderRoster() {
-    $("rosterCount").textContent =
-      `${currentRoster.length} player${currentRoster.length === 1 ? "" : "s"}`;
+    $("rosterCount").textContent = `${currentRoster.length} player${currentRoster.length === 1 ? "" : "s"}`;
 
-    if (!currentRoster.length) {
-      $("rosterList").innerHTML =
-        "<p>No players added yet. Add checked-in attendees to build the roster.</p>";
-    } else {
-      $("rosterList").innerHTML = currentRoster.map((p, index) => {
-        const person = p.participants || {};
-        const name = person.display_name || person.username || "Participant";
-
-        return `<div class="item">
-          <strong>${index + 1}. ${escapeHTML(name)}</strong>
+    $("rosterList").innerHTML = currentRoster.length
+      ? currentRoster.map((p,i) => `<div class="item">
+          <strong>${i+1}. ${escapeHTML(playerName(p))}</strong>
           <small>${escapeHTML(p.starting_bags)} starting bags · Added to game</small>
-        </div>`;
-      }).join("");
-    }
+        </div>`).join("")
+      : "<p>No players added yet. Add checked-in attendees to build the roster.</p>";
 
     const eventCanStart = currentEvent && currentEvent.status === "in_progress";
     const gameCanStart = currentGame && currentGame.status === "draft";
-    const ready = eventCanStart && gameCanStart && currentRoster.length > 0;
-
-    $("startGameBtn").disabled = !ready;
+    $("startGameBtn").disabled = !(eventCanStart && gameCanStart && currentRoster.length > 0);
 
     if (currentGame && currentGame.status !== "draft") {
-      $("startNotice").innerHTML =
-        `<div class="notice">This game is ${escapeHTML(currentGame.status)}. Its roster is locked.</div>`;
-    } else if (currentEvent && !eventCanStart) {
-      $("startNotice").innerHTML =
-        '<div class="notice">The event must be marked <strong>In Progress</strong> in Event Management before this game can start.</div>';
+      $("startNotice").innerHTML = `<div class="notice">This game is ${escapeHTML(currentGame.status)}. Its roster is locked.</div>`;
+    } else if (!eventCanStart) {
+      $("startNotice").innerHTML = '<div class="notice">The event must be marked <strong>In Progress</strong> before this game can start.</div>';
     } else if (!currentRoster.length) {
-      $("startNotice").innerHTML =
-        '<div class="notice">Add at least one checked-in participant before starting the game.</div>';
+      $("startNotice").innerHTML = '<div class="notice">Add at least one checked-in participant before starting.</div>';
     } else {
-      $("startNotice").innerHTML =
-        '<div class="notice">Roster ready. Starting the game will lock the roster and begin gameplay.</div>';
+      $("startNotice").innerHTML = '<div class="notice">Roster ready. Starting the game will lock the roster and begin gameplay.</div>';
     }
   }
 
-  async function createGame() {
-    if (!currentEvent) {
-      message("Select an event first.", "error");
+  async function loadGameplayData() {
+    if (!currentGame) return;
+    const gameId = currentGame.id;
+
+    const [balancesResult,progressResult,throwsResult] = await Promise.all([
+      db.from("game_participant_balances")
+        .select("game_id,game_participant_id,participant_id,starting_bags,game_status,throws_used,bonus_bags_earned,bags_remaining")
+        .eq("game_id",gameId),
+      db.from("game_distance_progress")
+        .select("id,game_participant_id,distance_ft,board_achieved,board_achieved_at,in_hole_achieved,in_hole_achieved_at,bonus_bags_awarded")
+        .in("game_participant_id",currentRoster.map(p => p.id)),
+      db.from("game_throws")
+        .select("id,game_id,game_participant_id,throw_number,distance_ft,result,first_in_hole_at_distance,bonus_bags_earned,recorded_at,recorded_by,notes")
+        .eq("game_id",gameId)
+        .order("recorded_at",{ascending:false})
+        .order("throw_number",{ascending:false})
+    ]);
+
+    if (balancesResult.error) throw new Error("Bag balances: " + balancesResult.error.message);
+    if (progressResult.error) throw new Error("Distance progress: " + progressResult.error.message);
+    if (throwsResult.error) throw new Error("Throw history: " + throwsResult.error.message);
+    if (!currentGame || currentGame.id !== gameId) return;
+
+    currentBalances = balancesResult.data || [];
+    currentProgress = progressResult.data || [];
+    currentThrows = throwsResult.data || [];
+
+    renderPlayerSelector();
+    renderPlayerGameplay();
+    renderAllBalances();
+    renderThrowHistory();
+
+    $("gameSummaryPanel").classList.remove("hidden");
+    $("throwHistoryPanel").classList.remove("hidden");
+
+    if (currentGame.status === "in_progress") {
+      $("liveGameplayPanel").classList.remove("hidden");
+      $("completionPanel").classList.remove("hidden");
+      $("completedPanel").classList.add("hidden");
+    } else if (currentGame.status === "completed") {
+      $("liveGameplayPanel").classList.add("hidden");
+      $("completionPanel").classList.add("hidden");
+      $("completedPanel").classList.remove("hidden");
+      renderCompletedDetails();
+    } else {
+      hideGameplayPanels();
+    }
+  }
+
+  function renderPlayerSelector() {
+    const previous = selectedPlayerId;
+    $("activePlayer").innerHTML = currentRoster.map(p =>
+      `<option value="${p.id}">${escapeHTML(playerName(p))}</option>`
+    ).join("");
+
+    selectedPlayerId = currentRoster.some(p => p.id === previous)
+      ? previous
+      : currentRoster[0]?.id || null;
+
+    if (selectedPlayerId) $("activePlayer").value = selectedPlayerId;
+
+    const maxDistance = Number(currentGame.max_distance_ft);
+    $("throwDistance").innerHTML = DISTANCES.filter(d => d <= maxDistance)
+      .map(d => `<option value="${d}">${d} ft</option>`).join("");
+
+    if (!$("throwDistance").value) $("throwDistance").value = "30";
+  }
+
+  function selectedBalance() {
+    return currentBalances.find(b => b.game_participant_id === selectedPlayerId) || null;
+  }
+
+  function selectedProgress() {
+    return currentProgress.filter(p => p.game_participant_id === selectedPlayerId);
+  }
+
+  function renderPlayerGameplay() {
+    const balance = selectedBalance();
+    const player = rosterEntryFor(selectedPlayerId);
+    if (!player) {
+      $("playerMetrics").innerHTML = "<p>No player selected.</p>";
+      $("playerProgress").innerHTML = "";
       return;
     }
 
+    const starting = balance?.starting_bags ?? player.starting_bags ?? 4;
+    const used = balance?.throws_used ?? 0;
+    const bonus = balance?.bonus_bags_earned ?? 0;
+    const remaining = balance?.bags_remaining ?? (Number(starting) + Number(bonus) - Number(used));
+
+    $("playerMetrics").innerHTML = `
+      <div class="metric"><span>Starting Bags</span><strong>${starting}</strong></div>
+      <div class="metric"><span>Throws Used</span><strong>${used}</strong></div>
+      <div class="metric"><span>Bonus Bags</span><strong class="success">${bonus}</strong></div>
+      <div class="metric"><span>Bags Remaining</span><strong>${remaining}</strong></div>
+    `;
+
+    const progress = selectedProgress();
+    $("playerProgress").innerHTML = DISTANCES.filter(d => d <= Number(currentGame.max_distance_ft)).map(distance => {
+      const record = progress.find(p => Number(p.distance_ft) === distance);
+      const board = !!record?.board_achieved;
+      const hole = !!record?.in_hole_achieved;
+      return `<div class="progress-row">
+        <strong>${distance} ft</strong>
+        <span class="achievement ${board ? "yes" : "no"}">${board ? "✓ " : ""}ON BOARD</span>
+        <span class="achievement ${hole ? "yes" : "no"}">${hole ? "✓ " : ""}IN HOLE</span>
+      </div>`;
+    }).join("");
+  }
+
+  function renderAllBalances() {
+    $("allPlayerBalances").innerHTML = currentRoster.map(player => {
+      const b = currentBalances.find(x => x.game_participant_id === player.id);
+      const starting = b?.starting_bags ?? player.starting_bags ?? 4;
+      const used = b?.throws_used ?? 0;
+      const bonus = b?.bonus_bags_earned ?? 0;
+      const remaining = b?.bags_remaining ?? (Number(starting) + Number(bonus) - Number(used));
+      return `<div class="item">
+        <div class="row"><strong>${escapeHTML(playerName(player))}</strong><span class="status">${remaining} bags left</span></div>
+        <small>Starting: ${starting} · Throws: ${used} · Bonus earned: ${bonus}</small>
+      </div>`;
+    }).join("");
+  }
+
+  function renderThrowHistory() {
+    if (!currentThrows.length) {
+      $("throwHistory").innerHTML = '<p class="muted">No throws have been recorded yet.</p>';
+      return;
+    }
+
+    $("throwHistory").innerHTML = `<div class="table-wrap"><table>
+      <thead><tr><th>Player</th><th>#</th><th>Distance</th><th>Result</th><th>Bonus</th><th>Recorded</th></tr></thead>
+      <tbody>${currentThrows.map(t => {
+        const player = rosterEntryFor(t.game_participant_id);
+        const bonus = Number(t.bonus_bags_earned || 0);
+        return `<tr>
+          <td>${escapeHTML(player ? playerName(player) : "Participant")}</td>
+          <td>${escapeHTML(t.throw_number)}</td>
+          <td>${escapeHTML(t.distance_ft)} ft</td>
+          <td>${escapeHTML(t.result)}</td>
+          <td>${bonus ? `<span class="success">+${bonus}</span>` : "—"}</td>
+          <td>${escapeHTML(t.recorded_at ? new Date(t.recorded_at).toLocaleTimeString() : "—")}</td>
+        </tr>`;
+      }).join("")}</tbody>
+    </table></div>`;
+  }
+
+  function renderCompletedDetails() {
+    const totalThrows = currentThrows.length;
+    const totalBonus = currentBalances.reduce((sum,b) => sum + Number(b.bonus_bags_earned || 0),0);
+    $("completedDetails").innerHTML = `
+      <div class="metric-grid">
+        <div class="metric"><span>Players</span><strong>${currentRoster.length}</strong></div>
+        <div class="metric"><span>Total Throws</span><strong>${totalThrows}</strong></div>
+        <div class="metric"><span>Bonus Bags Earned</span><strong>${totalBonus}</strong></div>
+      </div>
+      <p>Completion timestamp: ${escapeHTML(currentGame.completed_at ? new Date(currentGame.completed_at).toLocaleString() : "Recorded by database")}</p>
+    `;
+  }
+
+  async function createGame() {
+    if (!currentEvent) return message("Select an event first.","error");
     const ruleset = $("ruleset").value;
-    const maxDistance = ruleset === "official_100_footer"
-      ? 100
-      : Number($("maxDistance").value);
+    const maxDistance = ruleset === "official_100_footer" ? 100 : Number($("maxDistance").value);
 
     $("createGameBtn").disabled = true;
     message("Creating game...");
 
-    const { data, error } = await db.rpc("create_event_game", {
-      _event_id: currentEvent.id,
-      _ruleset: ruleset,
-      _max_distance_ft: maxDistance,
-      _notes: null
-    });
-
-    $("createGameBtn").disabled = false;
-
-    if (error) {
-      message(error.message, "error");
-      return;
+    try {
+      const {data,error} = await db.rpc("create_event_game",{
+        _event_id:currentEvent.id,_ruleset:ruleset,_max_distance_ft:maxDistance,_notes:null
+      });
+      if (error) throw error;
+      message("Game created successfully.","success");
+      await loadGames(data || null);
+    } catch (err) {
+      message(err.message || "Unable to create game.","error");
+    } finally {
+      $("createGameBtn").disabled = false;
     }
-
-    message("Game created successfully.", "success");
-    await loadGames(data || null);
   }
 
   async function addPlayer(participantId) {
     if (!currentGame || currentGame.status !== "draft") return;
-
-    const button = [...document.querySelectorAll(".addPlayerBtn")]
-      .find(b => b.dataset.participant === participantId);
+    const button = [...document.querySelectorAll(".addPlayerBtn")].find(b => b.dataset.participant === participantId);
     if (button) button.disabled = true;
-
     message("Adding participant to game...");
 
-    const { error } = await db.rpc("add_checked_in_participant_to_game", {
-      _game_id: currentGame.id,
-      _participant_id: participantId
+    const {error} = await db.rpc("add_checked_in_participant_to_game",{
+      _game_id:currentGame.id,_participant_id:participantId
     });
-
     if (error) {
-      message(error.message, "error");
+      message(error.message,"error");
       if (button) button.disabled = false;
       return;
     }
-
-    message("Participant added to the game roster.", "success");
+    message("Participant added to the game roster.","success");
     await openGame(currentGame.id);
   }
 
   async function startGame() {
     if (!currentGame || !currentEvent) return;
-
-    if (currentEvent.status !== "in_progress") {
-      message("The event must be In Progress before the game can start.", "error");
-      return;
-    }
-    if (!currentRoster.length) {
-      message("Add at least one player before starting.", "error");
-      return;
-    }
-
+    if (currentEvent.status !== "in_progress") return message("The event must be In Progress before the game can start.","error");
+    if (!currentRoster.length) return message("Add at least one player before starting.","error");
     if (!confirm("Start this game? The roster will be locked and gameplay can begin.")) return;
 
     $("startGameBtn").disabled = true;
     message("Starting game...");
-
     const gameId = currentGame.id;
-
-    const { error } = await db.rpc("start_event_game", {
-      _game_id: gameId
-    });
-
+    const {error} = await db.rpc("start_event_game",{_game_id:gameId});
     if (error) {
-      message(error.message, "error");
+      message(error.message,"error");
       await loadGames(gameId);
       return;
     }
-
-    message("Game started. Let's play!", "success");
+    message("Game started. Let's play!","success");
     await loadGames(gameId);
+  }
+
+  function selectResult(result) {
+    selectedResult = result;
+    document.querySelectorAll(".result-btn").forEach(btn => {
+      btn.classList.toggle("selected",btn.dataset.result === result);
+    });
+    $("recordThrowBtn").disabled = !selectedResult || !selectedPlayerId || busy;
+  }
+
+  async function recordThrow() {
+    if (busy || !currentGame || currentGame.status !== "in_progress") return;
+    if (!selectedPlayerId) return feedback("Select a player first.","error");
+    if (!selectedResult) return feedback("Choose ON BOARD, IN HOLE, or MISS.","error");
+
+    const distance = Number($("throwDistance").value);
+    if (!DISTANCES.includes(distance) || distance > Number(currentGame.max_distance_ft)) {
+      return feedback("That distance is not valid for this game.","error");
+    }
+
+    const player = rosterEntryFor(selectedPlayerId);
+    const playerLabel = player ? playerName(player) : "this player";
+    const result = selectedResult;
+
+    if (!confirm(`Record ${result} at ${distance} ft for ${playerLabel}?`)) return;
+
+    busy = true;
+    $("recordThrowBtn").disabled = true;
+    feedback("Recording throw...");
+
+    try {
+      const {error} = await db.rpc("record_event_game_throw",{
+        _game_id:currentGame.id,
+        _game_participant_id:selectedPlayerId,
+        _distance_ft:distance,
+        _result:result,
+        _recording_notes:$("throwNotes").value.trim() || null
+      });
+      if (error) throw error;
+
+      $("throwNotes").value = "";
+      selectedResult = null;
+      document.querySelectorAll(".result-btn").forEach(btn => btn.classList.remove("selected"));
+
+      await loadGameplayData();
+      feedback(`${result} recorded at ${distance} ft for ${playerLabel}.`,"success");
+      message("Throw recorded successfully.","success");
+    } catch (err) {
+      feedback(err.message || "Unable to record throw.","error");
+      message(err.message || "Unable to record throw.","error");
+    } finally {
+      busy = false;
+      $("recordThrowBtn").disabled = !selectedResult || !selectedPlayerId;
+    }
+  }
+
+  async function completeGame() {
+    if (!currentGame || currentGame.status !== "in_progress") return;
+    const confirmed = confirm(
+      "COMPLETE THIS GAME?\n\nThis permanently records the final results and locks gameplay. This action cannot be undone."
+    );
+    if (!confirmed) return;
+
+    $("completeGameBtn").disabled = true;
+    message("Completing game...");
+    const gameId = currentGame.id;
+
+    try {
+      const {error} = await db.rpc("complete_event_game",{_game_id:gameId});
+      if (error) throw error;
+      message("Game completed. Final results have been recorded.","success");
+      await loadGames(gameId);
+    } catch (err) {
+      message(err.message || "Unable to complete game.","error");
+      $("completeGameBtn").disabled = false;
+    }
   }
 
   async function refreshWorkspace() {
@@ -746,10 +854,8 @@
     message("Refreshing...");
     const gameId = currentGame?.id || null;
     await loadEventWorkspace();
-    if (gameId && currentGames.some(g => g.id === gameId)) {
-      await openGame(gameId);
-    }
-    message("Workspace refreshed.", "success");
+    if (gameId && currentGames.some(g => g.id === gameId)) await openGame(gameId);
+    message("Workspace refreshed.","success");
   }
 
   async function showApp() {
@@ -759,101 +865,78 @@
     await loadEvents();
   }
 
-  $("loginBtn").addEventListener("click", async () => {
+  $("loginBtn").addEventListener("click",async () => {
     const email = $("email").value.trim();
     const password = $("password").value;
     message("Signing in...");
-
-    const { error } = await db.auth.signInWithPassword({ email, password });
-    if (error) {
-      message(error.message, "error");
-      return;
-    }
-
-    try {
-      await showApp();
-    } catch (err) {
-      message(err.message || "Unable to load game management.", "error");
-    }
+    const {error} = await db.auth.signInWithPassword({email,password});
+    if (error) return message(error.message,"error");
+    try { await showApp(); } catch (err) { message(err.message,"error"); }
   });
 
-  $("logoutBtn").addEventListener("click", async () => {
+  $("logoutBtn").addEventListener("click",async () => {
     await db.auth.signOut();
     location.reload();
   });
 
-  $("eventSelect").addEventListener("change", async () => {
-    try {
-      await loadEventWorkspace();
-      message("");
-    } catch (err) {
-      message(err.message, "error");
-    }
+  $("eventSelect").addEventListener("change",async () => {
+    try { await loadEventWorkspace(); message(""); }
+    catch (err) { message(err.message,"error"); }
   });
 
-  $("gameDirectory").addEventListener("click", async event => {
+  $("gameDirectory").addEventListener("click",async event => {
     const button = event.target.closest("[data-game-id]");
     if (!button) return;
+    try { await openGame(button.dataset.gameId); message(""); }
+    catch (err) { message(err.message,"error"); }
+  });
 
-    try {
-      await openGame(button.dataset.gameId);
-      message("");
-    } catch (err) {
-      message(err.message, "error");
+  $("gameWorkspacePanel").addEventListener("click",async event => {
+    const button = event.target.closest(".addPlayerBtn");
+    if (button) {
+      try { await addPlayer(button.dataset.participant); }
+      catch (err) { message(err.message,"error"); }
     }
   });
 
-  $("backToGamesBtn").addEventListener("click", () => {
+  $("backToGamesBtn").addEventListener("click",() => {
     if (!currentEvent) return;
     updateUrl(currentEvent.id);
-    message("Back at the event game directory.");
+    $("gameWorkspacePanel").classList.add("hidden");
     renderGameDirectory();
+    message("Back at the event game directory.");
   });
 
-  $("ruleset").addEventListener("change", () => {
-    $("maxDistanceWrap").classList.toggle(
-      "hidden",
-      $("ruleset").value !== "alternate_distance"
-    );
+  $("ruleset").addEventListener("change",() => {
+    $("maxDistanceWrap").classList.toggle("hidden",$("ruleset").value !== "alternate_distance");
   });
 
-  $("createGameBtn").addEventListener("click", async () => {
-    try {
-      await createGame();
-    } catch (err) {
-      $("createGameBtn").disabled = false;
-      message(err.message, "error");
-    }
+  $("createGameBtn").addEventListener("click",createGame);
+  $("startGameBtn").addEventListener("click",async () => {
+    try { await startGame(); } catch (err) { message(err.message,"error"); }
+  });
+  $("refreshBtn").addEventListener("click",async () => {
+    try { await refreshWorkspace(); } catch (err) { message(err.message,"error"); }
   });
 
-  $("startGameBtn").addEventListener("click", async () => {
-    try {
-      await startGame();
-    } catch (err) {
-      message(err.message, "error");
-    }
+  document.querySelectorAll(".result-btn").forEach(btn => {
+    btn.addEventListener("click",() => selectResult(btn.dataset.result));
   });
 
-  $("refreshBtn").addEventListener("click", async () => {
-    try {
-      await refreshWorkspace();
-    } catch (err) {
-      message(err.message, "error");
-    }
+  $("activePlayer").addEventListener("change",() => {
+    selectedPlayerId = $("activePlayer").value;
+    renderPlayerGameplay();
+    selectResult(null);
   });
 
-  db.auth.getSession().then(async ({ data, error }) => {
-    if (error) {
-      message(error.message, "error");
-      return;
-    }
+  $("recordThrowBtn").addEventListener("click",recordThrow);
+  $("completeGameBtn").addEventListener("click",completeGame);
 
+  db.auth.getSession().then(async ({data,error}) => {
+    if (error) return message(error.message,"error");
     if (data.session) {
-      try {
-        await showApp();
-      } catch (err) {
-        message(err.message, "error");
-      }
+      try { await showApp(); }
+      catch (err) { message(err.message || "Unable to load game management.","error"); }
     }
   });
 })();
