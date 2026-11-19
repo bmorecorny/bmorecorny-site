@@ -1,0 +1,529 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Participant Management | BmoreCorny</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <style>
+    :root {
+      --bg: #101114;
+      --panel: #191b20;
+      --panel2: #20232a;
+      --line: #30343d;
+      --text: #f4f4f5;
+      --muted: #a0a4ae;
+      --accent: #ffbd35;
+      --green: #55d69e;
+      --red: #ff7272;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+    }
+    header {
+      padding: 22px 5%;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    header h1 { margin: 0; font-size: 22px; }
+    header span { color: var(--accent); }
+    nav { display: flex; gap: 15px; flex-wrap: wrap; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    main { max-width: 1250px; margin: 28px auto; padding: 0 20px 50px; }
+    h2 { margin-top: 0; font-size: 19px; }
+    p { color: var(--muted); line-height: 1.5; }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    label {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      margin: 14px 0 7px;
+    }
+    input, select, textarea {
+      width: 100%;
+      background: var(--panel2);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 12px;
+      font: inherit;
+    }
+    textarea { min-height: 75px; resize: vertical; }
+    button {
+      background: var(--accent);
+      color: #171717;
+      border: 0;
+      border-radius: 7px;
+      padding: 12px 17px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 16px;
+    }
+    button.secondary {
+      background: var(--panel2);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .hidden { display: none !important; }
+    .muted { color: var(--muted); }
+    .status { margin: 14px 0 0; font-size: 14px; }
+    .success { color: var(--green); }
+    .error { color: var(--red); }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .stat {
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      padding: 17px;
+      border-radius: 10px;
+    }
+    .stat strong { display: block; font-size: 25px; margin-top: 7px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 680px; }
+    th, td {
+      text-align: left;
+      padding: 13px 10px;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+    th { color: var(--muted); font-weight: 600; }
+    tr.selected { background: #29251a; }
+    .participant-name { color: var(--text); font-weight: 700; }
+    .pill {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 20px;
+      background: #293b33;
+      color: var(--green);
+      font-size: 12px;
+    }
+    .login-box { max-width: 420px; margin: 70px auto; }
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🌽 BmoreCorny <span>Participant Management</span></h1>
+  <nav>
+    <a href="index.html">Dashboard</a>
+    <a href="events.html">Events</a>
+    <a href="operations.html">Operations</a>
+    <a href="games.html">Games</a>
+  </nav>
+</header>
+
+<div id="loginPanel" class="panel login-box hidden">
+  <h2>Admin Login</h2>
+  <p>Sign in to manage BmoreCorny participants.</p>
+  <form id="loginForm">
+    <label>Email</label>
+    <input id="loginEmail" type="email" value="bmorecorny@gmail.com" required>
+    <label>Password</label>
+    <input id="loginPassword" type="password" required>
+    <button type="submit">Sign In</button>
+  </form>
+  <div id="loginMessage" class="status"></div>
+  <p><a href="reset-password.html">Forgot password?</a></p>
+</div>
+
+<main id="app" class="hidden">
+  <div class="topline">
+    <div>
+      <h2>Participant Directory</h2>
+      <p>Create Cornstars, manage profiles, and connect participants to events.</p>
+    </div>
+    <button id="logoutBtn" class="secondary">Sign Out</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <span class="muted">Total Participants</span>
+      <strong id="totalCount">0</strong>
+    </div>
+    <div class="stat">
+      <span class="muted">Active Participants</span>
+      <strong id="activeCount">0</strong>
+    </div>
+    <div class="stat">
+      <span class="muted">Public Profiles</span>
+      <strong id="publicCount">0</strong>
+    </div>
+  </div>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>Create Participant</h2>
+      <p>No email or login account required. This creates a participant profile only.</p>
+      <form id="createForm">
+        <label>Display Name *</label>
+        <input id="displayName" placeholder="Shucky" required>
+
+        <label>Username</label>
+        <input id="username" placeholder="shucky">
+
+        <label>Bio</label>
+        <textarea id="bio" placeholder="The original BmoreCorny Cornstar."></textarea>
+
+        <label>Profile Visibility</label>
+        <select id="visibility">
+          <option value="public" selected>Public</option>
+          <option value="private">Private</option>
+        </select>
+
+        <button id="createBtn" type="submit">Create Participant</button>
+      </form>
+      <div id="createMessage" class="status"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Register for an Event</h2>
+      <p>Select a participant and event to add them to the event roster.</p>
+
+      <label>Selected Participant</label>
+      <div id="selectedParticipant" class="stat">No participant selected.</div>
+
+      <label>Event</label>
+      <select id="eventSelect">
+        <option value="">Loading events...</option>
+      </select>
+
+      <button id="registerBtn" disabled>Register Participant</button>
+      <div id="registerMessage" class="status"></div>
+    </section>
+  </div>
+
+  <section class="panel">
+    <div class="topline">
+      <div>
+        <h2>All Participants</h2>
+        <p>Choose a participant below to register them for an event.</p>
+      </div>
+      <button id="refreshBtn" class="secondary">Refresh Directory</button>
+    </div>
+
+    <label>Search by name or username</label>
+    <input id="searchInput" placeholder="Search participants...">
+
+    <div class="table-wrap" style="margin-top:18px">
+      <table>
+        <thead>
+          <tr>
+            <th>Participant</th>
+            <th>Participant ID</th>
+            <th>Username</th>
+            <th>Status</th>
+            <th>Visibility</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="participantRows">
+          <tr><td colspan="6" class="muted">Loading participants...</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="directoryMessage" class="status"></div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const config = window.BMORECORNY_CONFIG;
+  if (!config?.SUPABASE_URL || !config?.SUPABASE_ANON_KEY) {
+    document.body.insertAdjacentHTML(
+      "beforeend",
+      '<p style="padding:20px;color:#ff7272">Supabase configuration is missing. Check admin/config.js.</p>'
+    );
+    return;
+  }
+
+  const db = window.supabase.createClient(
+    config.SUPABASE_URL,
+    config.SUPABASE_ANON_KEY
+  );
+
+  const $ = id => document.getElementById(id);
+  let participants = [];
+  let selectedParticipantId = null;
+  let events = [];
+
+  function message(id, text, type = "") {
+    const el = $(id);
+    el.textContent = text;
+    el.className = "status " + type;
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[char]);
+  }
+
+  function showLogin() {
+    $("loginPanel").classList.remove("hidden");
+    $("app").classList.add("hidden");
+  }
+
+  function showApp() {
+    $("loginPanel").classList.add("hidden");
+    $("app").classList.remove("hidden");
+  }
+
+  async function loadParticipants() {
+    message("directoryMessage", "Loading participant directory...");
+
+    const { data, error } = await db
+      .from("participants")
+      .select("id,participant_number,display_name,username,bio,profile_visibility,status,created_at")
+      .order("participant_number", { ascending: true });
+
+    if (error) {
+      message("directoryMessage", error.message, "error");
+      return;
+    }
+
+    participants = data || [];
+    $("totalCount").textContent = participants.length;
+    $("activeCount").textContent = participants.filter(p => p.status === "active").length;
+    $("publicCount").textContent = participants.filter(p => p.profile_visibility === "public").length;
+
+    renderParticipants();
+    message("directoryMessage", `${participants.length} participant(s) loaded.`, "success");
+  }
+
+  function renderParticipants() {
+    const search = $("searchInput").value.trim().toLowerCase();
+
+    const filtered = participants.filter(p =>
+      (p.display_name || "").toLowerCase().includes(search) ||
+      (p.username || "").toLowerCase().includes(search) ||
+      String(p.participant_number).includes(search)
+    );
+
+    if (!filtered.length) {
+      $("participantRows").innerHTML =
+        '<tr><td colspan="6" class="muted">No matching participants found.</td></tr>';
+      return;
+    }
+
+    $("participantRows").innerHTML = filtered.map(p => `
+      <tr class="${p.id === selectedParticipantId ? "selected" : ""}">
+        <td><span class="participant-name">${escapeHtml(p.display_name)}</span></td>
+        <td>BC-${String(p.participant_number).padStart(6, "0")}</td>
+        <td>${p.username ? "@" + escapeHtml(p.username) : "—"}</td>
+        <td>${escapeHtml(p.status)}</td>
+        <td>${escapeHtml(p.profile_visibility)}</td>
+        <td><button class="secondary select-participant" data-id="${escapeHtml(p.id)}" style="margin:0">Select</button></td>
+      </tr>
+    `).join("");
+
+    document.querySelectorAll(".select-participant").forEach(button => {
+      button.addEventListener("click", () => selectParticipant(button.dataset.id));
+    });
+  }
+
+  function selectParticipant(id) {
+    selectedParticipantId = id;
+    const p = participants.find(item => item.id === id);
+
+    $("selectedParticipant").innerHTML = p
+      ? `<strong>${escapeHtml(p.display_name)}</strong><br><span class="muted">BC-${String(p.participant_number).padStart(6, "0")}</span>`
+      : "No participant selected.";
+
+    $("registerBtn").disabled = !p || !$("eventSelect").value;
+    message("registerMessage", "");
+    renderParticipants();
+  }
+
+  async function loadEvents() {
+    const { data, error } = await db
+      .from("events")
+      .select("id,event_name,venue_name,city,state,start_at,status")
+      .order("start_at", { ascending: false });
+
+    if (error) {
+      $("eventSelect").innerHTML = '<option value="">Could not load events</option>';
+      message("registerMessage", error.message, "error");
+      return;
+    }
+
+    events = data || [];
+    const available = events.filter(e => !["completed", "cancelled"].includes(e.status));
+
+    $("eventSelect").innerHTML = '<option value="">Choose an event...</option>' +
+      available.map(e => `
+        <option value="${escapeHtml(e.id)}">
+          ${escapeHtml(e.event_name)} — ${escapeHtml(e.status)}
+        </option>
+      `).join("");
+
+    if (!available.length) {
+      $("eventSelect").innerHTML = '<option value="">No available events</option>';
+    }
+
+    $("registerBtn").disabled = !selectedParticipantId || !$("eventSelect").value;
+  }
+
+  $("createForm").addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const displayName = $("displayName").value.trim();
+    const username = $("username").value.trim();
+    const bio = $("bio").value.trim();
+    const visibility = $("visibility").value;
+
+    $("createBtn").disabled = true;
+    message("createMessage", "Creating participant...");
+
+    const { data, error } = await db.rpc("admin_create_participant", {
+      _display_name: displayName,
+      _username: username || null,
+      _bio: bio || null,
+      _profile_visibility: visibility
+    });
+
+    $("createBtn").disabled = false;
+
+    if (error) {
+      message("createMessage", error.message, "error");
+      return;
+    }
+
+    $("createForm").reset();
+    $("visibility").value = "public";
+
+    await loadParticipants();
+    selectParticipant(data);
+
+    const created = participants.find(p => p.id === data);
+    message(
+      "createMessage",
+      `Participant created successfully: ${created?.display_name || displayName}.`,
+      "success"
+    );
+  });
+
+  $("registerBtn").addEventListener("click", async () => {
+    const eventId = $("eventSelect").value;
+
+    if (!selectedParticipantId || !eventId) {
+      message("registerMessage", "Select a participant and event first.", "error");
+      return;
+    }
+
+    $("registerBtn").disabled = true;
+    message("registerMessage", "Registering participant...");
+
+    const { data, error } = await db.rpc("admin_register_participant_for_event", {
+      _event_id: eventId,
+      _participant_id: selectedParticipantId
+    });
+
+    $("registerBtn").disabled = false;
+
+    if (error) {
+      message("registerMessage", error.message, "error");
+      return;
+    }
+
+    const event = events.find(e => e.id === eventId);
+    const participant = participants.find(p => p.id === selectedParticipantId);
+
+    message(
+      "registerMessage",
+      `${participant?.display_name || "Participant"} registered for ${event?.event_name || "event"} successfully.`,
+      "success"
+    );
+  });
+
+  $("eventSelect").addEventListener("change", () => {
+    $("registerBtn").disabled = !selectedParticipantId || !$("eventSelect").value;
+  });
+
+  $("searchInput").addEventListener("input", renderParticipants);
+  $("refreshBtn").addEventListener("click", async () => {
+    await loadParticipants();
+    await loadEvents();
+  });
+
+  $("logoutBtn").addEventListener("click", async () => {
+    await db.auth.signOut();
+    showLogin();
+  });
+
+  $("loginForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    message("loginMessage", "Signing in...");
+
+    const { error } = await db.auth.signInWithPassword({
+      email: $("loginEmail").value.trim(),
+      password: $("loginPassword").value
+    });
+
+    if (error) {
+      message("loginMessage", error.message, "error");
+      return;
+    }
+
+    $("loginPassword").value = "";
+    await initializeApp();
+  });
+
+  async function initializeApp() {
+    const { data: { session } } = await db.auth.getSession();
+
+    if (!session) {
+      showLogin();
+      return;
+    }
+
+    showApp();
+    await Promise.all([loadParticipants(), loadEvents()]);
+  }
+
+  db.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_OUT" || !session) showLogin();
+  });
+
+  initializeApp();
+})();
+</script>
+</body>
+</html>
