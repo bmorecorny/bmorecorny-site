@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BmoreCorny | Event Command</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #101114;
+      color: #f5f5f5;
+    }
+    .layout { display: flex; min-height: 100vh; }
+    aside {
+      width: 230px;
+      background: #191a1f;
+      padding: 28px 20px;
+      border-right: 1px solid #303137;
+    }
+    .brand {
+      font-size: 23px;
+      font-weight: 900;
+      color: #f4bd35;
+      margin-bottom: 8px;
+    }
+    .subbrand {
+      color: #999ba5;
+      font-size: 12px;
+      margin-bottom: 40px;
+    }
+    nav a {
+      display: block;
+      color: #c7c8ce;
+      text-decoration: none;
+      padding: 13px 12px;
+      border-radius: 7px;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+    nav a.active, nav a:hover {
+      background: #303137;
+      color: #fff;
+    }
+    main { flex: 1; padding: 36px; min-width: 0; }
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+    h1 { margin: 0 0 8px; font-size: 30px; }
+    .muted { color: #999ba5; font-size: 14px; }
+    .status {
+      background: #203c2d;
+      color: #77dfa0;
+      padding: 9px 13px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 25px;
+    }
+    .panel {
+      background: #191a1f;
+      border: 1px solid #303137;
+      border-radius: 12px;
+      padding: 22px;
+    }
+    .stat-number {
+      font-size: 30px;
+      font-weight: bold;
+      margin: 12px 0 5px;
+    }
+    .section-title { font-size: 18px; margin: 0 0 18px; }
+    .event-placeholder {
+      border: 1px dashed #484a53;
+      border-radius: 9px;
+      padding: 28px;
+      color: #999ba5;
+      text-align: center;
+      line-height: 1.6;
+    }
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .action {
+      background: #25262d;
+      border: 1px solid #393b44;
+      border-radius: 9px;
+      padding: 18px;
+    }
+    .action strong { display: block; margin-bottom: 7px; }
+    .action span { color: #999ba5; font-size: 13px; }
+    @media (max-width: 750px) {
+      .layout { display: block; }
+      aside { width: 100%; padding: 18px; }
+      .subbrand { margin-bottom: 15px; }
+      nav { display: flex; overflow-x: auto; }
+      nav a { white-space: nowrap; }
+      main { padding: 22px 16px; }
+      .stats { grid-template-columns: 1fr; }
+      .actions { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside>
+      <div class="brand">🌽 BmoreCorny</div>
+      <div class="subbrand">EVENT COMMAND CENTER</div>
+      <nav>
+        <a class="active" href="#">Overview</a>
+        <a href="#">Events</a>
+        <a href="#">Check-In</a>
+        <a href="#">Games & Scoring</a>
+        <a href="#">Verification</a>
+        <a href="#">Participants</a>
+      </nav>
+    </aside>
+
+    <main>
+      <div class="topline">
+        <div>
+          <h1>Event Command</h1>
+          <div class="muted">Your backstage pass to BmoreCorny operations.</div>
+        </div>
+        <div class="status">● DASHBOARD INITIALIZED</div>
+      </div>
+
+      <div class="stats">
+        <div class="panel">
+          <div class="muted">ACTIVE EVENTS</div>
+          <div class="stat-number">—</div>
+          <div class="muted">Connected event data coming next</div>
+        </div>
+        <div class="panel">
+          <div class="muted">PARTICIPANTS</div>
+          <div class="stat-number">—</div>
+          <div class="muted">Live participant count</div>
+        </div>
+        <div class="panel">
+          <div class="muted">GAMES IN PROGRESS</div>
+          <div class="stat-number">—</div>
+          <div class="muted">Live gameplay activity</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 class="section-title">Event Operations</h2>
+        <div class="event-placeholder">
+          <strong>No event selected</strong><br>
+          Your assigned events will appear here once Supabase is connected.
+        </div>
+        <div class="actions">
+          <div class="action">
+            <strong>👋 Participant Check-In</strong>
+            <span>Find and check in registered players.</span>
+          </div>
+          <div class="action">
+            <strong>🎯 Game Control</strong>
+            <span>Create games and manage player rosters.</span>
+          </div>
+          <div class="action">
+            <strong>🌽 Live Scoring</strong>
+            <span>Record throws and track bag balances.</span>
+          </div>
+          <div class="action">
+            <strong>🏆 Verification Queue</strong>
+            <span>Review qualifying official 100-foot shots.</span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
