@@ -328,7 +328,7 @@
   );
 
   let events = [];
-  let selectedEventId = null;
+  let selectedEventId = new URLSearchParams(window.location.search).get("event");
   let attendanceRows = [];
 
   function message(id, text, type = "") {
@@ -351,6 +351,18 @@
       "&": "&amp;", "<": "&lt;", ">": "&gt;",
       '"': "&quot;", "'": "&#39;"
     })[char]);
+  }
+
+  function updateEventUrl(id) {
+    const url = new URL(window.location.href);
+
+    if (id) {
+      url.searchParams.set("event", id);
+    } else {
+      url.searchParams.delete("event");
+    }
+
+    window.history.replaceState({}, "", url);
   }
 
   async function loadEvents() {
@@ -389,6 +401,7 @@
       await selectEvent(selectedEventId);
     } else {
       selectedEventId = null;
+      updateEventUrl(null);
       $("eventWorkspace").classList.add("hidden");
     }
   }
@@ -399,11 +412,14 @@
     if (!event) {
       selectedEventId = null;
       attendanceRows = [];
+      updateEventUrl(null);
       $("eventWorkspace").classList.add("hidden");
       return;
     }
 
     selectedEventId = id;
+    updateEventUrl(id);
+
     $("selectedEventName").textContent = event.event_name;
     $("selectedEventLocation").textContent =
       [event.venue_name, event.city, event.state].filter(Boolean).join(" · ") || "Location not set";
@@ -615,6 +631,7 @@
     await db.auth.signOut();
     selectedEventId = null;
     attendanceRows = [];
+    updateEventUrl(null);
     await updateScreen();
   });
 
