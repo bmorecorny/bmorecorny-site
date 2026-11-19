@@ -36,7 +36,7 @@
       padding: 22px;
       margin-top: 20px;
     }
-    select {
+    select, input {
       width: 100%;
       padding: 13px;
       background: #101114;
@@ -120,11 +120,69 @@
       flex-wrap: wrap;
       margin-top: 18px;
     }
+    .roster-tools {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .roster-list { display: grid; gap: 10px; }
+    .attendee {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      padding: 15px;
+      background: #101114;
+      border: 1px solid #303137;
+      border-radius: 9px;
+    }
+    .attendee-name { font-weight: bold; margin-bottom: 5px; }
+    .attendee-meta { color: #999ba5; font-size: 12px; }
+    .attendee-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .attendance-status {
+      display: inline-block;
+      background: #303137;
+      color: #c7c8ce;
+      padding: 7px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+    .attendance-status.checked_in,
+    .attendance-status.attended {
+      color: #77dfa0;
+      background: #183326;
+    }
+    .attendance-status.cancelled,
+    .attendance-status.no_show {
+      color: #ff8585;
+      background: #382020;
+    }
+    .checkin-button { min-width: 105px; }
+    .empty-state {
+      padding: 24px;
+      text-align: center;
+      border: 1px dashed #41434c;
+      border-radius: 9px;
+      color: #999ba5;
+      font-size: 13px;
+    }
     @media(max-width: 650px) {
       main { padding: 20px 14px; }
       .panel { padding: 17px; }
       .stats { grid-template-columns: 1fr; }
       .detail-grid { grid-template-columns: 1fr; }
+      .roster-tools { grid-template-columns: 1fr; }
+      .attendee { align-items: flex-start; flex-direction: column; }
+      .attendee-actions { justify-content: flex-start; }
     }
   </style>
 </head>
@@ -151,11 +209,10 @@
     <form id="loginForm">
       <label for="email">Email</label>
       <input id="email" type="email" value="bmorecorny@gmail.com"
-        autocomplete="username" required
-        style="width:100%;padding:12px;margin-bottom:14px;background:#101114;color:white;border:1px solid #41434c;border-radius:7px;">
+        autocomplete="username" required style="margin-bottom:14px;">
       <label for="password">Password</label>
       <input id="password" type="password" autocomplete="current-password"
-        required style="width:100%;padding:12px;margin-bottom:14px;background:#101114;color:white;border:1px solid #41434c;border-radius:7px;">
+        required style="margin-bottom:14px;">
       <button id="loginButton" type="submit">Sign In</button>
     </form>
     <div id="loginMessage" class="message"></div>
@@ -227,6 +284,28 @@
           <a href="./events.html"><button type="button" class="secondary">Event Management</button></a>
         </div>
       </div>
+
+      <section class="panel">
+        <div class="toolbar">
+          <div>
+            <h2>Attendee Check-in</h2>
+            <p class="muted">Find a registered participant and check them in at the event.</p>
+          </div>
+          <span id="rosterTotal" class="status">0 attendees</span>
+        </div>
+
+        <div class="roster-tools">
+          <input id="attendeeSearch" type="search"
+            placeholder="Search attendee name or username..."
+            aria-label="Search attendees">
+          <button id="rosterRefreshButton" type="button" class="secondary">Refresh Roster</button>
+        </div>
+
+        <div id="rosterMessage" class="message muted"></div>
+        <div id="attendeeList" class="roster-list">
+          <div class="empty-state">Select an event to load its attendee roster.</div>
+        </div>
+      </section>
     </section>
   </section>
 </main>
@@ -250,6 +329,7 @@
 
   let events = [];
   let selectedEventId = null;
+  let attendanceRows = [];
 
   function message(id, text, type = "") {
     $(id).textContent = text;
@@ -261,7 +341,16 @@
   }
 
   function pretty(value) {
-    return (value || "Not set").replaceAll("_", " ").replace(/\b\w/g, c => c.toUpperCase());
+    return (value || "Not set")
+      .replaceAll("_", " ")
+      .replace(/\b\w/g, c => c.toUpperCase());
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;",
+      '"': "&quot;", "'": "&#39;"
+    })[char]);
   }
 
   async function loadEvents() {
@@ -304,17 +393,12 @@
     }
   }
 
-  function escapeHtml(value) {
-    return String(value ?? "").replace(/[&<>"']/g, char => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;",
-      '"': "&quot;", "'": "&#39;"
-    })[char]);
-  }
-
   async function selectEvent(id) {
     const event = events.find(item => item.id === id);
+
     if (!event) {
       selectedEventId = null;
+      attendanceRows = [];
       $("eventWorkspace").classList.add("hidden");
       return;
     }
@@ -335,46 +419,159 @@
     $("eventWorkspace").classList.remove("hidden");
     message("countMessage", "Loading event activity...");
 
+    await loadEventActivity();
+  }
+
+  async function loadEventActivity() {
+    if (!selectedEventId) return;
+
+    const id = selectedEventId;
+
     const [attendanceResult, gamesResult] = await Promise.all([
       db.from("event_attendance")
-        .select("attendance_status")
-        .eq("event_id", id),
+        .select("id,participant_id,attendance_status,checked_in_at,participants(display_name,username)")
+        .eq("event_id", id)
+        .order("created_at", { ascending: true }),
       db.from("games")
         .select("id,status")
         .eq("event_id", id)
     ]);
 
+    if (id !== selectedEventId) return;
+
     if (attendanceResult.error || gamesResult.error) {
       $("registeredCount").textContent = "—";
       $("checkedInCount").textContent = "—";
       $("gameCount").textContent = "—";
+
       const errors = [
         attendanceResult.error?.message,
         gamesResult.error?.message
       ].filter(Boolean).join(" | ");
-      message("countMessage", "Event details loaded, but activity counts could not be read: " + errors, "error");
+
+      message("countMessage", "Event activity could not be loaded: " + errors, "error");
+
+      if (attendanceResult.error) {
+        attendanceRows = [];
+        renderRoster();
+        message("rosterMessage", "Could not load attendee roster: " + attendanceResult.error.message, "error");
+      }
       return;
     }
 
-    const attendance = attendanceResult.data || [];
+    attendanceRows = attendanceResult.data || [];
     const games = gamesResult.data || [];
 
     $("registeredCount").textContent =
-      attendance.filter(row => ["registered", "checked_in", "attended"].includes(row.attendance_status)).length;
+      attendanceRows.filter(row =>
+        ["registered", "checked_in", "attended"].includes(row.attendance_status)
+      ).length;
 
     $("checkedInCount").textContent =
-      attendance.filter(row => row.attendance_status === "checked_in").length;
+      attendanceRows.filter(row => row.attendance_status === "checked_in").length;
 
     $("gameCount").textContent = games.length;
 
     message("countMessage", "Live counts loaded from the event database.", "success");
+    renderRoster();
   }
+
+  function renderRoster() {
+    const search = $("attendeeSearch").value.trim().toLowerCase();
+
+    const filtered = attendanceRows.filter(row => {
+      const participant = row.participants || {};
+      const name = participant.display_name || "";
+      const username = participant.username || "";
+
+      return (name + " " + username).toLowerCase().includes(search);
+    });
+
+    $("rosterTotal").textContent =
+      `${filtered.length} of ${attendanceRows.length} attendee(s)`;
+
+    if (!attendanceRows.length) {
+      $("attendeeList").innerHTML =
+        '<div class="empty-state">No attendees are registered for this event yet.</div>';
+      message("rosterMessage", "");
+      return;
+    }
+
+    if (!filtered.length) {
+      $("attendeeList").innerHTML =
+        '<div class="empty-state">No attendees match that search.</div>';
+      message("rosterMessage", "");
+      return;
+    }
+
+    $("attendeeList").innerHTML = filtered.map(row => {
+      const participant = row.participants || {};
+      const displayName = participant.display_name || "Unnamed participant";
+      const username = participant.username ? "@" + participant.username : "";
+      const status = row.attendance_status || "unknown";
+      const canCheckIn = status === "registered";
+
+      return `
+        <div class="attendee">
+          <div>
+            <div class="attendee-name">${escapeHtml(displayName)}</div>
+            <div class="attendee-meta">
+              ${escapeHtml(username)}
+              ${row.checked_in_at ? " · Checked in " + escapeHtml(formatDate(row.checked_in_at)) : ""}
+            </div>
+          </div>
+          <div class="attendee-actions">
+            <span class="attendance-status ${escapeHtml(status)}">
+              ${escapeHtml(pretty(status).toUpperCase())}
+            </span>
+            ${canCheckIn
+              ? `<button class="checkin-button" type="button" data-attendance-id="${escapeHtml(row.id)}">Check In</button>`
+              : ""}
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    message("rosterMessage", "Attendee roster loaded.", "success");
+  }
+
+  async function checkInAttendee(attendanceId, button) {
+    if (!attendanceId || !selectedEventId) return;
+
+    button.disabled = true;
+    button.textContent = "Checking in...";
+
+    const { error } = await db.rpc("check_in_event_attendee", {
+      _attendance_id: attendanceId
+    });
+
+    if (error) {
+      button.disabled = false;
+      button.textContent = "Check In";
+      message("rosterMessage", "Check-in failed: " + error.message, "error");
+      return;
+    }
+
+    message("rosterMessage", "Attendee successfully checked in.", "success");
+    await loadEventActivity();
+  }
+
+  $("attendeeList").addEventListener("click", async event => {
+    const button = event.target.closest("[data-attendance-id]");
+    if (!button || button.disabled) return;
+
+    await checkInAttendee(button.dataset.attendanceId, button);
+  });
+
+  $("attendeeSearch").addEventListener("input", renderRoster);
 
   $("eventSelect").addEventListener("change", async () => {
     await selectEvent($("eventSelect").value);
   });
 
   $("refreshButton").addEventListener("click", loadEvents);
+
+  $("rosterRefreshButton").addEventListener("click", loadEventActivity);
 
   async function updateScreen() {
     const { data: { session } } = await db.auth.getSession();
@@ -383,7 +580,13 @@
     $("operationsPanel").classList.toggle("hidden", !session);
     $("logoutButton").classList.toggle("hidden", !session);
 
-    if (session) await loadEvents();
+    if (session) {
+      await loadEvents();
+    } else {
+      selectedEventId = null;
+      attendanceRows = [];
+      $("eventWorkspace").classList.add("hidden");
+    }
   }
 
   $("loginForm").addEventListener("submit", async event => {
@@ -411,6 +614,7 @@
   $("logoutButton").addEventListener("click", async () => {
     await db.auth.signOut();
     selectedEventId = null;
+    attendanceRows = [];
     await updateScreen();
   });
 
