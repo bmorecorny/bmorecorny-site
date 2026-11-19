@@ -99,9 +99,22 @@
       color: #f4bd35;
     }
     .hidden { display: none !important; }
-    #message { margin-top: 15px; font-size: 13px; }
+    #message, #loginMessage, #recoveryMessage, #formMessage {
+      margin-top: 15px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
     .error { color: #ff8585; }
     .success { color: #77dfa0; }
+    .textLink {
+      display: inline-block;
+      margin-top: 14px;
+      color: #f4bd35;
+      font-size: 13px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .textLink:hover { text-decoration: underline; }
     @media(max-width: 650px) {
       .grid { grid-template-columns: 1fr; }
       main { padding: 20px 14px; }
@@ -143,9 +156,12 @@
         <input id="password" type="password"
           autocomplete="current-password" required>
       </div>
-      <button type="submit">Sign In</button>
+      <button id="loginButton" type="submit">Sign In</button>
     </form>
+
+    <a id="forgotPasswordLink" class="textLink" href="#">Forgot Password?</a>
     <div id="loginMessage"></div>
+    <div id="recoveryMessage"></div>
   </section>
 
   <section id="managementPanel" class="hidden">
@@ -254,6 +270,9 @@
 
   const $ = id => document.getElementById(id);
   let editingId = null;
+
+  // Exact destination for password recovery.
+  const recoveryRedirect = new URL("./reset-password.html", window.location.href).href;
 
   function showMessage(id, message, type = "") {
     $(id).textContent = message;
@@ -400,6 +419,41 @@
   $("cancelEditButton").addEventListener("click", resetForm);
   $("refreshButton").addEventListener("click", loadEvents);
 
+  // Password recovery
+  $("forgotPasswordLink").addEventListener("click", async event => {
+    event.preventDefault();
+
+    const email = $("email").value.trim();
+
+    if (!email) {
+      showMessage("recoveryMessage",
+        "Enter your email address above first.", "error");
+      $("email").focus();
+      return;
+    }
+
+    $("forgotPasswordLink").style.pointerEvents = "none";
+    $("forgotPasswordLink").textContent = "Sending recovery email...";
+    showMessage("recoveryMessage", "");
+
+    const { error } = await db.auth.resetPasswordForEmail(email, {
+      redirectTo: recoveryRedirect
+    });
+
+    $("forgotPasswordLink").style.pointerEvents = "";
+    $("forgotPasswordLink").textContent = "Forgot Password?";
+
+    if (error) {
+      showMessage("recoveryMessage",
+        "Could not send recovery email: " + error.message, "error");
+      return;
+    }
+
+    showMessage("recoveryMessage",
+      "If an account exists for this email, a password recovery link has been sent. Check your inbox and spam folder.",
+      "success");
+  });
+
   async function updateScreen() {
     const { data: { session } } = await db.auth.getSession();
 
@@ -414,10 +468,14 @@
     event.preventDefault();
     showMessage("loginMessage", "Signing in...");
 
+    $("loginButton").disabled = true;
+
     const { error } = await db.auth.signInWithPassword({
       email: $("email").value.trim(),
       password: $("password").value
     });
+
+    $("loginButton").disabled = false;
 
     if (error) {
       showMessage("loginMessage", "Sign-in failed: " + error.message, "error");
@@ -426,6 +484,7 @@
 
     $("password").value = "";
     showMessage("loginMessage", "");
+    showMessage("recoveryMessage", "");
     await updateScreen();
   });
 
