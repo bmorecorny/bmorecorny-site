@@ -2,249 +2,169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BmoreCorny | Event Management</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: #101114;
-      color: #f5f5f5;
-      font-family: Arial, sans-serif;
-    }
-    header {
-      background: #191a1f;
-      border-bottom: 1px solid #303137;
-      padding: 20px 28px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
-    .brand { color: #f4bd35; font-size: 22px; font-weight: 900; }
-    main { max-width: 1100px; margin: auto; padding: 30px 20px; }
-    h1 { margin: 0 0 8px; }
-    h2 { font-size: 19px; margin: 0 0 20px; }
-    .muted { color: #999ba5; font-size: 13px; }
-    .panel {
-      background: #191a1f;
-      border: 1px solid #303137;
-      border-radius: 12px;
-      padding: 24px;
-      margin-top: 22px;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
-    }
-    label {
-      display: block;
-      font-size: 13px;
-      color: #c7c8ce;
-      margin-bottom: 7px;
-    }
-    input, select {
-      width: 100%;
-      padding: 12px;
-      background: #101114;
-      color: white;
-      border: 1px solid #41434c;
-      border-radius: 7px;
-      font-size: 14px;
-    }
-    .field { margin-bottom: 16px; }
-    button {
-      background: #f4bd35;
-      color: #171717;
-      border: 0;
-      border-radius: 7px;
-      padding: 12px 18px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    button.secondary {
-      background: #303137;
-      color: white;
-    }
-    button:disabled { opacity: .5; cursor: not-allowed; }
-    .toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .event {
-      border: 1px solid #383a43;
-      border-radius: 9px;
-      padding: 17px;
-      margin-top: 12px;
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .event h3 { margin: 0 0 7px; }
-    .event p { margin: 4px 0; }
-    .status {
-      display: inline-block;
-      background: #303137;
-      border-radius: 20px;
-      padding: 6px 10px;
-      font-size: 11px;
-      color: #f4bd35;
-    }
-    .hidden { display: none !important; }
-    #message, #loginMessage, #recoveryMessage, #formMessage {
-      margin-top: 15px;
-      font-size: 13px;
-      line-height: 1.5;
-    }
-    .error { color: #ff8585; }
-    .success { color: #77dfa0; }
-    .textLink {
-      display: inline-block;
-      margin-top: 14px;
-      color: #f4bd35;
-      font-size: 13px;
-      text-decoration: none;
-      cursor: pointer;
-    }
-    .textLink:hover { text-decoration: underline; }
-    @media(max-width: 650px) {
-      .grid { grid-template-columns: 1fr; }
-      main { padding: 20px 14px; }
-      .panel { padding: 18px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BmoreCorny | Event Management</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101114;color:#f5f5f5;font-family:Arial,sans-serif}
+header{background:#191a1f;border-bottom:1px solid #303137;padding:20px 28px;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+.brand{color:#f4bd35;font-size:22px;font-weight:900}
+main{max-width:1100px;margin:auto;padding:30px 20px}
+h1{margin:0 0 8px}h2{font-size:19px;margin:0 0 20px}
+.muted{color:#999ba5;font-size:13px}
+.panel{background:#191a1f;border:1px solid #303137;border-radius:12px;padding:24px;margin-top:22px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+label{display:block;font-size:13px;color:#c7c8ce;margin-bottom:7px}
+input,select{width:100%;padding:12px;background:#101114;color:white;border:1px solid #41434c;border-radius:7px;font-size:14px}
+.field{margin-bottom:16px}
+button,.button{background:#f4bd35;color:#171717;border:0;border-radius:7px;padding:12px 18px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-block;font-size:13px}
+button.secondary,.button.secondary{background:#303137;color:white}
+button:disabled{opacity:.5;cursor:not-allowed}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.event{border:1px solid #383a43;border-radius:9px;padding:17px;margin-top:12px;display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap}
+.event h3{margin:0 0 7px}
+.event p{margin:4px 0}
+.eventTitle{color:#f5f5f5;text-decoration:none;font-size:17px;font-weight:bold}
+.eventTitle:hover{color:#f4bd35;text-decoration:underline}
+.status{display:inline-block;background:#303137;border-radius:20px;padding:6px 10px;font-size:11px;color:#f4bd35}
+.hidden{display:none!important}
+#message,#loginMessage,#recoveryMessage,#formMessage{margin-top:15px;font-size:13px;line-height:1.5}
+.error{color:#ff8585}.success{color:#77dfa0}
+.textLink{display:inline-block;margin-top:14px;color:#f4bd35;font-size:13px;text-decoration:none;cursor:pointer}
+.textLink:hover{text-decoration:underline}
+.workspaceHeader{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;align-items:center}
+.workspaceLinks{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.workspaceCard{background:#101114;border:1px solid #383a43;padding:18px;border-radius:10px}
+.workspaceCard h3{margin-top:0}
+.backLink{color:#f4bd35;text-decoration:none;display:inline-block;margin-bottom:20px;font-size:13px}
+.backLink:hover{text-decoration:underline}
+@media(max-width:650px){.grid{grid-template-columns:1fr}main{padding:20px 14px}.panel{padding:18px}}
+</style>
 </head>
 <body>
-
 <header>
   <div>
     <div class="brand">🌽 BmoreCorny</div>
     <div class="muted">EVENT MANAGEMENT</div>
   </div>
   <div>
-    <a href="./" style="color:#f4bd35;text-decoration:none;margin-right:15px;">Dashboard</a>
+    <a href="./" style="color:#f4bd35;text-decoration:none;margin-right:15px">Dashboard</a>
     <button id="logoutButton" class="secondary hidden">Sign Out</button>
   </div>
 </header>
 
 <main>
-  <div>
-    <h1>Event Management</h1>
-    <p class="muted">Create, organize and manage BmoreCorny events.</p>
-  </div>
-
   <section id="loginPanel" class="panel">
     <h2>Staff Sign In</h2>
     <p class="muted">Sign in with your authorized BmoreCorny account.</p>
-
     <form id="loginForm">
       <div class="field">
         <label for="email">Email</label>
-        <input id="email" type="email" autocomplete="username"
-          value="bmorecorny@gmail.com" required>
+        <input id="email" type="email" autocomplete="username" value="bmorecorny@gmail.com" required>
       </div>
       <div class="field">
         <label for="password">Password</label>
-        <input id="password" type="password"
-          autocomplete="current-password" required>
+        <input id="password" type="password" autocomplete="current-password" required>
       </div>
       <button id="loginButton" type="submit">Sign In</button>
     </form>
-
     <a id="forgotPasswordLink" class="textLink" href="#">Forgot Password?</a>
     <div id="loginMessage"></div>
     <div id="recoveryMessage"></div>
   </section>
 
   <section id="managementPanel" class="hidden">
-    <div class="panel">
-      <div class="toolbar">
-        <div>
-          <h2 id="formHeading">Create New Event</h2>
-          <p class="muted">Add an event to the BmoreCorny calendar.</p>
+    <div id="directoryView">
+      <h1>Event Management</h1>
+      <p class="muted">Create, organize and manage BmoreCorny events.</p>
+
+      <div class="panel">
+        <div class="toolbar">
+          <div>
+            <h2 id="formHeading">Create New Event</h2>
+            <p class="muted">Add an event to the BmoreCorny calendar.</p>
+          </div>
+          <span class="status">ADMIN CONSOLE</span>
         </div>
-        <span class="status">ADMIN CONSOLE</span>
+        <form id="eventForm">
+          <div class="grid">
+            <div class="field">
+              <label for="eventName">Event Name *</label>
+              <input id="eventName" required maxlength="150" placeholder="Example: BmoreCorny Summer Showdown">
+            </div>
+            <div class="field">
+              <label for="eventType">Event Type *</label>
+              <select id="eventType" required>
+                <option value="tour_stop">Tour Stop</option>
+                <option value="pop_up">Pop-Up</option>
+                <option value="featured_appearance">Featured Appearance</option>
+                <option value="community_event">Community Event</option>
+                <option value="championship">Championship</option>
+                <option value="private_event">Private Event</option>
+                <option value="fundraiser">Fundraiser</option>
+              </select>
+            </div>
+            <div class="field"><label for="venue">Venue</label><input id="venue" placeholder="Venue name"></div>
+            <div class="field"><label for="city">City</label><input id="city" placeholder="City"></div>
+            <div class="field"><label for="state">State</label><input id="state" placeholder="State"></div>
+            <div class="field">
+              <label for="eventStatus">Event Status</label>
+              <select id="eventStatus">
+                <option value="draft">Draft</option>
+                <option value="published">Published</option>
+                <option value="registration_open">Registration Open</option>
+                <option value="in_progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div class="field"><label for="startAt">Start Date & Time</label><input id="startAt" type="datetime-local"></div>
+            <div class="field"><label for="endAt">End Date & Time</label><input id="endAt" type="datetime-local"></div>
+          </div>
+          <button id="saveButton" type="submit">Create Event</button>
+          <button id="cancelEditButton" type="button" class="secondary hidden">Cancel Edit</button>
+          <div id="formMessage"></div>
+        </form>
       </div>
 
-      <form id="eventForm">
-        <div class="grid">
-          <div class="field">
-            <label for="eventName">Event Name *</label>
-            <input id="eventName" required maxlength="150"
-              placeholder="Example: BmoreCorny Summer Showdown">
-          </div>
-          <div class="field">
-            <label for="eventType">Event Type *</label>
-            <select id="eventType" required>
-              <option value="tour_stop">Tour Stop</option>
-              <option value="pop_up">Pop-Up</option>
-              <option value="featured_appearance">Featured Appearance</option>
-              <option value="community_event">Community Event</option>
-              <option value="championship">Championship</option>
-              <option value="private_event">Private Event</option>
-              <option value="fundraiser">Fundraiser</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="venue">Venue</label>
-            <input id="venue" placeholder="Venue name">
-          </div>
-          <div class="field">
-            <label for="city">City</label>
-            <input id="city" placeholder="City">
-          </div>
-          <div class="field">
-            <label for="state">State</label>
-            <input id="state" placeholder="State">
-          </div>
-          <div class="field">
-            <label for="eventStatus">Event Status</label>
-            <select id="eventStatus">
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
-              <option value="registration_open">Registration Open</option>
-              <option value="in_progress">In Progress</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="startAt">Start Date & Time</label>
-            <input id="startAt" type="datetime-local">
-          </div>
-          <div class="field">
-            <label for="endAt">End Date & Time</label>
-            <input id="endAt" type="datetime-local">
-          </div>
+      <div class="panel">
+        <div class="toolbar">
+          <div><h2>Event Directory</h2><p class="muted">Select an event name to open its workspace.</p></div>
+          <button id="refreshButton" class="secondary" type="button">Refresh Events</button>
         </div>
-
-        <button id="saveButton" type="submit">Create Event</button>
-        <button id="cancelEditButton" type="button"
-          class="secondary hidden">Cancel Edit</button>
-        <div id="formMessage"></div>
-      </form>
+        <div id="eventList"><p class="muted">Loading events...</p></div>
+      </div>
     </div>
 
-    <div class="panel">
-      <div class="toolbar">
-        <div>
-          <h2>Event Directory</h2>
-          <p class="muted">Events currently stored in Supabase.</p>
+    <div id="eventWorkspace" class="hidden">
+      <a href="events.html" class="backLink">← Back to Event Directory</a>
+      <div class="panel">
+        <div class="workspaceHeader">
+          <div>
+            <span class="status">EVENT WORKSPACE</span>
+            <h1 id="workspaceName" style="margin-top:12px"></h1>
+            <p id="workspaceMeta" class="muted"></p>
+          </div>
+          <button id="workspaceEditButton" type="button">Edit Event</button>
         </div>
-        <button id="refreshButton" class="secondary" type="button">
-          Refresh Events
-        </button>
-      </div>
-      <div id="eventList">
-        <p class="muted">Loading events...</p>
+        <hr style="border:0;border-top:1px solid #383a43;margin:22px 0">
+        <div class="grid">
+          <div class="workspaceCard">
+            <h3>Event Details</h3>
+            <p id="workspaceDate" class="muted"></p>
+            <p id="workspaceVenue" class="muted"></p>
+            <p id="workspaceStatus" class="muted"></p>
+          </div>
+          <div class="workspaceCard">
+            <h3>Event Management</h3>
+            <p class="muted">Manage attendees, check-in, games and event-day activity.</p>
+            <div class="workspaceLinks">
+              <a id="operationsLink" class="button" href="#">Event Operations</a>
+              <a id="gamesLink" class="button" href="#">Game Management</a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -252,255 +172,246 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./config.js"></script>
-
 <script>
 (() => {
-  const config = window.BMORECORNY_CONFIG;
+const config=window.BMORECORNY_CONFIG;
+if(!config?.SUPABASE_URL||!config?.SUPABASE_ANON_KEY){
+  document.getElementById("loginMessage").textContent="Configuration missing. Check admin/config.js.";
+  return;
+}
+const db=window.supabase.createClient(config.SUPABASE_URL,config.SUPABASE_ANON_KEY);
+const $=id=>document.getElementById(id);
+let editingId=null;
+let eventsCache=[];
 
-  if (!config?.SUPABASE_URL || !config?.SUPABASE_ANON_KEY) {
-    document.getElementById("loginMessage").textContent =
-      "Configuration missing. Check admin/config.js.";
+const recoveryRedirect=new URL("./reset-password.html",window.location.href).href;
+
+function showMessage(id,text,type=""){
+  $(id).textContent=text;
+  $(id).className=type;
+}
+function dateForInput(value){
+  if(!value)return "";
+  const date=new Date(value);
+  const local=new Date(date.getTime()-date.getTimezoneOffset()*60000);
+  return local.toISOString().slice(0,16);
+}
+function formatDate(value){
+  return value?new Date(value).toLocaleString():"Date not set";
+}
+function escapeHtml(value){
+  return String(value??"").replace(/[&<>"']/g,char=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[char]);
+}
+
+async function loadEvents(){
+  $("eventList").textContent="Loading events...";
+  const {data,error}=await db.from("events")
+    .select("id,event_name,event_type,venue_name,city,state,start_at,end_at,status")
+    .order("start_at",{ascending:false});
+  if(error){
+    $("eventList").textContent="Could not load events: "+error.message;
     return;
   }
-
-  const db = window.supabase.createClient(
-    config.SUPABASE_URL,
-    config.SUPABASE_ANON_KEY
-  );
-
-  const $ = id => document.getElementById(id);
-  let editingId = null;
-
-  // Exact destination for password recovery.
-  const recoveryRedirect = new URL("./reset-password.html", window.location.href).href;
-
-  function showMessage(id, message, type = "") {
-    $(id).textContent = message;
-    $(id).className = type;
+  eventsCache=data||[];
+  if(!eventsCache.length){
+    $("eventList").textContent="No events yet. Create your first event above.";
+    return;
   }
-
-  function dateForInput(value) {
-    if (!value) return "";
-    const date = new Date(value);
-    const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-    return local.toISOString().slice(0, 16);
-  }
-
-  function formatDate(value) {
-    if (!value) return "Date not set";
-    return new Date(value).toLocaleString();
-  }
-
-  function escapeHtml(value) {
-    return String(value ?? "").replace(/[&<>"']/g, char => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;",
-      '"': "&quot;", "'": "&#39;"
-    })[char]);
-  }
-
-  async function loadEvents() {
-    $("eventList").textContent = "Loading events...";
-
-    const { data, error } = await db
-      .from("events")
-      .select("id,event_name,event_type,venue_name,city,state,start_at,end_at,status")
-      .order("start_at", { ascending: false });
-
-    if (error) {
-      $("eventList").textContent = "Could not load events: " + error.message;
-      return;
-    }
-
-    if (!data.length) {
-      $("eventList").textContent = "No events yet. Create your first event above.";
-      return;
-    }
-
-    $("eventList").innerHTML = data.map(event => `
-      <div class="event">
-        <div>
-          <h3>${escapeHtml(event.event_name)}</h3>
-          <p class="muted">
-            ${escapeHtml(event.venue_name || "Venue TBD")}
-            ${event.city ? " · " + escapeHtml(event.city) : ""}
-            ${event.state ? ", " + escapeHtml(event.state) : ""}
-          </p>
-          <p class="muted">${escapeHtml(formatDate(event.start_at))}</p>
-          <span class="status">${escapeHtml(event.status.replaceAll("_", " ").toUpperCase())}</span>
-        </div>
+  $("eventList").innerHTML=eventsCache.map(event=>`
+    <div class="event">
+      <div>
+        <h3><a class="eventTitle" href="events.html?event=${encodeURIComponent(event.id)}">${escapeHtml(event.event_name)}</a></h3>
+        <p class="muted">${escapeHtml(event.venue_name||"Venue TBD")}${event.city?" · "+escapeHtml(event.city):""}${event.state?", "+escapeHtml(event.state):""}</p>
+        <p class="muted">${escapeHtml(formatDate(event.start_at))}</p>
+        <span class="status">${escapeHtml(event.status.replaceAll("_"," ").toUpperCase())}</span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="secondary" data-open="${event.id}">Open Event</button>
         <button class="secondary" data-edit="${event.id}">Edit Event</button>
       </div>
-    `).join("");
+    </div>
+  `).join("");
 
-    $("eventList").querySelectorAll("[data-edit]").forEach(button => {
-      button.addEventListener("click", () => {
-        const event = data.find(item => item.id === button.dataset.edit);
-        beginEdit(event);
-      });
+  $("eventList").querySelectorAll("[data-open]").forEach(button=>{
+    button.addEventListener("click",()=>openEvent(button.dataset.open));
+  });
+  $("eventList").querySelectorAll("[data-edit]").forEach(button=>{
+    button.addEventListener("click",()=>{
+      const event=eventsCache.find(item=>item.id===button.dataset.edit);
+      if(event)beginEdit(event);
     });
+  });
+}
+
+function openEvent(id){
+  const event=eventsCache.find(item=>item.id===id);
+  if(!event)return;
+  const url=new URL(window.location.href);
+  url.searchParams.set("event",id);
+  history.pushState({eventId:id},"",url);
+  renderWorkspace(event);
+}
+
+function renderWorkspace(event){
+  $("directoryView").classList.add("hidden");
+  $("eventWorkspace").classList.remove("hidden");
+  $("workspaceName").textContent=event.event_name;
+  $("workspaceMeta").textContent=[event.event_type.replaceAll("_"," "),event.city,event.state].filter(Boolean).join(" · ");
+  $("workspaceDate").textContent="Start: "+formatDate(event.start_at)+" | End: "+formatDate(event.end_at);
+  $("workspaceVenue").textContent="Venue: "+(event.venue_name||"Not set");
+  $("workspaceStatus").textContent="Status: "+event.status.replaceAll("_"," ").toUpperCase();
+
+  const query="?event="+encodeURIComponent(event.id);
+  $("operationsLink").href="operations.html"+query;
+  $("gamesLink").href="games.html"+query;
+  $("workspaceEditButton").onclick=()=>beginEdit(event);
+}
+
+function showDirectory(){
+  $("eventWorkspace").classList.add("hidden");
+  $("directoryView").classList.remove("hidden");
+}
+
+function beginEdit(event){
+  showDirectory();
+  editingId=event.id;
+  $("eventName").value=event.event_name||"";
+  $("eventType").value=event.event_type||"tour_stop";
+  $("venue").value=event.venue_name||"";
+  $("city").value=event.city||"";
+  $("state").value=event.state||"";
+  $("eventStatus").value=event.status||"draft";
+  $("startAt").value=dateForInput(event.start_at);
+  $("endAt").value=dateForInput(event.end_at);
+  $("formHeading").textContent="Edit Event";
+  $("saveButton").textContent="Save Event Changes";
+  $("cancelEditButton").classList.remove("hidden");
+  $("formHeading").scrollIntoView({behavior:"smooth"});
+}
+
+function resetForm(){
+  editingId=null;
+  $("eventForm").reset();
+  $("formHeading").textContent="Create New Event";
+  $("saveButton").textContent="Create Event";
+  $("cancelEditButton").classList.add("hidden");
+  showMessage("formMessage","");
+}
+
+$("eventForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+  const start=$("startAt").value;
+  const end=$("endAt").value;
+  if(start&&end&&new Date(end)<new Date(start)){
+    showMessage("formMessage","End date cannot be before start date.","error");
+    return;
   }
-
-  function beginEdit(event) {
-    editingId = event.id;
-    $("eventName").value = event.event_name || "";
-    $("eventType").value = event.event_type || "tour_stop";
-    $("venue").value = event.venue_name || "";
-    $("city").value = event.city || "";
-    $("state").value = event.state || "";
-    $("eventStatus").value = event.status || "draft";
-    $("startAt").value = dateForInput(event.start_at);
-    $("endAt").value = dateForInput(event.end_at);
-
-    $("formHeading").textContent = "Edit Event";
-    $("saveButton").textContent = "Save Event Changes";
-    $("cancelEditButton").classList.remove("hidden");
-    $("formHeading").scrollIntoView({ behavior: "smooth" });
+  const payload={
+    event_name:$("eventName").value.trim(),
+    event_type:$("eventType").value,
+    venue_name:$("venue").value.trim()||null,
+    city:$("city").value.trim()||null,
+    state:$("state").value.trim()||null,
+    status:$("eventStatus").value,
+    start_at:start?new Date(start).toISOString():null,
+    end_at:end?new Date(end).toISOString():null
+  };
+  $("saveButton").disabled=true;
+  showMessage("formMessage","Saving event...");
+  const result=editingId
+    ?await db.from("events").update(payload).eq("id",editingId).select()
+    :await db.from("events").insert(payload).select();
+  $("saveButton").disabled=false;
+  if(result.error){
+    showMessage("formMessage","Could not save event: "+result.error.message,"error");
+    return;
   }
-
-  function resetForm() {
-    editingId = null;
-    $("eventForm").reset();
-    $("formHeading").textContent = "Create New Event";
-    $("saveButton").textContent = "Create Event";
-    $("cancelEditButton").classList.add("hidden");
-    showMessage("formMessage", "");
+  if(!result.data?.length){
+    showMessage("formMessage","No event was returned. Check your account permissions.","error");
+    return;
   }
+  const savedId=result.data[0].id;
+  showMessage("formMessage",editingId?"Event updated successfully!":"Event created successfully!","success");
+  resetForm();
+  await loadEvents();
+  const saved=eventsCache.find(item=>item.id===savedId);
+  if(saved)openEvent(savedId);
+});
 
-  $("eventForm").addEventListener("submit", async event => {
-    event.preventDefault();
+$("cancelEditButton").addEventListener("click",resetForm);
+$("refreshButton").addEventListener("click",loadEvents);
 
-    const start = $("startAt").value;
-    const end = $("endAt").value;
-
-    if (start && end && new Date(end) < new Date(start)) {
-      showMessage("formMessage", "End date cannot be before start date.", "error");
-      return;
-    }
-
-    const payload = {
-      event_name: $("eventName").value.trim(),
-      event_type: $("eventType").value,
-      venue_name: $("venue").value.trim() || null,
-      city: $("city").value.trim() || null,
-      state: $("state").value.trim() || null,
-      status: $("eventStatus").value,
-      start_at: start ? new Date(start).toISOString() : null,
-      end_at: end ? new Date(end).toISOString() : null
-    };
-
-    $("saveButton").disabled = true;
-    showMessage("formMessage", "Saving event...");
-
-    const result = editingId
-      ? await db.from("events").update(payload).eq("id", editingId).select()
-      : await db.from("events").insert(payload).select();
-
-    $("saveButton").disabled = false;
-
-    if (result.error) {
-      showMessage("formMessage", "Could not save event: " + result.error.message, "error");
-      return;
-    }
-
-    if (!result.data?.length) {
-      showMessage("formMessage",
-        "No event was returned. Check your account permissions.", "error");
-      return;
-    }
-
-    showMessage("formMessage",
-      editingId ? "Event updated successfully!" : "Event created successfully!",
-      "success");
-
-    resetForm();
-    await loadEvents();
-  });
-
-  $("cancelEditButton").addEventListener("click", resetForm);
-  $("refreshButton").addEventListener("click", loadEvents);
-
-  // Password recovery
-  $("forgotPasswordLink").addEventListener("click", async event => {
-    event.preventDefault();
-
-    const email = $("email").value.trim();
-
-    if (!email) {
-      showMessage("recoveryMessage",
-        "Enter your email address above first.", "error");
-      $("email").focus();
-      return;
-    }
-
-    $("forgotPasswordLink").style.pointerEvents = "none";
-    $("forgotPasswordLink").textContent = "Sending recovery email...";
-    showMessage("recoveryMessage", "");
-
-    const { error } = await db.auth.resetPasswordForEmail(email, {
-      redirectTo: recoveryRedirect
-    });
-
-    $("forgotPasswordLink").style.pointerEvents = "";
-    $("forgotPasswordLink").textContent = "Forgot Password?";
-
-    if (error) {
-      showMessage("recoveryMessage",
-        "Could not send recovery email: " + error.message, "error");
-      return;
-    }
-
-    showMessage("recoveryMessage",
-      "If an account exists for this email, a password recovery link has been sent. Check your inbox and spam folder.",
-      "success");
-  });
-
-  async function updateScreen() {
-    const { data: { session } } = await db.auth.getSession();
-
-    $("loginPanel").classList.toggle("hidden", !!session);
-    $("managementPanel").classList.toggle("hidden", !session);
-    $("logoutButton").classList.toggle("hidden", !session);
-
-    if (session) await loadEvents();
+$("forgotPasswordLink").addEventListener("click",async event=>{
+  event.preventDefault();
+  const email=$("email").value.trim();
+  if(!email){
+    showMessage("recoveryMessage","Enter your email address above first.","error");
+    $("email").focus();
+    return;
   }
+  $("forgotPasswordLink").style.pointerEvents="none";
+  $("forgotPasswordLink").textContent="Sending recovery email...";
+  showMessage("recoveryMessage","");
+  const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:recoveryRedirect});
+  $("forgotPasswordLink").style.pointerEvents="";
+  $("forgotPasswordLink").textContent="Forgot Password?";
+  if(error){
+    showMessage("recoveryMessage","Could not send recovery email: "+error.message,"error");
+    return;
+  }
+  showMessage("recoveryMessage","If an account exists for this email, a recovery link has been sent. Check your inbox and spam folder.","success");
+});
 
-  $("loginForm").addEventListener("submit", async event => {
-    event.preventDefault();
-    showMessage("loginMessage", "Signing in...");
-
-    $("loginButton").disabled = true;
-
-    const { error } = await db.auth.signInWithPassword({
-      email: $("email").value.trim(),
-      password: $("password").value
-    });
-
-    $("loginButton").disabled = false;
-
-    if (error) {
-      showMessage("loginMessage", "Sign-in failed: " + error.message, "error");
-      return;
-    }
-
-    $("password").value = "";
-    showMessage("loginMessage", "");
-    showMessage("recoveryMessage", "");
-    await updateScreen();
+$("loginForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+  showMessage("loginMessage","Signing in...");
+  $("loginButton").disabled=true;
+  const {error}=await db.auth.signInWithPassword({
+    email:$("email").value.trim(),
+    password:$("password").value
   });
+  $("loginButton").disabled=false;
+  if(error){
+    showMessage("loginMessage","Sign-in failed: "+error.message,"error");
+    return;
+  }
+  $("password").value="";
+  showMessage("loginMessage","");
+  showMessage("recoveryMessage","");
+  await updateScreen();
+});
 
-  $("logoutButton").addEventListener("click", async () => {
-    await db.auth.signOut();
-    resetForm();
-    await updateScreen();
-  });
+$("logoutButton").addEventListener("click",async()=>{
+  await db.auth.signOut();
+  resetForm();
+  await updateScreen();
+});
 
-  db.auth.onAuthStateChange(() => {
-    updateScreen();
-  });
+async function updateScreen(){
+  const {data:{session}}=await db.auth.getSession();
+  $("loginPanel").classList.toggle("hidden",!!session);
+  $("managementPanel").classList.toggle("hidden",!session);
+  $("logoutButton").classList.toggle("hidden",!session);
+  if(!session)return;
+  await loadEvents();
+  const eventId=new URLSearchParams(window.location.search).get("event");
+  const requested=eventId&&eventsCache.find(event=>event.id===eventId);
+  if(requested)renderWorkspace(requested);
+  else showDirectory();
+}
 
-  updateScreen();
+window.addEventListener("popstate",()=>{
+  const eventId=new URLSearchParams(window.location.search).get("event");
+  const event=eventsCache.find(item=>item.id===eventId);
+  if(event)renderWorkspace(event);
+  else showDirectory();
+});
+
+db.auth.onAuthStateChange(()=>{updateScreen();});
+updateScreen();
 })();
 </script>
-
 </body>
 </html>
