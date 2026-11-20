@@ -12,6 +12,8 @@
   --bg:#101114;--panel:#1b1a1f;--panel2:#242229;
   --border:#34313a;--yellow:#ffc928;--orange:#ff7b22;
   --text:#f7f5f0;--muted:#aaa5b0;--green:#65d69a;
+  --purple:#a96aff;--purple-dark:#51267f;
+  --gold:#ffb52e;--gold-dark:#88500e;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
@@ -58,22 +60,92 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
 .section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
 .section h2{margin:0;font-size:19px}
 .count{color:var(--muted);font-size:13px}
+
+/* Badge collection visual system */
 .badges{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.badge-card{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:15px;text-align:center;min-height:150px;display:flex;flex-direction:column;justify-content:center;align-items:center}
-.badge-card.clickable{width:100%;color:var(--text);font:inherit;cursor:pointer;transition:border-color .15s,transform .15s}
-.badge-card.clickable:hover{border-color:var(--yellow);transform:translateY(-2px)}
-.badge-card:focus-visible{outline:2px solid var(--yellow);outline-offset:3px}
-.badge-icon{font-size:32px;margin-bottom:10px}
-.badge-name{font-weight:800}
-.badge-desc{font-size:12px;color:var(--muted);margin-top:6px}
-.badge-rarity{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--yellow);margin-top:10px}
-.badge-open-hint{font-size:10px;color:var(--yellow);margin-top:10px;font-weight:800;letter-spacing:.7px}
-.catalog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.catalog-card{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:13px;min-height:125px}
-.catalog-card.earned{border-color:#665222}
-.catalog-card.locked{opacity:.7}
-.catalog-status{font-size:10px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;margin-top:10px;color:var(--muted)}
+.badge-card,.catalog-card{
+  --badge-accent:#aaa5b0;
+  --badge-glow:rgba(170,165,176,.12);
+  position:relative;overflow:hidden;
+  background:linear-gradient(150deg,#302d36,#211f26);
+  border:1px solid #514d58;border-radius:13px;
+  text-align:center;min-width:0;
+}
+.badge-card{
+  min-height:180px;padding:17px 13px;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+}
+.badge-card.clickable{
+  width:100%;color:var(--text);font:inherit;cursor:pointer;
+  transition:transform .16s,border-color .16s,box-shadow .16s;
+}
+.badge-card.clickable:hover{transform:translateY(-3px);border-color:var(--badge-accent);box-shadow:0 8px 25px var(--badge-glow)}
+.badge-card:focus-visible,.catalog-card:focus-visible{outline:2px solid var(--yellow);outline-offset:3px}
+.badge-card.board,.catalog-card.board{--badge-accent:#bd83ff;--badge-glow:rgba(169,106,255,.24)}
+.badge-card.hole,.catalog-card.hole{--badge-accent:#ffc15a;--badge-glow:rgba(255,181,46,.24)}
+.badge-card.official,.catalog-card.official{--badge-accent:#ffc928;--badge-glow:rgba(255,201,40,.3)}
+.badge-card.general,.catalog-card.general{--badge-accent:#ffc928;--badge-glow:rgba(255,201,40,.2)}
+
+.badge-card.earned,.catalog-card.earned{
+  opacity:1;
+  filter:none;
+  border:2px solid var(--badge-accent);
+  background:linear-gradient(145deg,color-mix(in srgb,var(--badge-accent) 18%,#292630),#211f26 75%);
+  box-shadow:inset 0 0 18px var(--badge-glow),0 0 12px var(--badge-glow);
+}
+.badge-card.locked,.catalog-card.locked{
+  opacity:1;
+  filter:saturate(.12);
+  border:1px solid #514d58;
+  background:linear-gradient(145deg,#29272d,#1c1b20 75%);
+  box-shadow:none;
+}
+.badge-card.locked .badge-art,.catalog-card.locked .badge-art{
+  opacity:.34;
+  filter:grayscale(1);
+}
+.badge-card.locked .badge-name,.catalog-card.locked .badge-name{color:#aaa5b0}
+.badge-card.locked .badge-desc,.catalog-card.locked .badge-desc{color:#77727d}
+.badge-art{
+  width:65px;height:65px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:31px;margin:0 auto 11px;
+  border:2px solid var(--badge-accent);
+  background:radial-gradient(circle at 35% 25%,color-mix(in srgb,var(--badge-accent) 32%,#302d36),#17161b 75%);
+  box-shadow:0 0 18px var(--badge-glow),inset 0 0 12px var(--badge-glow);
+  flex-shrink:0;
+}
+.badge-card.locked .badge-art,.catalog-card.locked .badge-art{
+  border:1px solid #77727d;
+  background:linear-gradient(145deg,#39363e,#222127);
+  box-shadow:none;
+}
+.badge-name{font-weight:900;line-height:1.25}
+.badge-desc{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.45}
+.badge-rarity{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--badge-accent);margin-top:10px;font-weight:900}
+.badge-open-hint{font-size:10px;color:var(--badge-accent);margin-top:10px;font-weight:900;letter-spacing:.7px}
+.badge-state{
+  display:inline-flex;align-items:center;gap:5px;
+  border-radius:30px;padding:5px 9px;margin-top:11px;
+  font-size:9px;font-weight:900;letter-spacing:.8px;
+  border:1px solid var(--badge-accent);color:var(--badge-accent);
+}
+.locked .badge-state{border-color:#77727d;color:#aaa5b0}
+.badge-type{font-size:9px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--badge-accent);margin-bottom:8px}
+.catalog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
+.catalog-card{
+  padding:16px 12px;min-height:190px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--text);font:inherit;
+  transition:transform .16s,border-color .16s,box-shadow .16s;
+}
+.catalog-card:hover{transform:translateY(-2px);border-color:var(--badge-accent)}
+.catalog-card .badge-art{width:58px;height:58px;font-size:27px}
+.catalog-card .badge-name{font-size:14px}
+.catalog-card .badge-desc{font-size:11px}
+.catalog-status{font-size:10px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;margin-top:11px;color:var(--muted)}
 .catalog-card.earned .catalog-status{color:var(--green)}
+.catalog-card.locked .catalog-status{color:#aaa5b0}
 .empty{padding:28px;text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:10px;line-height:1.6}
 .event-list{display:flex;flex-direction:column;gap:10px}
 .event{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;padding:14px;background:var(--panel2);border:1px solid var(--border);border-radius:10px}
@@ -93,13 +165,24 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
 .success{color:var(--green);margin-top:12px}
 .share-row{display:flex;gap:8px;flex-wrap:wrap}
 
-/* Achievement detail and catalog windows */
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:1000;display:flex;align-items:center;justify-content:center;padding:18px}
-.modal{width:min(100%,620px);max-height:88vh;overflow:auto;background:var(--panel);border:1px solid #51442b;border-radius:16px;padding:22px;box-shadow:0 20px 70px #0009}
+/* Detail and catalog modals */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:1000;display:flex;align-items:center;justify-content:center;padding:18px}
+.modal{width:min(100%,650px);max-height:88vh;overflow:auto;background:var(--panel);border:1px solid #51442b;border-radius:16px;padding:22px;box-shadow:0 20px 70px #0009}
 .modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:18px}
 .modal-head h2{margin:0;font-size:22px}
 .modal-close{background:var(--panel2);color:var(--text);border:1px solid var(--border);padding:8px 12px}
-.modal-icon{font-size:54px;text-align:center;margin:10px 0}
+.modal-badge{
+  --badge-accent:#aaa5b0;
+  text-align:center;padding:20px 14px;border:2px solid var(--badge-accent);
+  border-radius:14px;background:linear-gradient(145deg,#302d36,#1d1b22);
+}
+.modal-badge.board{--badge-accent:#bd83ff}
+.modal-badge.hole{--badge-accent:#ffc15a}
+.modal-badge.official{--badge-accent:#ffc928}
+.modal-badge.general{--badge-accent:#ffc928}
+.modal-badge.locked{filter:saturate(.15);border:1px solid #77727d;background:linear-gradient(145deg,#29272d,#1c1b20)}
+.modal-badge .badge-art{width:86px;height:86px;font-size:43px;margin:0 auto 14px}
+.modal-badge.locked .badge-art{opacity:.35;filter:grayscale(1);border-color:#77727d}
 .modal-title{text-align:center;font-size:25px;font-weight:900}
 .modal-description{text-align:center;color:var(--muted);line-height:1.6;margin:10px auto 18px;max-width:480px}
 .detail-list{display:grid;gap:9px;margin:18px 0}
@@ -110,6 +193,12 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
 .catalog-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
 .catalog-toolbar input{flex:1;min-width:180px}
 .catalog-meta{color:var(--muted);font-size:12px}
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 15px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+.legend-dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.legend-dot.board{background:var(--purple)}
+.legend-dot.hole{background:var(--gold)}
+.legend-dot.locked{background:#77727d}
 @media(max-width:850px){.stats{grid-template-columns:repeat(3,1fr)}.badges{grid-template-columns:repeat(2,1fr)}.catalog-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:520px){
  header{padding:13px 14px}.header-actions{width:100%}.header-actions>*{flex:1;text-align:center}
@@ -120,11 +209,12 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
  .badges{grid-template-columns:repeat(2,1fr)}.player-path{align-items:flex-start}
  .upcoming-actions{width:100%}.upcoming-actions .nav-button{flex:1;text-align:center}
  .catalog-grid{grid-template-columns:1fr 1fr}.modal{padding:17px}
+ .badge-card{padding:13px 8px;min-height:170px}
+ .badge-art{width:55px;height:55px;font-size:27px}
 }
 </style>
 </head>
 <body>
-
 <header>
   <div class="brand">Bmore<span>Corny</span> · PASSPORT</div>
   <div class="header-actions">
@@ -136,7 +226,6 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
 
 <main>
   <div id="status" class="notice">Connecting to passport system...</div>
-
   <section id="loginPanel" class="login hidden">
     <h2>Access Your Passport</h2>
     <p style="color:var(--muted)">Sign in to access your personal Cornstar Passport.</p>
@@ -145,9 +234,7 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
     <button id="loginBtn" style="width:100%;margin-top:8px">Sign In</button>
     <button id="resetBtn" class="secondary" style="width:100%;margin-top:10px">Forgot Password?</button>
     <div id="loginMessage"></div>
-    <div style="text-align:center;margin-top:18px;color:var(--muted);font-size:13px">
-      New to BmoreCorny? <a href="../signup.html">Create your Cornstar Passport</a>
-    </div>
+    <div style="text-align:center;margin-top:18px;color:var(--muted);font-size:13px">New to BmoreCorny? <a href="../signup.html">Create your Cornstar Passport</a></div>
     <a class="nav-button" href="../events.html" style="display:block;text-align:center;margin-top:16px">BROWSE UPCOMING EVENTS →</a>
   </section>
 
@@ -174,10 +261,7 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
     </div>
 
     <div class="player-path">
-      <div>
-        <strong>🌽 Ready for your next BmoreCorny event?</strong>
-        <p>Find an event, claim your spot, show up, and add another chapter to your Cornstar story.</p>
-      </div>
+      <div><strong>🌽 Ready for your next BmoreCorny event?</strong><p>Find an event, claim your spot, show up, and add another chapter to your Cornstar story.</p></div>
       <a class="nav-button" href="../events.html">BROWSE UPCOMING EVENTS →</a>
     </div>
 
@@ -202,6 +286,11 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
       <div class="section-head">
         <div><h2>🏆 Achievement Vault</h2><span class="count" id="badgeSubtitle"></span></div>
         <button id="catalogBtn" class="secondary">VIEW FULL BADGE CATALOG →</button>
+      </div>
+      <div class="legend">
+        <span class="legend-item"><i class="legend-dot board"></i> ON BOARD · PURPLE</span>
+        <span class="legend-item"><i class="legend-dot hole"></i> IN HOLE · GOLD</span>
+        <span class="legend-item"><i class="legend-dot locked"></i> LOCKED · MUTED</span>
       </div>
       <div id="badges" class="badges"></div>
     </div>
@@ -242,23 +331,23 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
 
 <div class="footer">BE THERE. OR BE OTW. · BmoreCorny</div>
 
-<!-- Achievement detail window -->
 <div id="achievementModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="achievementTitle">
   <div class="modal">
-    <div class="modal-head">
-      <h2>Achievement Details</h2>
-      <button class="modal-close" data-close-modal="achievementModal" aria-label="Close">✕</button>
-    </div>
+    <div class="modal-head"><h2>Achievement Details</h2><button class="modal-close" data-close-modal="achievementModal" aria-label="Close">✕</button></div>
     <div id="achievementContent"></div>
   </div>
 </div>
 
-<!-- Full badge catalog window -->
 <div id="catalogModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="catalogTitle">
   <div class="modal">
     <div class="modal-head">
       <div><h2 id="catalogTitle">🏆 BmoreCorny Badge Catalog</h2><div class="catalog-meta" id="catalogSummary">Loading official badge catalog...</div></div>
       <button class="modal-close" data-close-modal="catalogModal" aria-label="Close">✕</button>
+    </div>
+    <div class="legend">
+      <span class="legend-item"><i class="legend-dot board"></i> ON BOARD · PURPLE</span>
+      <span class="legend-item"><i class="legend-dot hole"></i> IN HOLE · GOLD</span>
+      <span class="legend-item"><i class="legend-dot locked"></i> NOT EARNED</span>
     </div>
     <div class="catalog-toolbar">
       <input id="catalogSearch" type="search" placeholder="Search badges...">
@@ -274,75 +363,109 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
 
 <script>
 (() => {
-  const cfg = window.BMORECORNY_CONFIG;
-  if (!cfg?.SUPABASE_URL || !cfg?.SUPABASE_ANON_KEY) {
-    document.getElementById("status").textContent = "Supabase configuration missing.";
+  const cfg=window.BMORECORNY_CONFIG;
+  if(!cfg?.SUPABASE_URL||!cfg?.SUPABASE_ANON_KEY){
+    document.getElementById("status").textContent="Supabase configuration missing.";
     return;
   }
 
-  const db = window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
-  const $ = id => document.getElementById(id);
-  const params = new URLSearchParams(location.search);
-  const publicUsername = params.get("username");
-  let passportData = null;
-  let isPublic = Boolean(publicUsername);
-  let catalogRows = [];
-  let catalogLoaded = false;
+  const db=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
+  const $=id=>document.getElementById(id);
+  const params=new URLSearchParams(location.search);
+  const publicUsername=params.get("username");
+  let passportData=null;
+  let isPublic=Boolean(publicUsername);
+  let catalogRows=[];
+  let catalogLoaded=false;
 
-  function safe(value) {
-    return String(value ?? "").replace(/[&<>"']/g,ch=>({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[ch]));
+  function safe(value){
+    return String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   }
 
-  function date(value) {
-    if (!value) return "Date TBD";
-    const d = new Date(value);
-    if (isNaN(d)) return "Date TBD";
+  function date(value){
+    if(!value)return "Date TBD";
+    const d=new Date(value);
+    if(isNaN(d))return "Date TBD";
     return d.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
   }
 
-  function showStatus(text,type="notice") {
+  function showStatus(text,type="notice"){
     $("status").textContent=text;
     $("status").className=type;
   }
 
-  function showLogin(message="") {
+  function showLogin(message=""){
     $("passport").classList.add("hidden");
     $("loginPanel").classList.remove("hidden");
     $("logoutBtn").classList.add("hidden");
     showStatus("Sign in to access your personal passport.");
-    if(message) $("loginMessage").textContent=message;
+    if(message)$("loginMessage").textContent=message;
   }
 
-  function badgeIcon(badge) {
-    const code=(badge.badge_code||"").toUpperCase();
-    const name=(badge.badge_name||"").toUpperCase();
-    if(code.includes("HOD")||name.includes("HALL OF DRAIN")) return "🏆";
-    if(name.includes("100")||code.includes("100")) return "💯";
-    if(name.includes("HOLE")) return "🎯";
-    if(name.includes("BOARD")) return "🪵";
-    if(name.includes("EVENT")) return "📍";
-    if(name.includes("FIRST")) return "🌽";
+  function badgeCode(badge){
+    return String(badge?.badge_code||badge?.code||"").toUpperCase();
+  }
+
+  function badgeName(badge){
+    return String(badge?.badge_name||badge?.name||badge?.title||"Achievement");
+  }
+
+  function badgeType(badge){
+    const code=badgeCode(badge);
+    const name=badgeName(badge).toUpperCase();
+    if(code==="HOD-100"||name.includes("HALL OF DRAIN"))return "official";
+    if(code.endsWith("-B")||name.includes("ON BOARD"))return "board";
+    if(code.endsWith("-M")||name.includes("IN HOLE"))return "hole";
+    if(isOfficialHundredFooter(badge))return "official";
+    return "general";
+  }
+
+  // The 💯 mark is reserved for the official 100-foot IN-HOLE achievement.
+  // A 100-foot ON BOARD achievement must never receive it.
+  function isOfficialHundredFooter(badge){
+    const code=badgeCode(badge);
+    const name=badgeName(badge).toUpperCase();
+    if(code==="HOD-100"||name.includes("HALL OF DRAIN"))return true;
+    const isHundred=name.includes("100-FOOT")||name.includes("100 FOOT")||
+      code.includes("100-100");
+    const isHole=code.endsWith("-M")||name.includes("IN HOLE");
+    const isBoard=code.endsWith("-B")||name.includes("ON BOARD");
+    return isHundred&&isHole&&!isBoard;
+  }
+
+  function isHallBadge(badge){
+    const code=badgeCode(badge);
+    const name=badgeName(badge).toUpperCase();
+    return code==="HOD-100"||name.includes("HALL OF DRAIN")||isOfficialHundredFooter(badge);
+  }
+
+  function badgeIcon(badge){
+    const type=badgeType(badge);
+    if(type==="official")return "💯";
+    if(type==="board")return "🪵";
+    if(type==="hole")return "🎯";
+    const name=badgeName(badge).toUpperCase();
+    if(name.includes("EVENT"))return "📍";
+    if(name.includes("FIRST"))return "🌽";
     return "🏅";
   }
 
-  function isHallBadge(badge) {
-    const code=(badge.badge_code||"").toUpperCase();
-    const name=(badge.badge_name||"").toUpperCase();
-    return code.includes("HOD") || name.includes("HALL OF DRAIN") ||
-      (code.includes("100") && (name.includes("FOOT") || name.includes("DRAIN"))) ||
-      (name.includes("100") && name.includes("FOOT"));
+  function badgeTypeLabel(badge){
+    const type=badgeType(badge);
+    if(type==="board")return "ON BOARD";
+    if(type==="hole")return "IN HOLE";
+    if(type==="official")return "OFFICIAL 100-FOOTER";
+    return String(badge.category||"ACHIEVEMENT").replaceAll("_"," ").toUpperCase();
   }
 
-  function attendanceLabel(status) {
+  function attendanceLabel(status){
     const labels={registered:"REGISTERED",checked_in:"CHECKED IN",attended:"ATTENDED",cancelled:"CANCELLED",no_show:"NO SHOW"};
     return labels[status]||String(status||"UNKNOWN").replaceAll("_"," ").toUpperCase();
   }
 
-  function renderUpcomingEvents(rows) {
+  function renderUpcomingEvents(rows){
     const container=$("upcomingEvents");
-    if(!rows.length) {
+    if(!rows.length){
       container.innerHTML=`<div class="empty">No upcoming registrations yet. Your next chapter is waiting.<br><br><a href="../events.html">Browse upcoming events and claim your spot →</a></div>`;
       return;
     }
@@ -362,27 +485,27 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
     }).join("");
   }
 
-  async function loadUpcomingEvents(participantId) {
+  async function loadUpcomingEvents(participantId){
     const container=$("upcomingEvents");
     container.innerHTML=`<div class="empty">Loading your event registrations...</div>`;
-    try {
+    try{
       const {data:attendance,error:attendanceError}=await db.from("event_attendance")
         .select("event_id,attendance_status,checked_in_at,created_at")
         .eq("participant_id",participantId).in("attendance_status",["registered","checked_in"]);
-      if(attendanceError) throw attendanceError;
+      if(attendanceError)throw attendanceError;
       if(!attendance?.length){renderUpcomingEvents([]);return;}
       const eventIds=[...new Set(attendance.map(row=>row.event_id))];
       const {data:events,error:eventsError}=await db.from("events")
         .select("id,event_name,event_type,venue_name,city,state,start_at,end_at,status").in("id",eventIds);
-      if(eventsError) throw eventsError;
+      if(eventsError)throw eventsError;
       const now=Date.now();
       const eventMap=new Map((events||[]).map(event=>[event.id,event]));
       const upcoming=attendance.map(row=>({...row,event:eventMap.get(row.event_id)}))
         .filter(row=>{
           const event=row.event;
-          if(!event||["completed","cancelled","draft"].includes(event.status)) return false;
-          if(row.attendance_status==="checked_in"||event.status==="in_progress") return true;
-          if(!event.start_at) return true;
+          if(!event||["completed","cancelled","draft"].includes(event.status))return false;
+          if(row.attendance_status==="checked_in"||event.status==="in_progress")return true;
+          if(!event.start_at)return true;
           const eventEnd=event.end_at?new Date(event.end_at).getTime():new Date(event.start_at).getTime();
           return eventEnd>=now;
         }).sort((a,b)=>{
@@ -391,97 +514,121 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
           return at-bt;
         });
       renderUpcomingEvents(upcoming);
-    } catch(error) {
+    }catch(error){
       console.error("Upcoming event lookup failed:",error);
       container.innerHTML=`<div class="empty">We couldn't load your upcoming events right now.<br><br><span style="color:#ff8e8e">${safe(error.message||"Please refresh and try again.")}</span></div>`;
     }
   }
 
-  function showModal(id) {
+  function showModal(id){
     $(id).classList.remove("hidden");
     document.body.style.overflow="hidden";
   }
 
-  function hideModal(id) {
+  function hideModal(id){
     $(id).classList.add("hidden");
-    if($("achievementModal").classList.contains("hidden")&&$("catalogModal").classList.contains("hidden")) {
+    if($("achievementModal").classList.contains("hidden")&&$("catalogModal").classList.contains("hidden")){
       document.body.style.overflow="";
     }
   }
 
-  function renderAchievementDetail(badge) {
-    const hall=isHallBadge(badge);
-    const eventLink=badge.event_id?"../event.html?id="+encodeURIComponent(badge.event_id):null;
+  function renderBadgeDetail(badge,earned){
+    const hall=earned&&isHallBadge(badge);
+    const type=badgeType(badge);
+    const icon=badgeIcon(badge);
+    const eventLink=earned&&badge.event_id?"../event.html?id="+encodeURIComponent(badge.event_id):null;
+    const description=badge.description||"Keep playing and collecting your BmoreCorny story.";
+    const stateClass=earned?"earned":"locked";
+
     $("achievementContent").innerHTML=`
-      <div class="modal-icon">${badgeIcon(badge)}</div>
-      <div class="modal-title" id="achievementTitle">${safe(badge.badge_name||"Achievement")}</div>
-      <div class="modal-description">${safe(badge.description||"Achievement unlocked. Keep playing and collecting your BmoreCorny story.")}</div>
+      <div class="modal-badge ${type} ${stateClass}">
+        <div class="badge-art">${earned?icon:"🔒"}</div>
+        <div class="badge-type">${safe(badgeTypeLabel(badge))}</div>
+        <div class="modal-title" id="achievementTitle">${safe(badgeName(badge))}</div>
+        <div class="badge-state">${earned?"✓ ACHIEVEMENT UNLOCKED":"🔒 NOT YET EARNED"}</div>
+      </div>
+      <div class="modal-description">${safe(description)}</div>
       <div class="detail-list">
-        <div class="detail-row"><span>Status</span><span style="color:var(--green)">✓ EARNED</span></div>
+        <div class="detail-row"><span>Status</span><span style="color:${earned?"var(--green)":"var(--muted)"}">${earned?"✓ EARNED":"🔒 LOCKED"}</span></div>
+        <div class="detail-row"><span>Achievement Type</span><span>${safe(badgeTypeLabel(badge))}</span></div>
         <div class="detail-row"><span>Category</span><span>${safe(badge.category||"Achievement")}</span></div>
         <div class="detail-row"><span>Rarity</span><span>${safe(badge.rarity||"Standard")}</span></div>
-        <div class="detail-row"><span>Earned</span><span>${safe(date(badge.awarded_at))}</span></div>
-        ${badge.verification_status?`<div class="detail-row"><span>Verification</span><span>${safe(badge.verification_status)}</span></div>`:""}
+        ${earned&&badge.awarded_at?`<div class="detail-row"><span>Earned</span><span>${safe(date(badge.awarded_at))}</span></div>`:""}
+        ${earned&&badge.verification_status?`<div class="detail-row"><span>Verification</span><span>${safe(badge.verification_status)}</span></div>`:""}
         ${badge.badge_code?`<div class="detail-row"><span>Badge Code</span><span>${safe(badge.badge_code)}</span></div>`:""}
       </div>
       <div class="modal-actions">
         ${hall?`<a class="nav-button" href="../hall-of-drain.html">VIEW OFFICIAL HALL OF DRAIN →</a>`:""}
         ${eventLink?`<a class="nav-button secondary" href="${eventLink}">VIEW RELATED EVENT →</a>`:""}
       </div>
-      ${hall?`<p class="catalog-meta" style="text-align:center;margin-top:14px">This achievement represents an official verified 100-foot IN HOLE record. Visit the Hall of Drain to view the permanent public record and available evidence.</p>`:""}
+      ${hall?`<p class="catalog-meta" style="text-align:center;margin-top:14px">The official verified 100-foot IN-HOLE record. Visit the Hall of Drain to view the permanent public record and available evidence.</p>`:""}
+      ${!earned?`<p class="catalog-meta" style="text-align:center;margin-top:14px">This achievement has not yet been unlocked on this passport.</p>`:""}
     `;
     showModal("achievementModal");
   }
 
-  function renderBadges(badges) {
+  function renderAchievementDetail(badge){
+    renderBadgeDetail(badge,true);
+  }
+
+  function renderBadges(badges){
     $("badgeSubtitle").textContent=badges.length+" earned · Select a badge to explore";
-    $("badges").innerHTML=badges.length?badges.map((b,index)=>`
-      <button type="button" class="badge-card clickable" data-earned-badge="${index}" aria-label="View ${safe(b.badge_name)} achievement details">
-        <div class="badge-icon">${badgeIcon(b)}</div>
-        <div class="badge-name">${safe(b.badge_name)}</div>
+    $("badges").innerHTML=badges.length?badges.map((b,index)=>{
+      const type=badgeType(b);
+      return `<button type="button" class="badge-card clickable earned ${type}" data-earned-badge="${index}" aria-label="View ${safe(badgeName(b))} achievement details">
+        <div class="badge-art">${badgeIcon(b)}</div>
+        <div class="badge-type">${safe(badgeTypeLabel(b))}</div>
+        <div class="badge-name">${safe(badgeName(b))}</div>
         <div class="badge-desc">${safe(b.description||"Achievement unlocked")}</div>
         <div class="badge-rarity">${safe(b.rarity||"Achievement")}</div>
         <div class="badge-desc">${safe(date(b.awarded_at))}</div>
+        <div class="badge-state">✓ EARNED</div>
         <div class="badge-open-hint">VIEW DETAILS ↗</div>
-      </button>`).join(""):`<div class="empty" style="grid-column:1/-1">No badges earned yet. Your story starts with your first throw.</div>`;
+      </button>`;
+    }).join(""):`<div class="empty" style="grid-column:1/-1">No badges earned yet. Your story starts with your first throw.</div>`;
   }
 
-  function earnedCodeSet() {
-    return new Set((passportData?.badges||[]).map(b=>b.badge_code).filter(Boolean));
+  function earnedCodeSet(){
+    return new Set((passportData?.badges||[]).map(b=>badgeCode(b)).filter(Boolean));
   }
 
-  function renderCatalog() {
+  function renderCatalog(){
     const earned=earnedCodeSet();
     const query=$("catalogSearch").value.trim().toLowerCase();
     const filter=$("catalogFilter").value;
     const filtered=catalogRows.filter(b=>{
-      const isEarned=earned.has(b.badge_code);
-      if(filter==="earned"&&!isEarned) return false;
-      if(filter==="locked"&&isEarned) return false;
-      const haystack=[b.badge_name,b.badge_code,b.description,b.category,b.rarity].join(" ").toLowerCase();
+      const isEarned=earned.has(badgeCode(b));
+      if(filter==="earned"&&!isEarned)return false;
+      if(filter==="locked"&&isEarned)return false;
+      const haystack=[badgeName(b),badgeCode(b),b.description,b.category,b.rarity].join(" ").toLowerCase();
       return !query||haystack.includes(query);
     });
-    $("catalogSummary").textContent=`${earned.size} earned · ${catalogRows.length} active badges in the catalog`;
-    $("catalogGrid").innerHTML=filtered.length?filtered.map(b=>{
-      const isEarned=earned.has(b.badge_code);
-      return `<div class="catalog-card ${isEarned?"earned":"locked"}">
-        <div class="badge-icon">${badgeIcon(b)}</div>
-        <div class="badge-name">${safe(b.badge_name)}</div>
+
+    const earnedCount=catalogRows.filter(b=>earned.has(badgeCode(b))).length;
+    $("catalogSummary").textContent=`${earnedCount} of ${catalogRows.length} catalog badges earned`;
+    $("catalogGrid").innerHTML=filtered.length?filtered.map((b,index)=>{
+      const isEarned=earned.has(badgeCode(b));
+      const type=badgeType(b);
+      return `<button type="button" class="catalog-card ${isEarned?"earned":"locked"} ${type}" data-catalog-badge="${safe(badgeCode(b))}" aria-label="${isEarned?"View earned":"View locked"} badge: ${safe(badgeName(b))}">
+        <div class="badge-art">${isEarned?badgeIcon(b):"🔒"}</div>
+        <div class="badge-type">${safe(badgeTypeLabel(b))}</div>
+        <div class="badge-name">${safe(badgeName(b))}</div>
         <div class="badge-desc">${safe(b.description||"Achievement")}</div>
         <div class="badge-rarity">${safe(b.rarity||"Standard")}</div>
-        <div class="catalog-status">${isEarned?"✓ EARNED":"🔒 NOT YET EARNED"}</div>
-      </div>`;
+        <div class="badge-state">${isEarned?"✓ EARNED":"🔒 LOCKED"}</div>
+        <div class="badge-open-hint">VIEW DETAILS ↗</div>
+      </button>`;
     }).join(""):`<div class="empty" style="grid-column:1/-1">No badges match this search.</div>`;
   }
 
-  async function openCatalog() {
+  async function openCatalog(){
     showModal("catalogModal");
     $("catalogGrid").innerHTML=`<div class="empty" style="grid-column:1/-1">Loading the official badge catalog...</div>`;
-    if(!catalogLoaded) {
+    if(!catalogLoaded){
       const {data,error}=await db.from("badge_catalog")
         .select("badge_code,badge_name,description,category,rarity,is_active")
         .eq("is_active",true).order("badge_name",{ascending:true});
-      if(error) {
+      if(error){
         console.error("Badge catalog lookup failed:",error);
         $("catalogSummary").textContent="The catalog could not be loaded.";
         $("catalogGrid").innerHTML=`<div class="empty" style="grid-column:1/-1">We couldn't load the official badge catalog. ${safe(error.message)}<br><br>Your earned badges remain available in your Achievement Vault.</div>`;
@@ -493,8 +640,8 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
     renderCatalog();
   }
 
-  function render(data) {
-    if(!data||!data.profile) {
+  function render(data){
+    if(!data||!data.profile){
       $("passport").classList.add("hidden");
       showStatus(isPublic?"Passport not found, or this player has not made their passport public.":"No player profile is linked to this account.");
       return;
@@ -505,7 +652,7 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
     editor.classList.toggle("hidden",isPublic);
     $("upcomingSection").classList.toggle("hidden",isPublic);
 
-    if(!isPublic) {
+    if(!isPublic){
       $("editDisplayName").value=data.profile.display_name||"";
       $("editUsername").value=data.profile.username||"";
       $("editBio").value=data.profile.bio||"";
@@ -541,24 +688,24 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
       :`<div class="empty">Your first event stamp is waiting.<br><br><a href="../events.html">Browse upcoming events and register for your next experience →</a></div>`;
 
     $("logoutBtn").classList.toggle("hidden",isPublic);
-    if(!isPublic&&p.participant_id) loadUpcomingEvents(p.participant_id);
+    if(!isPublic&&p.participant_id)loadUpcomingEvents(p.participant_id);
   }
 
-  async function loadPublic(username) {
+  async function loadPublic(username){
     showStatus("Loading public passport...");
     const {data,error}=await db.rpc("get_public_passport",{_username:username});
     if(error){showStatus("Unable to load passport: "+error.message);return;}
     render(data);
   }
 
-  async function loadMyPassport() {
+  async function loadMyPassport(){
     showStatus("Loading your passport...");
     const {data,error}=await db.rpc("get_my_passport");
     if(error){showStatus(error.message);return;}
     render(data);
   }
 
-  async function init() {
+  async function init(){
     if(publicUsername){await loadPublic(publicUsername);return;}
     const {data:{session}}=await db.auth.getSession();
     if(!session){showLogin();return;}
@@ -601,18 +748,18 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
 
   $("logoutBtn").onclick=async()=>{await db.auth.signOut();location.reload();};
 
-  function passportUrl() {
+  function passportUrl(){
     const p=passportData?.profile;
     if(!p?.username)return location.href;
     return location.origin+location.pathname+"?username="+encodeURIComponent(p.username);
   }
 
-  async function sharePassport() {
+  async function sharePassport(){
     if(!passportData)return;
     const url=passportUrl();
-    if(navigator.share) {
+    if(navigator.share){
       try{await navigator.share({title:passportData.profile.display_name+"'s Cornstar Passport",url});}catch(e){}
-    } else {
+    }else{
       try{await navigator.clipboard.writeText(url);showStatus("Passport link copied!");$("status").classList.remove("hidden");}
       catch(e){showStatus("Unable to copy automatically. Use the Copy Passport Link button.");}
     }
@@ -643,6 +790,16 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
     if(!card)return;
     const badge=(passportData?.badges||[])[Number(card.dataset.earnedBadge)];
     if(badge)renderAchievementDetail(badge);
+  });
+
+  $("catalogGrid").addEventListener("click",event=>{
+    const card=event.target.closest("[data-catalog-badge]");
+    if(!card)return;
+    const code=card.dataset.catalogBadge;
+    const badge=catalogRows.find(row=>badgeCode(row)===code);
+    if(!badge)return;
+    const earnedBadge=(passportData?.badges||[]).find(row=>badgeCode(row)===code);
+    renderBadgeDetail(earnedBadge?{...badge,...earnedBadge}:badge,Boolean(earnedBadge));
   });
 
   $("catalogBtn").onclick=openCatalog;
