@@ -150,6 +150,26 @@
       cursor: wait;
     }
 
+    .signup-secondary {
+      display: block;
+      width: 100%;
+      padding: 13px 18px;
+      border: 2px solid #6d469b;
+      border-radius: 8px;
+      background: #fff;
+      color: #6d469b;
+      font: inherit;
+      font-weight: 900;
+      text-align: center;
+      text-decoration: none;
+      box-sizing: border-box;
+      margin-top: 10px;
+    }
+
+    .signup-secondary:hover {
+      background: #f7f3fa;
+    }
+
     .signup-message {
       display: none;
       padding: 14px 16px;
@@ -255,11 +275,12 @@
 
     <nav aria-label="Main navigation">
       <a href="index.html">Home</a>
+      <a href="events.html">Events</a>
       <a href="hall-of-drain.html">Hall of Drain</a>
       <a href="passport.html">Cornstar Passport</a>
     </nav>
 
-    <a class="header-cta" href="index.html#connect">COME PLAY <span>↗</span></a>
+    <a class="header-cta" href="events.html">BROWSE EVENTS <span>↗</span></a>
   </header>
 
   <main class="signup-page">
@@ -271,6 +292,10 @@
         <p class="signup-intro">
           Create your account, claim your player identity, and start building your very own Cornstar Passport.
         </p>
+
+        <a class="signup-secondary" href="events.html" style="margin: 0 0 22px;">
+          BROWSE EVENTS WITHOUT SIGNING UP →
+        </a>
 
         <div id="authMessage" class="signup-message" role="status" aria-live="polite"></div>
 
@@ -347,6 +372,9 @@
         <a class="signup-submit" href="admin/passport.html" style="display:block;text-align:center;text-decoration:none;box-sizing:border-box;">
           OPEN MY PASSPORT →
         </a>
+        <a class="signup-secondary" href="events.html">
+          BROWSE EVENTS →
+        </a>
       </div>
 
       <div id="confirmationSection" class="hidden">
@@ -358,6 +386,9 @@
         <button type="button" id="confirmationSignin" class="signup-submit">
           GO TO SIGN IN →
         </button>
+        <a class="signup-secondary" href="events.html">
+          BROWSE EVENTS WHILE YOU WAIT →
+        </a>
       </div>
 
       <div class="signup-benefits">
@@ -369,6 +400,9 @@
       <div class="signup-footer">
         Already part of the madness?
         <a href="passport.html">Find your passport</a>
+        <br><br>
+        Looking for your next game?
+        <a href="events.html">Browse upcoming events</a>
         <br><br>
         <a href="index.html">← Back to BmoreCorny</a>
       </div>
@@ -457,9 +491,6 @@
         const { data, error } = await supabaseClient.rpc("get_my_passport");
 
         if (error) {
-          // M45 raises P0001 when the authenticated account does not yet have
-          // an active participant profile. That is the normal first-time
-          // registration state, not a fatal lookup failure.
           const noPlayerProfile =
             error.code === "P0001" &&
             /no active player profile linked to this account/i.test(error.message || "");
@@ -476,6 +507,7 @@
             error.details ? `Details: ${error.details}` : null,
             error.hint ? `Hint: ${error.hint}` : null
           ].filter(Boolean).join(" | ");
+
           throw new Error(details || "The passport lookup failed, but Supabase did not provide an error message.");
         }
 
@@ -617,6 +649,7 @@
             await supabaseClient.auth.getSession();
 
           if (sessionError) throw sessionError;
+
           if (!sessionData.session) {
             throw new Error("Your session has expired. Please sign in again.");
           }
@@ -639,11 +672,12 @@
 
           showMessage(
             profileMessage,
-            "Passport claimed! Welcome to BmoreCorny.",
+            "Passport claimed! Taking you to the Events Board...",
             "success"
           );
 
-          window.location.href = "admin/passport.html";
+          // First-time players go straight to event discovery.
+          window.location.href = "events.html";
         } catch (err) {
           showMessage(
             profileMessage,
