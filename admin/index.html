@@ -5,32 +5,43 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BmoreCorny | Event Command</title>
+
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: #101114;
       color: #f5f5f5;
     }
-    .layout { display: flex; min-height: 100vh; }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
     aside {
       width: 230px;
+      flex-shrink: 0;
       background: #191a1f;
       padding: 28px 20px;
       border-right: 1px solid #303137;
     }
+
     .brand {
       font-size: 23px;
       font-weight: 900;
       color: #f4bd35;
       margin-bottom: 8px;
     }
+
     .subbrand {
       color: #999ba5;
       font-size: 12px;
       margin-bottom: 40px;
     }
+
     nav a {
       display: block;
       color: #c7c8ce;
@@ -39,12 +50,29 @@
       border-radius: 7px;
       margin-bottom: 5px;
       font-size: 14px;
+      transition: background .15s, color .15s;
     }
-    nav a.active, nav a:hover {
+
+    nav a.active,
+    nav a:hover {
       background: #303137;
       color: #fff;
     }
-    main { flex: 1; padding: 36px; min-width: 0; }
+
+    nav a:focus-visible,
+    .action:focus-visible,
+    .stat-link:focus-visible,
+    .top-link:focus-visible {
+      outline: 2px solid #f4bd35;
+      outline-offset: 3px;
+    }
+
+    main {
+      flex: 1;
+      padding: 36px;
+      min-width: 0;
+    }
+
     .topline {
       display: flex;
       justify-content: space-between;
@@ -53,8 +81,17 @@
       flex-wrap: wrap;
       margin-bottom: 32px;
     }
-    h1 { margin: 0 0 8px; font-size: 30px; }
-    .muted { color: #999ba5; font-size: 14px; }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+
+    .muted {
+      color: #999ba5;
+      font-size: 14px;
+    }
+
     .status {
       background: #203c2d;
       color: #77dfa0;
@@ -63,24 +100,44 @@
       font-size: 12px;
       font-weight: bold;
     }
+
     .stats {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 16px;
       margin-bottom: 25px;
     }
+
     .panel {
       background: #191a1f;
       border: 1px solid #303137;
       border-radius: 12px;
       padding: 22px;
     }
+
+    .stat-link {
+      display: block;
+      color: inherit;
+      text-decoration: none;
+      transition: border-color .15s, transform .15s;
+    }
+
+    .stat-link:hover {
+      border-color: #f4bd35;
+      transform: translateY(-2px);
+    }
+
     .stat-number {
       font-size: 30px;
       font-weight: bold;
       margin: 12px 0 5px;
     }
-    .section-title { font-size: 18px; margin: 0 0 18px; }
+
+    .section-title {
+      font-size: 18px;
+      margin: 0 0 18px;
+    }
+
     .event-placeholder {
       border: 1px dashed #484a53;
       border-radius: 9px;
@@ -89,102 +146,232 @@
       text-align: center;
       line-height: 1.6;
     }
+
     .actions {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
       margin-top: 18px;
     }
+
     .action {
+      display: block;
       background: #25262d;
       border: 1px solid #393b44;
       border-radius: 9px;
       padding: 18px;
+      color: #f5f5f5;
+      text-decoration: none;
+      transition: background .15s, border-color .15s, transform .15s;
     }
-    .action strong { display: block; margin-bottom: 7px; }
-    .action span { color: #999ba5; font-size: 13px; }
+
+    .action:hover {
+      background: #303137;
+      border-color: #f4bd35;
+      transform: translateY(-2px);
+    }
+
+    .action strong {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 15px;
+    }
+
+    .action span {
+      color: #999ba5;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .action .action-arrow {
+      display: block;
+      color: #f4bd35;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      margin-top: 15px;
+    }
+
+    .quick-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .top-link {
+      display: inline-block;
+      color: #f4bd35;
+      text-decoration: none;
+      border: 1px solid #393b44;
+      border-radius: 7px;
+      padding: 10px 13px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .top-link:hover {
+      background: #25262d;
+    }
+
+    .footer-note {
+      margin-top: 25px;
+      color: #777984;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
     @media (max-width: 750px) {
-      .layout { display: block; }
-      aside { width: 100%; padding: 18px; }
-      .subbrand { margin-bottom: 15px; }
-      nav { display: flex; overflow-x: auto; }
-      nav a { white-space: nowrap; }
-      main { padding: 22px 16px; }
-      .stats { grid-template-columns: 1fr; }
-      .actions { grid-template-columns: 1fr; }
+      .layout {
+        display: block;
+      }
+
+      aside {
+        width: 100%;
+        padding: 18px;
+        border-right: 0;
+        border-bottom: 1px solid #303137;
+      }
+
+      .subbrand {
+        margin-bottom: 15px;
+      }
+
+      nav {
+        display: flex;
+        overflow-x: auto;
+        gap: 4px;
+        padding-bottom: 4px;
+      }
+
+      nav a {
+        white-space: nowrap;
+        margin-bottom: 0;
+      }
+
+      main {
+        padding: 22px 16px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .actions {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="layout">
+
     <aside>
       <div class="brand">🌽 BmoreCorny</div>
       <div class="subbrand">EVENT COMMAND CENTER</div>
-      <nav>
-        <a class="active" href="#">Overview</a>
-        <a href="#">Events</a>
-        <a href="#">Check-In</a>
-        <a href="#">Games & Scoring</a>
-        <a href="#">Verification</a>
-        <a href="#">Participants</a>
+
+      <nav aria-label="Admin navigation">
+        <a class="active" href="index.html" aria-current="page">Overview</a>
+        <a href="events.html">Events</a>
+        <a href="operations.html">Check-In</a>
+        <a href="games.html">Games & Scoring</a>
+        <a href="verification.html">Verification</a>
+        <a href="../passport.html">Participant Passports</a>
+        <a href="passport.html">My Passport</a>
       </nav>
     </aside>
 
     <main>
+
       <div class="topline">
         <div>
           <h1>Event Command</h1>
-          <div class="muted">Your backstage pass to BmoreCorny operations.</div>
+          <div class="muted">
+            Your backstage pass to BmoreCorny operations.
+          </div>
         </div>
-        <div class="status">● DASHBOARD INITIALIZED</div>
+
+        <div class="status">● NAVIGATION CONNECTED</div>
       </div>
 
       <div class="stats">
-        <div class="panel">
+
+        <a href="events.html" class="panel stat-link">
           <div class="muted">ACTIVE EVENTS</div>
           <div class="stat-number">—</div>
-          <div class="muted">Connected event data coming next</div>
-        </div>
-        <div class="panel">
+          <div class="muted">Open event management →</div>
+        </a>
+
+        <a href="../passport.html" class="panel stat-link">
           <div class="muted">PARTICIPANTS</div>
           <div class="stat-number">—</div>
-          <div class="muted">Live participant count</div>
-        </div>
-        <div class="panel">
+          <div class="muted">Explore participant passports →</div>
+        </a>
+
+        <a href="games.html" class="panel stat-link">
           <div class="muted">GAMES IN PROGRESS</div>
           <div class="stat-number">—</div>
-          <div class="muted">Live gameplay activity</div>
-        </div>
+          <div class="muted">Open game management →</div>
+        </a>
+
       </div>
 
       <div class="panel">
+
         <h2 class="section-title">Event Operations</h2>
+
         <div class="event-placeholder">
           <strong>No event selected</strong><br>
-          Your assigned events will appear here once Supabase is connected.
+          Select an event through Event Management to begin your event-day workflow.
         </div>
+
         <div class="actions">
-          <div class="action">
+
+          <a class="action" href="operations.html">
             <strong>👋 Participant Check-In</strong>
-            <span>Find and check in registered players.</span>
-          </div>
-          <div class="action">
+            <span>Find registered players, manage the attendee roster, and check participants in.</span>
+            <span class="action-arrow">OPEN EVENT OPERATIONS →</span>
+          </a>
+
+          <a class="action" href="games.html">
             <strong>🎯 Game Control</strong>
-            <span>Create games and manage player rosters.</span>
-          </div>
-          <div class="action">
+            <span>Create games, select rulesets, and manage checked-in player rosters.</span>
+            <span class="action-arrow">OPEN GAME MANAGEMENT →</span>
+          </a>
+
+          <a class="action" href="games.html">
             <strong>🌽 Live Scoring</strong>
-            <span>Record throws and track bag balances.</span>
-          </div>
-          <div class="action">
+            <span>Record throws, track bag balances, monitor distance achievements, and complete games.</span>
+            <span class="action-arrow">OPEN LIVE SCORING →</span>
+          </a>
+
+          <a class="action" href="verification.html">
             <strong>🏆 Verification Queue</strong>
-            <span>Review qualifying official 100-foot shots.</span>
-          </div>
+            <span>Review and verify qualifying official 100-foot shots and Hall of Drain records.</span>
+            <span class="action-arrow">OPEN VERIFICATION →</span>
+          </a>
+
         </div>
+
+        <div class="quick-links">
+          <a class="top-link" href="events.html">+ CREATE / MANAGE EVENTS</a>
+          <a class="top-link" href="passport.html">MY CORNSTAR PASSPORT</a>
+          <a class="top-link" href="../hall-of-drain.html">PUBLIC HALL OF DRAIN ↗</a>
+          <a class="top-link" href="../index.html">PUBLIC WEBSITE ↗</a>
+        </div>
+
       </div>
+
+      <div class="footer-note">
+        BmoreCorny Event Command Center · Administrative navigation
+        <br>
+        Live dashboard statistics and event selection are not yet connected.
+      </div>
+
     </main>
   </div>
-  
+
   <script src="./config.js"></script>
   <script src="./admin.js"></script>
 </body>
