@@ -457,10 +457,21 @@
         const { data, error } = await supabaseClient.rpc("get_my_passport");
 
         if (error) {
-          throw new Error("We couldn't check your passport status. Please refresh and try again.");
+          console.error("get_my_passport() failed:", error);
+          const details = [
+            error.message,
+            error.code ? `Code: ${error.code}` : null,
+            error.details ? `Details: ${error.details}` : null,
+            error.hint ? `Hint: ${error.hint}` : null
+          ].filter(Boolean).join(" | ");
+          throw new Error(details || "The passport lookup failed, but Supabase did not provide an error message.");
         }
 
-        const profile = data && data.profile ? data.profile : null;
+        // The RPC should return an object containing profile. Treat a missing
+        // profile as a new player who still needs to claim a passport.
+        const profile = data && typeof data === "object" && data.profile
+          ? data.profile
+          : null;
 
         if (profile && profile.participant_id) {
           showSection(existingSection);
