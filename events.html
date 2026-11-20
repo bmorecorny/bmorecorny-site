@@ -104,6 +104,16 @@
       margin: 0;
     }
 
+    .event-title-link {
+      color: #fff !important;
+      text-decoration: none !important;
+    }
+
+    .event-title-link:hover {
+      color: #f5b82e !important;
+      text-decoration: underline !important;
+    }
+
     .event-type {
       color: #f5b82e;
       font-size: 11px;
@@ -154,6 +164,9 @@
     .event-action {
       margin-top: auto;
       padding-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
     }
 
     .event-button {
@@ -163,12 +176,12 @@
       border-radius: 9px;
       padding: 13px 16px;
       background: #f5b82e;
-      color: #171717;
+      color: #171717 !important;
       font-size: 13px;
       font-weight: 900;
       letter-spacing: .7px;
       text-align: center;
-      text-decoration: none;
+      text-decoration: none !important;
       cursor: pointer;
       transition: opacity .15s ease, transform .15s ease;
     }
@@ -186,7 +199,17 @@
 
     .event-button.secondary {
       background: #333;
-      color: #fff;
+      color: #fff !important;
+    }
+
+    .event-details-link {
+      display: block;
+      text-align: center;
+      color: #f5b82e !important;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .8px;
+      padding: 5px;
     }
 
     .event-message {
@@ -308,6 +331,10 @@
         })[character]);
       }
 
+      function eventHubUrl(eventId) {
+        return "event.html?id=" + encodeURIComponent(eventId);
+      }
+
       function showMessage(message, type = "") {
         pageMessage.innerHTML = message
           ? `<div class="event-message ${type}">${escapeHTML(message)}</div>`
@@ -370,6 +397,7 @@
           const status = attendance?.attendance_status;
           const isOpen = event.status === "registration_open";
           const isLive = event.status === "in_progress";
+          const hubUrl = eventHubUrl(event.id);
 
           let statusLabel = "Coming Soon";
           let statusClass = "";
@@ -442,16 +470,29 @@
           return `
             <article class="event-card">
               <div class="event-type">${escapeHTML(formatEventType(event.event_type))}</div>
-              <h3>${escapeHTML(event.event_name)}</h3>
+
+              <h3>
+                <a class="event-title-link" href="${hubUrl}">
+                  ${escapeHTML(event.event_name)}
+                </a>
+              </h3>
+
               <span class="event-status ${statusClass}">
                 ${escapeHTML(statusLabel)}
               </span>
+
               <div class="event-details">
                 <div><strong>When:</strong> ${escapeHTML(formatDate(event.start_at))}</div>
                 <div><strong>Where:</strong> ${escapeHTML(getLocation(event))}</div>
                 ${event.end_at ? `<div><strong>Ends:</strong> ${escapeHTML(formatDate(event.end_at))}</div>` : ""}
               </div>
-              <div class="event-action">${action}</div>
+
+              <div class="event-action">
+                ${action}
+                <a class="event-details-link" href="${hubUrl}">
+                  VIEW EVENT DETAILS →
+                </a>
+              </div>
             </article>
           `;
         }).join("");
@@ -542,12 +583,7 @@
       }
 
       async function registerForEvent(eventId, button) {
-        if (!currentUser) {
-          window.location.href = "signup.html";
-          return;
-        }
-
-        if (!participantId) {
+        if (!currentUser || !participantId) {
           window.location.href = "signup.html";
           return;
         }
