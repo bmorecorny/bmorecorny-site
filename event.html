@@ -24,6 +24,7 @@
       border-radius: 18px;
       padding: 38px;
       margin-bottom: 22px;
+      overflow: hidden;
     }
 
     .hub-eyebrow {
@@ -217,6 +218,35 @@
       border-radius: 14px;
     }
 
+    .hub-artwork {
+      display: block;
+      width: 100%;
+      max-height: 480px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin: 0 0 25px;
+      border: 1px solid #363636;
+      background: #101010;
+    }
+
+    .hub-rich-text {
+      color: #ddd;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-size: 15px;
+    }
+
+    .hub-external-link {
+      margin-top: 18px;
+    }
+
+    .hub-empty {
+      color: #929292;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
     @media (max-width: 600px) {
       .hub {
         padding: 25px 15px 55px;
@@ -271,6 +301,21 @@
           '"': "&quot;",
           "'": "&#039;"
         })[character]);
+      }
+
+      function safeExternalUrl(value) {
+        if (!value) return null;
+
+        try {
+          const url = new URL(value);
+          if (url.protocol === "https:" || url.protocol === "http:") {
+            return url.href;
+          }
+        } catch (error) {
+          return null;
+        }
+
+        return null;
       }
 
       function showMessage(message, type = "") {
@@ -337,7 +382,7 @@
         let statusClass = "";
         if (isOpen) statusClass = "open";
         if (isLive) statusClass = "live";
-        if (attendance) statusClass = "registered";
+        if (attendance && hasActiveRegistration) statusClass = "registered";
 
         let action = "";
 
@@ -385,19 +430,67 @@
           </button>
         ` : "";
 
+        const externalRegistrationUrl = safeExternalUrl(eventRecord.registration_url);
+        const imageUrl = safeExternalUrl(eventRecord.event_image_url);
+
+        const artwork = imageUrl ? `
+          <img
+            class="hub-artwork"
+            src="${escapeHTML(imageUrl)}"
+            alt="${escapeHTML(eventRecord.event_name)} event artwork"
+            loading="eager"
+            onerror="this.style.display='none';"
+          >
+        ` : "";
+
+        const description = eventRecord.public_description?.trim()
+          ? `
+            <section class="hub-panel">
+              <h2>About This Event</h2>
+              <div class="hub-rich-text">${escapeHTML(eventRecord.public_description)}</div>
+            </section>
+          `
+          : "";
+
+        const attendeeInformation = eventRecord.attendee_information?.trim()
+          ? `
+            <section class="hub-panel">
+              <h2>Attendee Information</h2>
+              <div class="hub-rich-text">${escapeHTML(eventRecord.attendee_information)}</div>
+            </section>
+          `
+          : "";
+
+        const externalRegistration = externalRegistrationUrl ? `
+          <div class="hub-external-link">
+            <a
+              class="hub-action"
+              href="${escapeHTML(externalRegistrationUrl)}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              EXTERNAL TICKETS / REGISTRATION ↗
+            </a>
+          </div>
+        ` : "";
+
         content.className = "";
         content.innerHTML = `
           <section class="hub-hero">
             <div class="hub-eyebrow">BmoreCorny • Event Hub</div>
+            ${artwork}
             <h1>${escapeHTML(eventRecord.event_name)}</h1>
             <p class="hub-description">
-              Get the details, claim your spot, and be part of the action.
-              Be there. Or be OTW.
+              ${eventRecord.public_description?.trim()
+                ? escapeHTML(eventRecord.public_description)
+                : "Get the details, claim your spot, and be part of the action. Be there. Or be OTW."}
             </p>
             <span class="hub-status ${statusClass}">
               ${escapeHTML(statusText())}
             </span>
           </section>
+
+          ${description}
 
           <section class="hub-panel">
             <h2>Event Details</h2>
@@ -423,7 +516,11 @@
               <div class="hub-detail-label">Location</div>
               <div class="hub-detail-value">${escapeHTML(locationText())}</div>
             </div>
+
+            ${externalRegistration}
           </section>
+
+          ${attendeeInformation}
 
           <section class="hub-panel">
             <h2>Your Spot</h2>
@@ -455,12 +552,33 @@
         if (verifyButton) {
           verifyButton.addEventListener("click", verifyRegistration);
         }
+
+        document.title = eventRecord.event_name + " | BmoreCorny Event Hub";
+
+        const metaDescription = document.querySelector('meta[name="description"]');
+        if (metaDescription && eventRecord.public_description) {
+          metaDescription.content = eventRecord.public_description.slice(0, 155);
+        }
       }
 
       async function loadEvent() {
         const { data, error } = await client
           .from("events")
-          .select("id,event_name,event_type,venue_name,city,state,start_at,end_at,status")
+          .select(`
+            id,
+            event_name,
+            event_type,
+            venue_name,
+            city,
+            state,
+            start_at,
+            end_at,
+            status,
+            public_description,
+            attendee_information,
+            event_image_url,
+            registration_url
+          `)
           .eq("id", eventId)
           .maybeSingle();
 
@@ -474,7 +592,10 @@
         participantId = null;
         attendance = null;
 
-        const { data: sessionData } = await client.auth.getSession();
+        const { data: sessionData, error: sessionError } = await client.auth.getSession();
+
+        if (sessionError) throw sessionError;
+
         currentUser = sessionData?.session?.user || null;
 
         if (!currentUser) return;
@@ -567,8 +688,13 @@
         }
 
         showMessage("You're on the list. Welcome to the Cornhouse!", "success");
-        await loadPlayer();
-        renderPage();
+
+        try {
+          await loadPlayer();
+          renderPage();
+        } catch (refreshError) {
+          showMessage("Registration was submitted, but we couldn't refresh your status: " + refreshError.message, "error");
+        }
       }
 
       async function cancel() {
@@ -591,8 +717,13 @@
         }
 
         showMessage("Your registration has been cancelled.", "success");
-        await loadPlayer();
-        renderPage();
+
+        try {
+          await loadPlayer();
+          renderPage();
+        } catch (refreshError) {
+          showMessage("Your cancellation was submitted, but we couldn't refresh the page: " + refreshError.message, "error");
+        }
       }
 
       async function initialize() {
