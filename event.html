@@ -17,7 +17,6 @@
       padding: 45px 22px 80px;
       color: #fff;
     }
-
     .hub-hero {
       background: #171717;
       border: 1px solid #363636;
@@ -26,7 +25,6 @@
       margin-bottom: 22px;
       overflow: hidden;
     }
-
     .hub-eyebrow {
       color: #f5b82e;
       font-size: 12px;
@@ -35,20 +33,17 @@
       text-transform: uppercase;
       margin-bottom: 13px;
     }
-
     .hub h1 {
       font-size: clamp(34px, 6vw, 54px);
       line-height: 1.08;
       margin: 0 0 18px;
       color: #fff;
     }
-
     .hub-description {
       color: #c7c7c7;
       line-height: 1.7;
       margin: 0;
     }
-
     .hub-status {
       display: inline-block;
       margin-top: 22px;
@@ -61,22 +56,18 @@
       letter-spacing: 1px;
       text-transform: uppercase;
     }
-
     .hub-status.open {
       background: #183d2a;
       color: #8ee0a9;
     }
-
     .hub-status.live {
       background: #3c2020;
       color: #ffaaaa;
     }
-
     .hub-status.registered {
       background: #3c3215;
       color: #ffd66e;
     }
-
     .hub-panel {
       background: #191919;
       border: 1px solid #363636;
@@ -84,7 +75,6 @@
       padding: 25px;
       margin-bottom: 18px;
     }
-
     .hub-panel h2 {
       margin: 0 0 19px;
       color: #f5b82e;
@@ -92,17 +82,14 @@
       letter-spacing: 1px;
       text-transform: uppercase;
     }
-
     .hub-detail {
       padding: 13px 0;
       border-bottom: 1px solid #333;
     }
-
     .hub-detail:last-child {
       border-bottom: 0;
       padding-bottom: 0;
     }
-
     .hub-detail-label {
       color: #929292;
       font-size: 11px;
@@ -111,13 +98,11 @@
       text-transform: uppercase;
       margin-bottom: 5px;
     }
-
     .hub-detail-value {
       color: #fff;
       font-size: 16px;
       line-height: 1.5;
     }
-
     .hub-action {
       display: block;
       width: 100%;
@@ -133,17 +118,14 @@
       letter-spacing: .8px;
       cursor: pointer;
     }
-
     .hub-action.secondary {
       background: #333;
       color: #fff;
     }
-
     .hub-action:disabled {
       opacity: .55;
       cursor: wait;
     }
-
     .hub-verify-link {
       display: inline-block;
       margin-top: 17px;
@@ -158,16 +140,13 @@
       text-underline-offset: 4px;
       cursor: pointer;
     }
-
     .hub-verify-link:hover {
       color: #ffda79;
     }
-
     .hub-verify-link:disabled {
       opacity: .55;
       cursor: wait;
     }
-
     .hub-message {
       display: none;
       padding: 15px 18px;
@@ -178,21 +157,17 @@
       color: #ccc;
       line-height: 1.5;
     }
-
     .hub-message.show {
       display: block;
     }
-
     .hub-message.error {
       border-color: #874343;
       color: #ffb6b6;
     }
-
     .hub-message.success {
       border-color: #39764c;
       color: #a5e6b6;
     }
-
     .hub-links {
       display: flex;
       flex-wrap: wrap;
@@ -202,13 +177,11 @@
       border-top: 1px solid #333;
       font-size: 13px;
     }
-
     .hub-links a {
       color: #f5b82e;
       text-decoration: none;
       font-weight: 800;
     }
-
     .hub-loading {
       padding: 30px;
       text-align: center;
@@ -217,7 +190,6 @@
       border: 1px solid #363636;
       border-radius: 14px;
     }
-
     .hub-artwork {
       display: block;
       width: 100%;
@@ -228,7 +200,6 @@
       border: 1px solid #363636;
       background: #101010;
     }
-
     .hub-rich-text {
       color: #ddd;
       line-height: 1.8;
@@ -236,26 +207,21 @@
       overflow-wrap: anywhere;
       font-size: 15px;
     }
-
     .hub-external-link {
       margin-top: 18px;
     }
-
     .hub-empty {
       color: #929292;
       font-size: 14px;
       line-height: 1.6;
     }
-
     @media (max-width: 600px) {
       .hub {
         padding: 25px 15px 55px;
       }
-
       .hub-hero {
         padding: 28px 22px;
       }
-
       .hub-panel {
         padding: 21px;
       }
@@ -293,6 +259,12 @@
 
       const eventId = new URLSearchParams(window.location.search).get("id");
 
+      const REGISTERABLE_STATUSES = [
+        "published",
+        "registration_open",
+        "in_progress"
+      ];
+
       function escapeHTML(value) {
         return String(value ?? "").replace(/[&<>"']/g, character => ({
           "&": "&amp;",
@@ -327,7 +299,6 @@
         if (!value) return "To be announced";
 
         const date = new Date(value);
-
         if (Number.isNaN(date.getTime())) return "To be announced";
 
         return date.toLocaleString(undefined, {
@@ -362,7 +333,7 @@
         if (attendance?.attendance_status === "attended") return "Attendance Recorded";
 
         const labels = {
-          published: "Coming Soon",
+          published: "Registration Available",
           registration_open: "Registration Open",
           in_progress: "Event In Progress",
           completed: "Event Completed",
@@ -373,16 +344,18 @@
       }
 
       function renderPage() {
-        const isOpen = eventRecord.status === "registration_open";
+        const canRegister = REGISTERABLE_STATUSES.includes(eventRecord.status);
         const isLive = eventRecord.status === "in_progress";
         const isRegistered = attendance?.attendance_status === "registered";
         const isCheckedIn = ["checked_in", "attended"].includes(attendance?.attendance_status);
         const hasActiveRegistration = isRegistered || isCheckedIn;
 
         let statusClass = "";
-        if (isOpen) statusClass = "open";
+        if (["published", "registration_open"].includes(eventRecord.status)) {
+          statusClass = "open";
+        }
         if (isLive) statusClass = "live";
-        if (attendance && hasActiveRegistration) statusClass = "registered";
+        if (hasActiveRegistration) statusClass = "registered";
 
         let action = "";
 
@@ -398,19 +371,19 @@
               REGISTRATION CONFIRMED
             </button>
           `;
-        } else if (isOpen && !currentUser) {
+        } else if (canRegister && !currentUser) {
           action = `
             <a class="hub-action" href="signup.html">
               SIGN IN TO REGISTER
             </a>
           `;
-        } else if (isOpen && !participantId) {
+        } else if (canRegister && !participantId) {
           action = `
             <a class="hub-action" href="signup.html">
               CLAIM YOUR CORNSTAR PASSPORT
             </a>
           `;
-        } else if (isOpen) {
+        } else if (canRegister) {
           action = `
             <button class="hub-action" id="registerButton">
               REGISTER FOR THIS EVENT
@@ -529,7 +502,7 @@
                 ? participantId
                   ? attendance
                     ? "Your Cornstar Passport is connected to this event."
-                    : "Your passport is ready. Claim your spot when registration is open."
+                    : "Your passport is ready. Claim your spot while registration is available."
                   : "You're signed in, but still need to claim your Cornstar Passport."
                 : "Sign in or create your Cornstar Passport to register for this event."}
             </p>
@@ -593,11 +566,9 @@
         attendance = null;
 
         const { data: sessionData, error: sessionError } = await client.auth.getSession();
-
         if (sessionError) throw sessionError;
 
         currentUser = sessionData?.session?.user || null;
-
         if (!currentUser) return;
 
         const { data, error } = await client.rpc("get_my_passport");
@@ -676,24 +647,21 @@
         button.disabled = true;
         button.textContent = "REGISTERING...";
 
-        const { error } = await client.rpc("register_for_event", {
-          _event_id: eventId
-        });
+        try {
+          const { error } = await client.rpc("register_for_event", {
+            _event_id: eventId
+          });
 
-        if (error) {
+          if (error) throw error;
+
+          showMessage("You're on the list. Welcome to the Cornhouse!", "success");
+
+          await loadPlayer();
+          renderPage();
+        } catch (error) {
           showMessage("Registration didn't go through: " + error.message, "error");
           button.disabled = false;
           button.textContent = "REGISTER FOR THIS EVENT";
-          return;
-        }
-
-        showMessage("You're on the list. Welcome to the Cornhouse!", "success");
-
-        try {
-          await loadPlayer();
-          renderPage();
-        } catch (refreshError) {
-          showMessage("Registration was submitted, but we couldn't refresh your status: " + refreshError.message, "error");
         }
       }
 
@@ -705,24 +673,21 @@
         button.disabled = true;
         button.textContent = "CANCELLING...";
 
-        const { error } = await client.rpc("cancel_event_registration", {
-          _attendance_id: attendance.id
-        });
+        try {
+          const { error } = await client.rpc("cancel_event_registration", {
+            _attendance_id: attendance.id
+          });
 
-        if (error) {
+          if (error) throw error;
+
+          showMessage("Your registration has been cancelled.", "success");
+
+          await loadPlayer();
+          renderPage();
+        } catch (error) {
           showMessage("We couldn't cancel your registration: " + error.message, "error");
           button.disabled = false;
           button.textContent = "CANCEL REGISTRATION";
-          return;
-        }
-
-        showMessage("Your registration has been cancelled.", "success");
-
-        try {
-          await loadPlayer();
-          renderPage();
-        } catch (refreshError) {
-          showMessage("Your cancellation was submitted, but we couldn't refresh the page: " + refreshError.message, "error");
         }
       }
 
