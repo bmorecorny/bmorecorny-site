@@ -16,7 +16,6 @@
       margin: 0 auto;
       padding: 48px 22px 80px;
     }
-
     .event-hero {
       padding: 42px 30px;
       border-radius: 18px;
@@ -24,7 +23,6 @@
       border: 1px solid #343434;
       margin-bottom: 32px;
     }
-
     .event-eyebrow {
       color: #f5b82e;
       font-size: 12px;
@@ -33,21 +31,18 @@
       text-transform: uppercase;
       margin-bottom: 12px;
     }
-
     .event-hero h1 {
       color: #fff;
       font-size: clamp(34px, 6vw, 58px);
       line-height: 1.05;
       margin: 0 0 14px;
     }
-
     .event-hero p {
       color: #c8c8c8;
       max-width: 650px;
       line-height: 1.6;
       margin: 0;
     }
-
     .event-board-topline {
       display: flex;
       justify-content: space-between;
@@ -56,36 +51,30 @@
       flex-wrap: wrap;
       margin-bottom: 20px;
     }
-
     .event-board-topline h2 {
       color: #fff;
       margin: 0;
       font-size: 25px;
     }
-
     .event-account {
       color: #bcbcbc;
       font-size: 13px;
     }
-
     .event-account a,
     .event-card a {
       color: #f5b82e;
       font-weight: 700;
       text-decoration: none;
     }
-
     .event-account a:hover,
     .event-card a:hover {
       text-decoration: underline;
     }
-
     .event-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
       gap: 18px;
     }
-
     .event-card {
       background: #191919;
       border: 1px solid #363636;
@@ -96,24 +85,20 @@
       flex-direction: column;
       gap: 13px;
     }
-
     .event-card h3 {
       color: #fff;
       font-size: 23px;
       line-height: 1.2;
       margin: 0;
     }
-
     .event-title-link {
       color: #fff !important;
       text-decoration: none !important;
     }
-
     .event-title-link:hover {
       color: #f5b82e !important;
       text-decoration: underline !important;
     }
-
     .event-type {
       color: #f5b82e;
       font-size: 11px;
@@ -121,18 +106,15 @@
       letter-spacing: 1.4px;
       text-transform: uppercase;
     }
-
     .event-details {
       color: #c3c3c3;
       font-size: 14px;
       line-height: 1.65;
     }
-
     .event-details strong {
       color: #fff;
       font-weight: 650;
     }
-
     .event-status {
       display: inline-flex;
       align-self: flex-start;
@@ -145,22 +127,18 @@
       letter-spacing: .7px;
       text-transform: uppercase;
     }
-
     .event-status.open {
       background: #183d2a;
       color: #8ee0a9;
     }
-
     .event-status.registered {
       background: #3c3215;
       color: #ffd66e;
     }
-
     .event-status.live {
       background: #3c2020;
       color: #ffaaaa;
     }
-
     .event-action {
       margin-top: auto;
       padding-top: 8px;
@@ -168,7 +146,6 @@
       flex-direction: column;
       gap: 13px;
     }
-
     .event-button {
       display: inline-block;
       width: 100%;
@@ -185,23 +162,19 @@
       cursor: pointer;
       transition: opacity .15s ease, transform .15s ease;
     }
-
     .event-button:hover {
       opacity: .9;
       transform: translateY(-1px);
     }
-
     .event-button:disabled {
       opacity: .55;
       cursor: wait;
       transform: none;
     }
-
     .event-button.secondary {
       background: #333;
       color: #fff !important;
     }
-
     .event-details-link {
       display: block;
       text-align: center;
@@ -211,7 +184,6 @@
       letter-spacing: .8px;
       padding: 5px;
     }
-
     .event-message {
       padding: 17px 19px;
       border-radius: 10px;
@@ -221,17 +193,14 @@
       line-height: 1.5;
       margin-bottom: 20px;
     }
-
     .event-message.error {
       border-color: #874343;
       color: #ffb6b6;
     }
-
     .event-message.success {
       border-color: #39764c;
       color: #a5e6b6;
     }
-
     .event-empty {
       padding: 35px 20px;
       text-align: center;
@@ -240,12 +209,10 @@
       border: 1px dashed #444;
       border-radius: 14px;
     }
-
     .event-empty h3 {
       color: #fff;
       margin: 0 0 8px;
     }
-
     .event-footer-links {
       margin-top: 45px;
       padding-top: 22px;
@@ -255,18 +222,15 @@
       gap: 20px;
       font-size: 13px;
     }
-
     .event-footer-links a {
       color: #f5b82e;
       text-decoration: none;
       font-weight: 700;
     }
-
     @media (max-width: 600px) {
       .event-board {
         padding: 25px 15px 55px;
       }
-
       .event-hero {
         padding: 30px 21px;
       }
@@ -315,11 +279,18 @@
       const pageMessage = document.getElementById("pageMessage");
       const accountStatus = document.getElementById("accountStatus");
 
+      const REGISTERABLE_STATUSES = [
+        "published",
+        "registration_open",
+        "in_progress"
+      ];
+
       let supabaseClient = null;
       let currentUser = null;
       let participantId = null;
       let attendanceByEvent = new Map();
       let events = [];
+      let eventLoadError = null;
 
       function escapeHTML(value) {
         return String(value ?? "").replace(/[&<>"']/g, character => ({
@@ -345,7 +316,6 @@
         if (!value) return "Date to be announced";
 
         const date = new Date(value);
-
         if (Number.isNaN(date.getTime())) {
           return "Date to be announced";
         }
@@ -382,6 +352,16 @@
       }
 
       function renderEvents() {
+        if (eventLoadError) {
+          grid.innerHTML = `
+            <div class="event-empty">
+              <h3>COULDN'T LOAD THE EVENT BOARD</h3>
+              <p>${escapeHTML(eventLoadError)}</p>
+            </div>
+          `;
+          return;
+        }
+
         if (!events.length) {
           grid.innerHTML = `
             <div class="event-empty">
@@ -395,19 +375,20 @@
         grid.innerHTML = events.map(event => {
           const attendance = getAttendance(event.id);
           const status = attendance?.attendance_status;
-          const isOpen = event.status === "registration_open";
+          const canRegister = REGISTERABLE_STATUSES.includes(event.status);
           const isLive = event.status === "in_progress";
           const hubUrl = eventHubUrl(event.id);
 
           let statusLabel = "Coming Soon";
           let statusClass = "";
 
-          if (isOpen) {
+          if (event.status === "published") {
+            statusLabel = "Registration Available";
+            statusClass = "open";
+          } else if (event.status === "registration_open") {
             statusLabel = "Registration Open";
             statusClass = "open";
-          }
-
-          if (isLive) {
+          } else if (isLive) {
             statusLabel = "Event In Progress";
             statusClass = "live";
           }
@@ -439,19 +420,19 @@
                 REGISTRATION CONFIRMED
               </button>
             `;
-          } else if (isOpen && !currentUser) {
+          } else if (canRegister && !currentUser) {
             action = `
               <a class="event-button" href="signup.html">
                 SIGN IN TO REGISTER
               </a>
             `;
-          } else if (isOpen && !participantId) {
+          } else if (canRegister && !participantId) {
             action = `
               <a class="event-button" href="signup.html">
                 CLAIM YOUR PASSPORT
               </a>
             `;
-          } else if (isOpen && status !== "registered") {
+          } else if (canRegister) {
             action = `
               <button class="event-button"
                 data-action="register"
@@ -499,6 +480,8 @@
       }
 
       async function loadEvents() {
+        eventLoadError = null;
+
         const { data, error } = await supabaseClient
           .from("events")
           .select("id,event_name,event_type,venue_name,city,state,start_at,end_at,status")
@@ -506,12 +489,8 @@
           .order("start_at", { ascending: true, nullsFirst: false });
 
         if (error) {
-          grid.innerHTML = `
-            <div class="event-empty">
-              <h3>COULDN'T LOAD THE EVENT BOARD</h3>
-              <p>${escapeHTML(error.message)}</p>
-            </div>
-          `;
+          eventLoadError = error.message;
+          renderEvents();
           return;
         }
 
@@ -525,7 +504,9 @@
             ? new Date(event.end_at).getTime()
             : null;
 
-          return start >= now || (end !== null && end >= now) || event.status === "in_progress";
+          return start >= now ||
+            (end !== null && end >= now) ||
+            event.status === "in_progress";
         });
 
         renderEvents();
@@ -565,7 +546,8 @@
           return;
         }
 
-        accountStatus.innerHTML = `SIGNED IN: ${escapeHTML(data.profile.display_name || "CORNSTAR")} · <a href="admin/passport.html">VIEW PASSPORT ↗</a>`;
+        accountStatus.innerHTML =
+          `SIGNED IN: ${escapeHTML(data.profile.display_name || "CORNSTAR")} · <a href="admin/passport.html">VIEW PASSPORT ↗</a>`;
 
         const { data: attendance, error: attendanceError } = await supabaseClient
           .from("event_attendance")
@@ -573,7 +555,10 @@
           .eq("participant_id", participantId);
 
         if (attendanceError) {
-          showMessage("Your events loaded, but we couldn't retrieve your registration status: " + attendanceError.message, "error");
+          showMessage(
+            "Your events loaded, but we couldn't retrieve your registration status: " + attendanceError.message,
+            "error"
+          );
           return;
         }
 
@@ -591,20 +576,22 @@
         button.disabled = true;
         button.textContent = "REGISTERING...";
 
-        const { error } = await supabaseClient.rpc("register_for_event", {
-          _event_id: eventId
-        });
+        try {
+          const { error } = await supabaseClient.rpc("register_for_event", {
+            _event_id: eventId
+          });
 
-        if (error) {
+          if (error) throw error;
+
+          showMessage("You're on the list. Welcome to the Cornhouse!", "success");
+
+          await loadPlayerProfile();
+          renderEvents();
+        } catch (error) {
           showMessage("Registration didn't go through: " + error.message, "error");
           button.disabled = false;
           button.textContent = "REGISTER FOR THIS EVENT";
-          return;
         }
-
-        showMessage("You're on the list. Welcome to the Cornhouse!", "success");
-        await loadPlayerProfile();
-        renderEvents();
       }
 
       async function cancelRegistration(attendanceId, button) {
@@ -615,25 +602,26 @@
         button.disabled = true;
         button.textContent = "CANCELLING...";
 
-        const { error } = await supabaseClient.rpc("cancel_event_registration", {
-          _attendance_id: attendanceId
-        });
+        try {
+          const { error } = await supabaseClient.rpc("cancel_event_registration", {
+            _attendance_id: attendanceId
+          });
 
-        if (error) {
+          if (error) throw error;
+
+          showMessage("Your registration has been cancelled.", "success");
+
+          await loadPlayerProfile();
+          renderEvents();
+        } catch (error) {
           showMessage("We couldn't cancel that registration: " + error.message, "error");
           button.disabled = false;
           button.textContent = "CANCEL REGISTRATION";
-          return;
         }
-
-        showMessage("Your registration has been cancelled.", "success");
-        await loadPlayerProfile();
-        renderEvents();
       }
 
       grid.addEventListener("click", async event => {
         const button = event.target.closest("button[data-action]");
-
         if (!button) return;
 
         const action = button.dataset.action;
