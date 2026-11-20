@@ -1,0 +1,1036 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BmoreCorny | Verification Console</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+
+  <style>
+    :root {
+      --bg: #101114;
+      --panel: #191b20;
+      --panel2: #20232a;
+      --border: #30343d;
+      --text: #f5f5f5;
+      --muted: #9da3af;
+      --yellow: #ffc928;
+      --green: #39c982;
+      --red: #ff6262;
+      --blue: #64a9ff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    header {
+      background: #17191e;
+      border-bottom: 1px solid var(--border);
+      padding: 20px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    .brand span { color: var(--yellow); }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: auto;
+      padding: 30px 24px 60px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 19px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 26px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .stat {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .stat-value {
+      font-size: 30px;
+      font-weight: 900;
+      margin-top: 8px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      cursor: pointer;
+      border: 0;
+      border-radius: 7px;
+      padding: 11px 16px;
+      font-weight: 800;
+      font-size: 13px;
+      transition: opacity .15s;
+    }
+
+    button:hover { opacity: .85; }
+    button:disabled { opacity: .4; cursor: not-allowed; }
+
+    .primary {
+      background: var(--yellow);
+      color: #171717;
+    }
+
+    .secondary {
+      background: var(--panel2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .success {
+      background: var(--green);
+      color: #101114;
+    }
+
+    .danger {
+      background: #482426;
+      color: #ffaaaa;
+      border: 1px solid #77383b;
+    }
+
+    .active-tab {
+      background: var(--yellow);
+      color: #171717;
+    }
+
+    .inactive-tab {
+      background: var(--panel2);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .record {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      margin-top: 12px;
+    }
+
+    .record-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .player {
+      font-size: 21px;
+      font-weight: 900;
+    }
+
+    .distance {
+      color: var(--yellow);
+      font-size: 25px;
+      font-weight: 900;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
+      margin-top: 10px;
+    }
+
+    .status {
+      display: inline-block;
+      border-radius: 30px;
+      padding: 5px 10px;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      background: #3a3020;
+      color: var(--yellow);
+    }
+
+    .status.verified {
+      background: #173d2d;
+      color: var(--green);
+    }
+
+    .status.rejected {
+      background: #482426;
+      color: #ffaaaa;
+    }
+
+    .record-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 7px;
+      font-weight: 700;
+    }
+
+    input, textarea {
+      width: 100%;
+      background: #111318;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--text);
+      padding: 12px;
+      font-size: 14px;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 85px;
+    }
+
+    input:focus, textarea:focus {
+      outline: 1px solid var(--yellow);
+      border-color: var(--yellow);
+    }
+
+    .checks {
+      display: grid;
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .check {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .check input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--yellow);
+    }
+
+    .notice {
+      padding: 13px;
+      border-radius: 8px;
+      background: #29251a;
+      border: 1px solid #5b4b24;
+      color: #f6d77c;
+      font-size: 13px;
+      line-height: 1.6;
+      margin: 15px 0;
+    }
+
+    .message {
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin: 12px 0;
+      font-size: 13px;
+      display: none;
+      line-height: 1.5;
+    }
+
+    .message.error {
+      display: block;
+      background: #482426;
+      color: #ffaaaa;
+    }
+
+    .message.ok {
+      display: block;
+      background: #173d2d;
+      color: #9df0c3;
+    }
+
+    .empty {
+      color: var(--muted);
+      text-align: center;
+      padding: 35px 15px;
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      margin-top: 14px;
+    }
+
+    .hidden { display: none !important; }
+
+    .login {
+      max-width: 420px;
+      margin: 90px auto;
+    }
+
+    .login input { margin-bottom: 12px; }
+
+    .login button { width: 100%; }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .muted { color: var(--muted); }
+
+    .record-divider {
+      border: 0;
+      border-top: 1px solid var(--border);
+      margin: 18px 0;
+    }
+
+    @media (max-width: 650px) {
+      .container { padding: 22px 14px 45px; }
+      header { padding: 16px; }
+      .stats { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      h1 { font-size: 25px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">BE MORE <span>CORNY.</span></div>
+  <div class="header-right">
+    <span class="muted" id="userLabel"></span>
+    <button class="secondary hidden" id="logoutBtn">LOG OUT</button>
+  </div>
+</header>
+
+<div id="loginPanel" class="panel login">
+  <h2>Verification Console</h2>
+  <p class="muted">Administrator and verifier access required.</p>
+
+  <div id="loginMessage" class="message"></div>
+
+  <label for="email">EMAIL</label>
+  <input id="email" type="email" autocomplete="username"
+    placeholder="Your admin email">
+
+  <label for="password">PASSWORD</label>
+  <input id="password" type="password"
+    autocomplete="current-password" placeholder="Password">
+
+  <button class="primary" id="loginBtn">SIGN IN</button>
+</div>
+
+<main id="app" class="container hidden">
+
+  <h1>Verification Console</h1>
+  <div class="subtitle">
+    Official records. Real evidence. Permanent achievements.
+  </div>
+
+  <div id="appMessage" class="message"></div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-label">Pending Verification</div>
+      <div class="stat-value" id="pendingCount">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Official Hall of Drain</div>
+      <div class="stat-value" id="hallCount">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Current Access</div>
+      <div class="stat-value" style="font-size:20px" id="accessLabel">—</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="active-tab" id="pendingTab">PENDING QUEUE</button>
+    <button class="inactive-tab" id="hallTab">HALL OF DRAIN</button>
+    <button class="secondary" id="refreshBtn">↻ REFRESH</button>
+  </div>
+
+  <section id="pendingSection" class="panel">
+    <div class="section-heading">
+      <h2>Official Verification Queue</h2>
+      <span class="muted" id="queueUpdated"></span>
+    </div>
+
+    <div class="notice">
+      Only official 100-foot IN HOLE throws from completed
+      official 100-Footer games qualify for approval.
+      Alternate-distance games cannot enter the Hall of Drain.
+    </div>
+
+    <div id="pendingList">
+      <div class="empty">Loading verification queue...</div>
+    </div>
+  </section>
+
+  <section id="hallSection" class="panel hidden">
+    <div class="section-heading">
+      <h2>Hall of Drain</h2>
+      <span class="muted">Official verified records only</span>
+    </div>
+
+    <div id="hallList">
+      <div class="empty">Loading official records...</div>
+    </div>
+  </section>
+
+</main>
+
+<!-- APPROVAL DIALOG -->
+<div id="approvalPanel" class="container hidden">
+  <section class="panel">
+    <div class="section-heading">
+      <h2>Verify Official 100-Footer</h2>
+      <button class="secondary" id="closeApprovalBtn">CLOSE</button>
+    </div>
+
+    <div id="approvalRecord" class="notice"></div>
+
+    <div id="approvalMessage" class="message"></div>
+
+    <form id="approvalForm">
+      <div class="form-grid">
+        <div>
+          <label for="evidenceUrl">VIDEO / EVIDENCE URL</label>
+          <input id="evidenceUrl" type="url" required
+            placeholder="https://...">
+        </div>
+
+        <div>
+          <label for="witnessName">WITNESS NAME</label>
+          <input id="witnessName" required
+            placeholder="Full name">
+        </div>
+
+        <div>
+          <label for="verifierName">VERIFIER NAME</label>
+          <input id="verifierName" required
+            placeholder="Full name">
+        </div>
+
+        <div>
+          <label for="measuredDistance">MEASURED DISTANCE (FT)</label>
+          <input id="measuredDistance" type="number"
+            min="100" max="100" value="100" required>
+        </div>
+      </div>
+
+      <div class="checks">
+        <label class="check">
+          <input id="equipmentConfirmed" type="checkbox" required>
+          Regulation equipment confirmed
+        </label>
+
+        <label class="check">
+          <input id="foulLineConfirmed" type="checkbox" required>
+          Foul-line compliance confirmed
+        </label>
+
+        <label class="check">
+          <input id="bagContactConfirmed" type="checkbox" required>
+          Valid bag contact confirmed
+        </label>
+      </div>
+
+      <div class="notice">
+        Approval is permanent. Once verified, this record is locked
+        and the Hall of Drain badge is awarded automatically.
+        Only approve after reviewing the evidence.
+      </div>
+
+      <button class="success" type="submit" id="approveBtn">
+        APPROVE OFFICIAL RECORD
+      </button>
+    </form>
+  </section>
+</div>
+
+<!-- REJECTION DIALOG -->
+<div id="rejectionPanel" class="container hidden">
+  <section class="panel">
+    <div class="section-heading">
+      <h2>Reject Verification</h2>
+      <button class="secondary" id="closeRejectionBtn">CLOSE</button>
+    </div>
+
+    <div id="rejectionRecord" class="notice"></div>
+    <div id="rejectionMessage" class="message"></div>
+
+    <label for="rejectionReason">REASON FOR REJECTION</label>
+    <textarea id="rejectionReason"
+      placeholder="Explain why this submission does not qualify..."></textarea>
+
+    <button class="danger" id="confirmRejectBtn">
+      CONFIRM REJECTION
+    </button>
+  </section>
+</div>
+
+<script>
+(() => {
+  const config = window.BMORECORNY_CONFIG;
+
+  if (!config || !config.SUPABASE_URL || !config.SUPABASE_ANON_KEY) {
+    document.body.innerHTML +=
+      '<p style="color:#ff7777;padding:25px">Supabase configuration is missing. Check admin/config.js.</p>';
+    return;
+  }
+
+  const db = window.supabase.createClient(
+    config.SUPABASE_URL,
+    config.SUPABASE_ANON_KEY
+  );
+
+  let currentQueue = [];
+  let currentHall = [];
+  let selectedVerification = null;
+  let activeTab = "pending";
+
+  const $ = id => document.getElementById(id);
+
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    })[char]);
+  }
+
+  function showMessage(id, message, type) {
+    const el = $(id);
+    el.textContent = message;
+    el.className = "message " + type;
+  }
+
+  function clearMessage(id) {
+    const el = $(id);
+    el.textContent = "";
+    el.className = "message";
+  }
+
+  function formatDate(value) {
+    if (!value) return "—";
+    return new Date(value).toLocaleString();
+  }
+
+  function locationText(record) {
+    return [record.venue_name, record.city, record.state]
+      .filter(Boolean).join(" · ") || "Location not provided";
+  }
+
+  function hideDialogs() {
+    $("approvalPanel").classList.add("hidden");
+    $("rejectionPanel").classList.add("hidden");
+    $("app").classList.remove("hidden");
+    selectedVerification = null;
+  }
+
+  function showTab(tab) {
+    activeTab = tab;
+
+    $("pendingSection").classList.toggle("hidden", tab !== "pending");
+    $("hallSection").classList.toggle("hidden", tab !== "hall");
+
+    $("pendingTab").className =
+      tab === "pending" ? "active-tab" : "inactive-tab";
+
+    $("hallTab").className =
+      tab === "hall" ? "active-tab" : "inactive-tab";
+  }
+
+  async function loadQueue() {
+    $("pendingList").innerHTML =
+      '<div class="empty">Loading verification queue...</div>';
+
+    const { data, error } = await db.rpc(
+      "get_official_verification_queue"
+    );
+
+    if (error) {
+      $("pendingList").innerHTML =
+        '<div class="empty">Unable to load queue.</div>';
+      showMessage("appMessage", error.message, "error");
+      return;
+    }
+
+    currentQueue = data || [];
+    $("pendingCount").textContent = currentQueue.length;
+    $("queueUpdated").textContent =
+      "Updated " + new Date().toLocaleTimeString();
+
+    renderQueue();
+  }
+
+  function renderQueue() {
+    if (!currentQueue.length) {
+      $("pendingList").innerHTML =
+        '<div class="empty">No pending official verifications. ' +
+        'The queue is clear!</div>';
+      return;
+    }
+
+    $("pendingList").innerHTML = currentQueue.map(record => {
+      const canApprove = record.game_status === "completed";
+
+      return `
+        <article class="record">
+          <div class="record-top">
+            <div>
+              <div class="player">${escapeHtml(record.display_name)}</div>
+              <div class="meta">
+                Participant #${escapeHtml(record.participant_number)}<br>
+                ${escapeHtml(record.event_name || "No event name")}<br>
+                ${escapeHtml(locationText(record))}
+              </div>
+            </div>
+
+            <div style="text-align:right">
+              <div class="distance">${escapeHtml(record.distance_ft)} FT</div>
+              <span class="status">PENDING</span>
+            </div>
+          </div>
+
+          <hr class="record-divider">
+
+          <div class="meta">
+            Throw #${escapeHtml(record.throw_number)}
+            · ${escapeHtml(record.throw_result)}
+            <br>
+            Game: ${escapeHtml(record.game_status)}
+            · ${escapeHtml(record.ruleset)}
+            <br>
+            Submitted: ${escapeHtml(formatDate(record.created_at))}
+          </div>
+
+          ${!canApprove ? `
+            <div class="notice">
+              This game must be completed before official approval.
+            </div>` : ""}
+
+          <div class="record-actions">
+            <button class="success"
+              data-approve="${escapeHtml(record.verification_id)}"
+              ${canApprove ? "" : "disabled"}>
+              REVIEW & APPROVE
+            </button>
+
+            <button class="danger"
+              data-reject="${escapeHtml(record.verification_id)}">
+              REJECT
+            </button>
+          </div>
+        </article>
+      `;
+    }).join("");
+
+    document.querySelectorAll("[data-approve]").forEach(button => {
+      button.addEventListener("click", () =>
+        openApproval(button.dataset.approve)
+      );
+    });
+
+    document.querySelectorAll("[data-reject]").forEach(button => {
+      button.addEventListener("click", () =>
+        openRejection(button.dataset.reject)
+      );
+    });
+  }
+
+  async function loadHall() {
+    $("hallList").innerHTML =
+      '<div class="empty">Loading Hall of Drain...</div>';
+
+    const { data, error } = await db.rpc(
+      "get_hall_of_drain_records"
+    );
+
+    if (error) {
+      $("hallList").innerHTML =
+        '<div class="empty">Unable to load Hall of Drain.</div>';
+      showMessage("appMessage", error.message, "error");
+      return;
+    }
+
+    currentHall = data || [];
+    $("hallCount").textContent = currentHall.length;
+    renderHall();
+  }
+
+  function renderHall() {
+    if (!currentHall.length) {
+      $("hallList").innerHTML =
+        '<div class="empty">The Hall of Drain is waiting for its first official 100-footer.</div>';
+      return;
+    }
+
+    $("hallList").innerHTML = currentHall.map((record, index) => `
+      <article class="record">
+        <div class="record-top">
+          <div>
+            <div class="player">
+              ${index + 1}. ${escapeHtml(record.display_name)}
+            </div>
+            <div class="meta">
+              Participant #${escapeHtml(record.participant_number)}
+              <br>
+              ${escapeHtml(record.event_name || "Event not available")}
+              <br>
+              ${escapeHtml(locationText(record))}
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div class="distance">100 FT</div>
+            <span class="status verified">VERIFIED</span>
+          </div>
+        </div>
+
+        <div class="meta">
+          Verified: ${escapeHtml(formatDate(record.verified_at))}
+          <br>
+          Verifier: ${escapeHtml(record.verifier_name)}
+          <br>
+          Witness: ${escapeHtml(record.witness_name)}
+        </div>
+
+        ${record.evidence_url ? `
+          <div class="record-actions">
+            <a href="${escapeHtml(record.evidence_url)}"
+              target="_blank" rel="noopener noreferrer"
+              style="color:var(--yellow)">
+              VIEW EVIDENCE ↗
+            </a>
+          </div>` : ""}
+      </article>
+    `).join("");
+  }
+
+  function openApproval(id) {
+    selectedVerification = currentQueue.find(
+      item => item.verification_id === id
+    );
+
+    if (!selectedVerification) return;
+
+    const record = selectedVerification;
+
+    $("approvalRecord").innerHTML = `
+      <strong>${escapeHtml(record.display_name)}</strong><br>
+      ${escapeHtml(record.event_name || "Event")}<br>
+      ${escapeHtml(record.distance_ft)} FT IN HOLE ·
+      Throw #${escapeHtml(record.throw_number)}<br>
+      Game status: ${escapeHtml(record.game_status)}
+    `;
+
+    $("approvalForm").reset();
+    $("measuredDistance").value = 100;
+    clearMessage("approvalMessage");
+
+    $("app").classList.add("hidden");
+    $("approvalPanel").classList.remove("hidden");
+  }
+
+  function openRejection(id) {
+    selectedVerification = currentQueue.find(
+      item => item.verification_id === id
+    );
+
+    if (!selectedVerification) return;
+
+    const record = selectedVerification;
+
+    $("rejectionRecord").innerHTML = `
+      <strong>${escapeHtml(record.display_name)}</strong><br>
+      ${escapeHtml(record.event_name || "Event")}<br>
+      ${escapeHtml(record.distance_ft)} FT IN HOLE
+    `;
+
+    $("rejectionReason").value = "";
+    clearMessage("rejectionMessage");
+
+    $("app").classList.add("hidden");
+    $("rejectionPanel").classList.remove("hidden");
+  }
+
+  $("approvalForm").addEventListener("submit", async event => {
+    event.preventDefault();
+
+    if (!selectedVerification) return;
+
+    const evidenceUrl = $("evidenceUrl").value.trim();
+
+    let parsedUrl;
+    try {
+      parsedUrl = new URL(evidenceUrl);
+    } catch {
+      showMessage("approvalMessage", "Enter a valid evidence URL.", "error");
+      return;
+    }
+
+    if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+      showMessage("approvalMessage", "Evidence must use an HTTP or HTTPS URL.", "error");
+      return;
+    }
+
+    if (!$("equipmentConfirmed").checked ||
+        !$("foulLineConfirmed").checked ||
+        !$("bagContactConfirmed").checked) {
+      showMessage("approvalMessage", "All three confirmations are required.", "error");
+      return;
+    }
+
+    if (Number($("measuredDistance").value) !== 100) {
+      showMessage("approvalMessage", "Official measured distance must be 100 feet.", "error");
+      return;
+    }
+
+    const confirmed = confirm(
+      "Approve this official 100-foot IN HOLE record?\n\n" +
+      "This action is permanent and automatically awards the Hall of Drain badge."
+    );
+
+    if (!confirmed) return;
+
+    $("approveBtn").disabled = true;
+    $("approveBtn").textContent = "APPROVING...";
+
+    const { error } = await db.rpc(
+      "verify_official_100_footer_throw",
+      {
+        _verification_id: selectedVerification.verification_id,
+        _evidence_url: evidenceUrl,
+        _witness_name: $("witnessName").value.trim(),
+        _verifier_name: $("verifierName").value.trim(),
+        _measured_distance_ft: 100,
+        _equipment_confirmed: true,
+        _foul_line_confirmed: true,
+        _bag_contact_confirmed: true
+      }
+    );
+
+    $("approveBtn").disabled = false;
+    $("approveBtn").textContent = "APPROVE OFFICIAL RECORD";
+
+    if (error) {
+      showMessage("approvalMessage", error.message, "error");
+      return;
+    }
+
+    hideDialogs();
+    showMessage(
+      "appMessage",
+      "Official record verified. Hall of Drain badge awarded automatically.",
+      "ok"
+    );
+
+    await loadQueue();
+    await loadHall();
+  });
+
+  $("confirmRejectBtn").addEventListener("click", async () => {
+    if (!selectedVerification) return;
+
+    const reason = $("rejectionReason").value.trim();
+
+    if (!reason) {
+      showMessage("rejectionMessage", "A rejection reason is required.", "error");
+      return;
+    }
+
+    if (!confirm(
+      "Reject this verification submission?\n\nReason: " + reason
+    )) return;
+
+    $("confirmRejectBtn").disabled = true;
+    $("confirmRejectBtn").textContent = "REJECTING...";
+
+    const { error } = await db.rpc(
+      "reject_official_100_footer_throw",
+      {
+        _verification_id: selectedVerification.verification_id,
+        _rejection_reason: reason
+      }
+    );
+
+    $("confirmRejectBtn").disabled = false;
+    $("confirmRejectBtn").textContent = "CONFIRM REJECTION";
+
+    if (error) {
+      showMessage("rejectionMessage", error.message, "error");
+      return;
+    }
+
+    hideDialogs();
+    showMessage("appMessage", "Verification rejected. The audit record is preserved.", "ok");
+    await loadQueue();
+  });
+
+  async function refreshAll() {
+    clearMessage("appMessage");
+    await loadQueue();
+    await loadHall();
+  }
+
+  $("pendingTab").addEventListener("click", () => showTab("pending"));
+  $("hallTab").addEventListener("click", () => showTab("hall"));
+  $("refreshBtn").addEventListener("click", refreshAll);
+
+  $("closeApprovalBtn").addEventListener("click", hideDialogs);
+  $("closeRejectionBtn").addEventListener("click", hideDialogs);
+
+  $("loginBtn").addEventListener("click", async () => {
+    clearMessage("loginMessage");
+
+    const email = $("email").value.trim();
+    const password = $("password").value;
+
+    if (!email || !password) {
+      showMessage("loginMessage", "Enter your email and password.", "error");
+      return;
+    }
+
+    $("loginBtn").disabled = true;
+    $("loginBtn").textContent = "SIGNING IN...";
+
+    const { error } = await db.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    $("loginBtn").disabled = false;
+    $("loginBtn").textContent = "SIGN IN";
+
+    if (error) {
+      showMessage("loginMessage", error.message, "error");
+      return;
+    }
+
+    await initializeApp();
+  });
+
+  $("password").addEventListener("keydown", event => {
+    if (event.key === "Enter") $("loginBtn").click();
+  });
+
+  $("logoutBtn").addEventListener("click", async () => {
+    await db.auth.signOut();
+    $("app").classList.add("hidden");
+    $("loginPanel").classList.remove("hidden");
+    $("logoutBtn").classList.add("hidden");
+    $("userLabel").textContent = "";
+  });
+
+  async function initializeApp() {
+    const { data: { user } } = await db.auth.getUser();
+
+    if (!user) return;
+
+    $("loginPanel").classList.add("hidden");
+    $("app").classList.remove("hidden");
+    $("logoutBtn").classList.remove("hidden");
+    $("userLabel").textContent = user.email || "Signed in";
+
+    const { data: isAdmin, error: adminError } =
+      await db.rpc("has_role", { _role: "admin" });
+
+    const { data: isVerifier, error: verifierError } =
+      await db.rpc("has_role", { _role: "verifier" });
+
+    if (adminError || verifierError || (!isAdmin && !isVerifier)) {
+      $("app").classList.add("hidden");
+      $("loginPanel").classList.remove("hidden");
+      showMessage(
+        "loginMessage",
+        "This account does not have administrator or verifier access.",
+        "error"
+      );
+      return;
+    }
+
+    $("accessLabel").textContent =
+      isAdmin ? "ADMIN" : "VERIFIER";
+
+    await refreshAll();
+  }
+
+  db.auth.getSession().then(({ data }) => {
+    if (data.session) initializeApp();
+  });
+})();
+</script>
+
+</body>
+</html>
