@@ -1,0 +1,499 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BmoreCorny | Cornstar Passport</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./config.js"></script>
+<style>
+:root {
+  --bg:#101114;
+  --panel:#1b1a1f;
+  --panel2:#242229;
+  --border:#34313a;
+  --yellow:#ffc928;
+  --orange:#ff7b22;
+  --text:#f7f5f0;
+  --muted:#aaa5b0;
+  --green:#65d69a;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+}
+button,input{
+  font:inherit;
+}
+button{
+  border:0;border-radius:9px;padding:11px 15px;
+  background:var(--yellow);color:#17130a;font-weight:800;
+  cursor:pointer;
+}
+button:hover{filter:brightness(1.08)}
+button.secondary{
+  background:var(--panel2);color:var(--text);
+  border:1px solid var(--border);
+}
+button:disabled{opacity:.45;cursor:not-allowed}
+input{
+  background:#121116;border:1px solid var(--border);
+  color:var(--text);padding:12px;border-radius:8px;
+  width:100%;
+}
+a{color:var(--yellow)}
+header{
+  border-bottom:1px solid var(--border);
+  padding:15px 22px;display:flex;align-items:center;
+  justify-content:space-between;gap:12px;flex-wrap:wrap;
+}
+.brand{font-weight:900;letter-spacing:1px}
+.brand span{color:var(--yellow)}
+.header-actions{display:flex;gap:8px;align-items:center}
+main{max-width:1100px;margin:auto;padding:24px 18px 60px}
+.hidden{display:none!important}
+.notice{
+  background:#302918;border:1px solid #635020;
+  padding:12px;border-radius:9px;color:#ffe08a;
+  margin-bottom:16px;
+}
+.login{
+  max-width:430px;margin:40px auto;
+  background:var(--panel);border:1px solid var(--border);
+  padding:24px;border-radius:14px;
+}
+.login h2{margin-top:0}
+.login input{margin:8px 0}
+.hero{
+  background:linear-gradient(120deg,#29241b,#1c1a20);
+  border:1px solid #51442b;border-radius:16px;
+  padding:25px;display:flex;align-items:center;
+  justify-content:space-between;gap:20px;flex-wrap:wrap;
+}
+.hero-left{display:flex;align-items:center;gap:18px}
+.avatar{
+  width:88px;height:88px;border-radius:50%;
+  background:linear-gradient(145deg,var(--yellow),var(--orange));
+  color:#17130a;display:flex;align-items:center;
+  justify-content:center;font-size:32px;font-weight:900;
+  border:3px solid #fff3bf;flex-shrink:0;
+}
+.name{font-size:30px;font-weight:900;margin:0 0 5px}
+.username{color:var(--yellow);font-weight:700}
+.bio{color:var(--muted);margin-top:10px;max-width:550px}
+.passport-number{color:var(--muted);font-size:13px;margin-top:8px}
+.hero-right{text-align:right}
+.hero-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.hero-value{font-size:26px;font-weight:900;color:var(--yellow);margin-top:5px}
+.stats{
+  display:grid;grid-template-columns:repeat(6,1fr);
+  gap:12px;margin:16px 0;
+}
+.stat{
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:12px;padding:16px;min-height:100px;
+}
+.stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.stat-value{font-size:27px;font-weight:900;margin-top:9px}
+.stat-value.highlight{color:var(--yellow)}
+.section{
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:14px;padding:19px;margin-top:16px;
+}
+.section-head{
+  display:flex;justify-content:space-between;
+  align-items:center;gap:10px;flex-wrap:wrap;
+  margin-bottom:14px;
+}
+.section h2{margin:0;font-size:19px}
+.count{color:var(--muted);font-size:13px}
+.badges{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:12px;
+}
+.badge-card{
+  background:var(--panel2);border:1px solid var(--border);
+  border-radius:12px;padding:15px;text-align:center;
+  min-height:150px;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;
+}
+.badge-icon{font-size:32px;margin-bottom:10px}
+.badge-name{font-weight:800}
+.badge-desc{font-size:12px;color:var(--muted);margin-top:6px}
+.badge-rarity{
+  font-size:10px;text-transform:uppercase;
+  letter-spacing:1px;color:var(--yellow);margin-top:10px
+}
+.empty{
+  padding:28px;text-align:center;color:var(--muted);
+  border:1px dashed var(--border);border-radius:10px;
+}
+.event-list{display:flex;flex-direction:column;gap:10px}
+.event{
+  display:flex;justify-content:space-between;
+  align-items:center;gap:15px;flex-wrap:wrap;
+  padding:14px;background:var(--panel2);
+  border:1px solid var(--border);border-radius:10px;
+}
+.event-name{font-weight:800}
+.event-location{font-size:13px;color:var(--muted);margin-top:5px}
+.event-date{color:var(--yellow);font-size:13px;font-weight:700}
+.footer{
+  text-align:center;color:var(--muted);
+  padding:30px 10px;font-size:12px
+}
+.error{color:#ff8e8e;margin-top:12px}
+.success{color:var(--green);margin-top:12px}
+.share-row{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:850px){
+  .stats{grid-template-columns:repeat(3,1fr)}
+  .badges{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:520px){
+  main{padding:15px 12px 40px}
+  .stats{grid-template-columns:repeat(2,1fr);gap:8px}
+  .stat{padding:12px;min-height:85px}
+  .stat-value{font-size:23px}
+  .hero{padding:18px}
+  .avatar{width:65px;height:65px;font-size:25px}
+  .name{font-size:24px}
+  .hero-right{text-align:left}
+  .badges{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">Bmore<span>Corny</span> · PASSPORT</div>
+  <div class="header-actions">
+    <button class="secondary" id="shareBtn">Share Passport</button>
+    <button class="secondary hidden" id="logoutBtn">Log Out</button>
+  </div>
+</header>
+
+<main>
+  <div id="status" class="notice">Connecting to passport system...</div>
+
+  <section id="loginPanel" class="login hidden">
+    <h2>Access Your Passport</h2>
+    <p style="color:var(--muted)">Sign in to access your personal Cornstar Passport.</p>
+    <input id="email" type="email" placeholder="Email address" autocomplete="email">
+    <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+    <button id="loginBtn" style="width:100%;margin-top:8px">Sign In</button>
+    <button id="resetBtn" class="secondary" style="width:100%;margin-top:10px">Forgot Password?</button>
+    <div id="loginMessage"></div>
+  </section>
+
+  <section id="passport" class="hidden">
+    <div class="hero">
+      <div class="hero-left">
+        <div class="avatar" id="avatar">BC</div>
+        <div>
+          <h1 class="name" id="displayName">Cornstar</h1>
+          <div class="username" id="username"></div>
+          <div class="bio" id="bio"></div>
+          <div class="passport-number" id="passportNumber"></div>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="hero-label">Passport Status</div>
+        <div class="hero-value">🌽 ACTIVE</div>
+        <div class="passport-number" id="memberSince"></div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-label">Games Played</div><div class="stat-value" id="games">0</div></div>
+      <div class="stat"><div class="stat-label">Throws</div><div class="stat-value" id="throws">0</div></div>
+      <div class="stat"><div class="stat-label">Furthest Board</div><div class="stat-value" id="board">—</div></div>
+      <div class="stat"><div class="stat-label">Furthest Hole</div><div class="stat-value highlight" id="hole">—</div></div>
+      <div class="stat"><div class="stat-label">Badges</div><div class="stat-value" id="badgeCount">0</div></div>
+      <div class="stat"><div class="stat-label">Event Stamps</div><div class="stat-value" id="eventCount">0</div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <h2>🏆 Achievement Vault</h2>
+        <span class="count" id="badgeSubtitle"></span>
+      </div>
+      <div id="badges" class="badges"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <h2>📍 Event Passport</h2>
+        <span class="count">Your official event history</span>
+      </div>
+      <div id="events" class="event-list"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <h2>📣 Share Your Passport</h2>
+      </div>
+      <p style="color:var(--muted)">Your passport is your proof that you were there.</p>
+      <div class="share-row">
+        <button id="copyLink">Copy Passport Link</button>
+        <button class="secondary" id="copyStats">Copy Stats</button>
+      </div>
+      <div id="shareMessage"></div>
+    </div>
+  </section>
+</main>
+
+<div class="footer">BE THERE. OR BE OTW. · BmoreCorny</div>
+
+<script>
+(() => {
+  const cfg = window.BMORECORNY_CONFIG;
+  if (!cfg?.SUPABASE_URL || !cfg?.SUPABASE_ANON_KEY) {
+    document.getElementById("status").textContent =
+      "Supabase configuration missing.";
+    return;
+  }
+
+  const db = window.supabase.createClient(
+    cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY
+  );
+
+  const $ = id => document.getElementById(id);
+  const params = new URLSearchParams(location.search);
+  const publicUsername = params.get("username");
+  let passportData = null;
+  let isPublic = Boolean(publicUsername);
+
+  function safe(value) {
+    return String(value ?? "").replace(/[&<>"']/g, ch => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",
+      '"':"&quot;","'":"&#39;"
+    }[ch]));
+  }
+
+  function date(value) {
+    if (!value) return "Date TBD";
+    const d = new Date(value);
+    if (isNaN(d)) return "Date TBD";
+    return d.toLocaleDateString(undefined,{
+      month:"short",day:"numeric",year:"numeric"
+    });
+  }
+
+  function showStatus(text, type="notice") {
+    $("status").textContent=text;
+    $("status").className=type;
+  }
+
+  function showLogin(message="") {
+    $("passport").classList.add("hidden");
+    $("loginPanel").classList.remove("hidden");
+    $("logoutBtn").classList.add("hidden");
+    showStatus("Sign in to access your personal passport.");
+    if(message) $("loginMessage").textContent=message;
+  }
+
+  function badgeIcon(badge) {
+    const code=(badge.badge_code||"").toUpperCase();
+    const name=(badge.badge_name||"").toUpperCase();
+    if(code.includes("HOD")||name.includes("HALL OF DRAIN")) return "🏆";
+    if(name.includes("100")||code.includes("100")) return "💯";
+    if(name.includes("HOLE")) return "🎯";
+    if(name.includes("BOARD")) return "🪵";
+    if(name.includes("EVENT")) return "📍";
+    if(name.includes("FIRST")) return "🌽";
+    return "🏅";
+  }
+
+  function render(data) {
+    if(!data || !data.profile) {
+      $("passport").classList.add("hidden");
+      showStatus(
+        isPublic
+          ? "Passport not found, or this player has not made their passport public."
+          : "No player profile is linked to this account."
+      );
+      return;
+    }
+
+    passportData=data;
+    $("loginPanel").classList.add("hidden");
+    $("passport").classList.remove("hidden");
+    $("status").classList.add("hidden");
+
+    const p=data.profile;
+    const s=data.stats||{};
+    $("displayName").textContent=p.display_name||"Cornstar";
+    $("username").textContent=p.username ? "@"+p.username : "";
+    $("bio").textContent=p.bio||"Out here making memories and throwing bags.";
+    $("passportNumber").textContent=
+      "Cornstar #"+String(p.participant_number||"").padStart(6,"0");
+    $("avatar").textContent=(p.display_name||"BC").trim().slice(0,2).toUpperCase();
+    $("memberSince").textContent="Joined "+date(p.created_at);
+
+    $("games").textContent=s.games_played??0;
+    $("throws").textContent=s.throws_recorded??0;
+    $("board").textContent=s.furthest_board ? s.furthest_board+" FT" : "—";
+    $("hole").textContent=s.furthest_hole ? s.furthest_hole+" FT" : "—";
+    $("badgeCount").textContent=s.badges_earned??0;
+    $("eventCount").textContent=s.events_attended??0;
+
+    const badges=data.badges||[];
+    $("badgeSubtitle").textContent=badges.length+" earned";
+    $("badges").innerHTML=badges.length
+      ? badges.map(b=>`
+        <div class="badge-card">
+          <div class="badge-icon">${badgeIcon(b)}</div>
+          <div class="badge-name">${safe(b.badge_name)}</div>
+          <div class="badge-desc">${safe(b.description||"Achievement unlocked")}</div>
+          <div class="badge-rarity">${safe(b.rarity||"Achievement")}</div>
+          <div class="badge-desc">${date(b.awarded_at)}</div>
+        </div>`).join("")
+      : `<div class="empty" style="grid-column:1/-1">
+          No badges earned yet. Your story starts with your first throw.
+        </div>`;
+
+    const events=data.events||[];
+    $("events").innerHTML=events.length
+      ? events.map(e=>`
+        <div class="event">
+          <div>
+            <div class="event-name">${safe(e.event_name)}</div>
+            <div class="event-location">
+              ${safe(e.venue_name||"")}
+              ${e.city? " · "+safe(e.city):""}
+              ${e.state? ", "+safe(e.state):""}
+            </div>
+          </div>
+          <div class="event-date">📍 ${date(e.start_at)}</div>
+        </div>`).join("")
+      : `<div class="empty">Your first event stamp is waiting.</div>`;
+
+    $("logoutBtn").classList.toggle("hidden",isPublic);
+  }
+
+  async function loadPublic(username) {
+    showStatus("Loading public passport...");
+    const {data,error}=await db.rpc("get_public_passport",{
+      _username:username
+    });
+    if(error) {
+      showStatus("Unable to load passport: "+error.message);
+      return;
+    }
+    render(data);
+  }
+
+  async function loadMyPassport() {
+    showStatus("Loading your passport...");
+    const {data,error}=await db.rpc("get_my_passport");
+    if(error) {
+      showStatus(error.message);
+      return;
+    }
+    render(data);
+  }
+
+  async function init() {
+    if(publicUsername) {
+      await loadPublic(publicUsername);
+      return;
+    }
+
+    const {data:{session}}=await db.auth.getSession();
+    if(!session) {
+      showLogin();
+      return;
+    }
+    await loadMyPassport();
+  }
+
+  $("loginBtn").onclick=async()=>{
+    $("loginMessage").textContent="Signing in...";
+    const {error}=await db.auth.signInWithPassword({
+      email:$("email").value.trim(),
+      password:$("password").value
+    });
+    if(error) {
+      $("loginMessage").textContent=error.message;
+      return;
+    }
+    isPublic=false;
+    await loadMyPassport();
+  };
+
+  $("resetBtn").onclick=async()=>{
+    const email=$("email").value.trim();
+    if(!email) {
+      $("loginMessage").textContent="Enter your email address first.";
+      return;
+    }
+    const {error}=await db.auth.resetPasswordForEmail(email,{
+      redirectTo:location.origin+location.pathname.replace(
+        "passport.html","reset-password.html"
+      )
+    });
+    $("loginMessage").textContent=error
+      ?error.message
+      :"Password reset email sent.";
+  };
+
+  $("logoutBtn").onclick=async()=>{
+    await db.auth.signOut();
+    location.reload();
+  };
+
+  function passportUrl() {
+    const p=passportData?.profile;
+    if(!p?.username) return location.href;
+    return location.origin+location.pathname+
+      "?username="+encodeURIComponent(p.username);
+  }
+
+  $("shareBtn").onclick=async()=>{
+    if(!passportData) return;
+    const url=passportUrl();
+    if(navigator.share) {
+      try {
+        await navigator.share({
+          title:passportData.profile.display_name+"'s Cornstar Passport",
+          url
+        });
+      } catch(e) {}
+    } else {
+      await navigator.clipboard.writeText(url);
+      showStatus("Passport link copied!");
+      $("status").classList.remove("hidden");
+    }
+  };
+
+  $("copyLink").onclick=async()=>{
+    if(!passportData) return;
+    await navigator.clipboard.writeText(passportUrl());
+    $("shareMessage").textContent="Passport link copied!";
+    $("shareMessage").className="success";
+  };
+
+  $("copyStats").onclick=async()=>{
+    if(!passportData) return;
+    const p=passportData.profile,s=passportData.stats||{};
+    const text=[
+      p.display_name+" | BmoreCorny Cornstar Passport",
+      "Games: "+(s.games_played||0),
+      "Throws: "+(s.throws_recorded||0),
+      "Furthest ON BOARD: "+(s.furthest_board||"—")+" ft",
+      "Furthest IN HOLE: "+(s.furthest_hole||"—")+" ft",
+      "Badges: "+(s.badges_earned||0),
+      "Events: "+(s.events_attended||0),
+      passportUrl()
+    ].join("\n");
+    await navigator.clipboard.writeText(text);
+    $("shareMessage").textContent="Stats copied!";
+    $("shareMessage").className="success";
+  };
+
+  init();
+})();
+</script>
+</body>
+</html>
