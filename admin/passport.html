@@ -229,6 +229,39 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
       <div id="events" class="event-list"></div>
     </div>
 
+    <div class="section" id="profileEditor">
+      <div class="section-head">
+        <h2>⚙️ My Cornstar Profile</h2>
+        <span class="count">Manage your player identity</span>
+      </div>
+      <div style="display:grid;gap:12px;max-width:600px">
+        <label>
+          <div class="stat-label" style="margin-bottom:6px">Display Name</div>
+          <input id="editDisplayName" maxlength="80" placeholder="Your player name">
+        </label>
+        <label>
+          <div class="stat-label" style="margin-bottom:6px">Username</div>
+          <input id="editUsername" maxlength="24" placeholder="your_username">
+          <div class="badge-desc">3–24 characters. Letters, numbers, and underscores.</div>
+        </label>
+        <label>
+          <div class="stat-label" style="margin-bottom:6px">Bio</div>
+          <input id="editBio" maxlength="280" placeholder="Tell the world a little about yourself">
+        </label>
+        <label>
+          <div class="stat-label" style="margin-bottom:6px">Profile Visibility</div>
+          <select id="editVisibility" style="background:#121116;border:1px solid var(--border);color:var(--text);padding:12px;border-radius:8px;width:100%">
+            <option value="private">Private — only you can view your passport</option>
+            <option value="public">Public — anyone with your link can view it</option>
+          </select>
+        </label>
+        <div>
+          <button id="saveProfileBtn">Save My Profile</button>
+        </div>
+        <div id="profileMessage"></div>
+      </div>
+    </div>
+
     <div class="section">
       <div class="section-head">
         <h2>📣 Share Your Passport</h2>
@@ -317,6 +350,19 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
     }
 
     passportData=data;
+    
+    // Populate the profile editor for the logged-in player's own passport.
+    const editor = $("profileEditor");
+    editor.classList.toggle("hidden", isPublic);
+
+    if (!isPublic) {
+      $("editDisplayName").value = data.profile.display_name || "";
+      $("editUsername").value = data.profile.username || "";
+      $("editBio").value = data.profile.bio || "";
+      $("editVisibility").value =
+        data.profile.profile_visibility || "private";
+    }
+
     $("loginPanel").classList.add("hidden");
     $("passport").classList.remove("hidden");
     $("status").classList.add("hidden");
@@ -436,6 +482,42 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
     $("loginMessage").textContent=error
       ?error.message
       :"Password reset email sent.";
+  };
+
+  $("saveProfileBtn").onclick = async () => {
+    const button = $("saveProfileBtn");
+    const message = $("profileMessage");
+
+    button.disabled = true;
+    button.textContent = "Saving...";
+    message.textContent = "";
+
+    const { data, error } = await db.rpc(
+      "update_my_passport_profile",
+      {
+        _display_name: $("editDisplayName").value.trim(),
+        _username: $("editUsername").value.trim(),
+        _bio: $("editBio").value.trim(),
+        _profile_visibility: $("editVisibility").value
+      }
+    );
+
+    button.disabled = false;
+    button.textContent = "Save My Profile";
+
+    if (error) {
+      message.textContent = error.message;
+      message.className = "error";
+      return;
+    }
+
+    message.textContent = "Profile saved successfully!";
+    message.className = "success";
+
+    // Reload authoritative passport data from Supabase.
+    await loadMyPassport();
+    $("profileMessage").textContent = "Profile saved successfully!";
+    $("profileMessage").className = "success";
   };
 
   $("logoutBtn").onclick=async()=>{
