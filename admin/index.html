@@ -16,10 +16,7 @@
       color: #f5f5f5;
     }
 
-    .layout {
-      display: flex;
-      min-height: 100vh;
-    }
+    .layout { display: flex; min-height: 100vh; }
 
     aside {
       width: 230px;
@@ -53,8 +50,7 @@
       transition: background .15s, color .15s;
     }
 
-    nav a.active,
-    nav a:hover {
+    nav a.active, nav a:hover {
       background: #303137;
       color: #fff;
     }
@@ -62,7 +58,8 @@
     nav a:focus-visible,
     .action:focus-visible,
     .stat-link:focus-visible,
-    .top-link:focus-visible {
+    .top-link:focus-visible,
+    button:focus-visible {
       outline: 2px solid #f4bd35;
       outline-offset: 3px;
     }
@@ -82,15 +79,9 @@
       margin-bottom: 32px;
     }
 
-    h1 {
-      margin: 0 0 8px;
-      font-size: 30px;
-    }
+    h1 { margin: 0 0 8px; font-size: 30px; }
 
-    .muted {
-      color: #999ba5;
-      font-size: 14px;
-    }
+    .muted { color: #999ba5; font-size: 14px; }
 
     .status {
       background: #203c2d;
@@ -99,6 +90,16 @@
       border-radius: 20px;
       font-size: 12px;
       font-weight: bold;
+    }
+
+    .status.loading {
+      background: #34313a;
+      color: #d1c3ff;
+    }
+
+    .status.error {
+      background: #452626;
+      color: #ffaaaa;
     }
 
     .stats {
@@ -138,7 +139,90 @@
       margin: 0 0 18px;
     }
 
-    .event-placeholder {
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .section-heading .section-title { margin: 0; }
+
+    .event-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .event-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      background: #202127;
+      border: 1px solid #353740;
+      border-radius: 9px;
+      padding: 16px;
+    }
+
+    .event-name {
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .event-meta {
+      color: #999ba5;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .event-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .event-actions a {
+      color: #f4bd35;
+      text-decoration: none;
+      border: 1px solid #484a53;
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .event-actions a:hover {
+      background: #303137;
+      border-color: #f4bd35;
+    }
+
+    .event-status {
+      display: inline-block;
+      margin-top: 7px;
+      padding: 5px 8px;
+      border-radius: 5px;
+      background: #303137;
+      color: #d2d3da;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .event-status.in_progress {
+      background: #203c2d;
+      color: #77dfa0;
+    }
+
+    .event-status.registration_open {
+      background: #3c3420;
+      color: #f4bd35;
+    }
+
+    .empty-state {
       border: 1px dashed #484a53;
       border-radius: 9px;
       padding: 28px;
@@ -199,19 +283,24 @@
       margin-top: 24px;
     }
 
-    .top-link {
+    .top-link, button {
       display: inline-block;
       color: #f4bd35;
+      background: transparent;
       text-decoration: none;
       border: 1px solid #393b44;
       border-radius: 7px;
       padding: 10px 13px;
       font-size: 12px;
       font-weight: 800;
+      cursor: pointer;
     }
 
-    .top-link:hover {
-      background: #25262d;
+    .top-link:hover, button:hover { background: #25262d; }
+
+    button:disabled {
+      opacity: .5;
+      cursor: wait;
     }
 
     .footer-note {
@@ -222,9 +311,7 @@
     }
 
     @media (max-width: 750px) {
-      .layout {
-        display: block;
-      }
+      .layout { display: block; }
 
       aside {
         width: 100%;
@@ -233,9 +320,7 @@
         border-bottom: 1px solid #303137;
       }
 
-      .subbrand {
-        margin-bottom: 15px;
-      }
+      .subbrand { margin-bottom: 15px; }
 
       nav {
         display: flex;
@@ -244,29 +329,17 @@
         padding-bottom: 4px;
       }
 
-      nav a {
-        white-space: nowrap;
-        margin-bottom: 0;
-      }
+      nav a { white-space: nowrap; margin-bottom: 0; }
 
-      main {
-        padding: 22px 16px;
-      }
+      main { padding: 22px 16px; }
 
-      .stats {
-        grid-template-columns: 1fr;
-      }
-
-      .actions {
-        grid-template-columns: 1fr;
-      }
+      .stats, .actions { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 
 <body>
   <div class="layout">
-
     <aside>
       <div class="brand">🌽 BmoreCorny</div>
       <div class="subbrand">EVENT COMMAND CENTER</div>
@@ -283,51 +356,46 @@
     </aside>
 
     <main>
-
       <div class="topline">
         <div>
           <h1>Event Command</h1>
-          <div class="muted">
-            Your backstage pass to BmoreCorny operations.
-          </div>
+          <div class="muted">Your backstage pass to BmoreCorny operations.</div>
         </div>
 
-        <div class="status">● NAVIGATION CONNECTED</div>
+        <div id="connectionStatus" class="status loading">● CONNECTING TO SUPABASE</div>
       </div>
 
       <div class="stats">
-
         <a href="events.html" class="panel stat-link">
-          <div class="muted">ACTIVE EVENTS</div>
-          <div class="stat-number">—</div>
-          <div class="muted">Open event management →</div>
+          <div class="muted">ACTIVE / REGISTRATION EVENTS</div>
+          <div class="stat-number" id="activeEventsCount">—</div>
+          <div class="muted">Published, registration open, or in progress</div>
         </a>
 
         <a href="../passport.html" class="panel stat-link">
-          <div class="muted">PARTICIPANTS</div>
-          <div class="stat-number">—</div>
-          <div class="muted">Explore participant passports →</div>
+          <div class="muted">PLAYERS ON EVENT ROSTERS</div>
+          <div class="stat-number" id="participantCount">—</div>
+          <div class="muted">Unique participants with active attendance</div>
         </a>
 
         <a href="games.html" class="panel stat-link">
           <div class="muted">GAMES IN PROGRESS</div>
-          <div class="stat-number">—</div>
-          <div class="muted">Open game management →</div>
+          <div class="stat-number" id="gamesCount">—</div>
+          <div class="muted">Currently active games</div>
         </a>
-
       </div>
 
       <div class="panel">
+        <div class="section-heading">
+          <h2 class="section-title">Event Operations</h2>
+          <button id="refreshButton" type="button">↻ REFRESH DASHBOARD</button>
+        </div>
 
-        <h2 class="section-title">Event Operations</h2>
-
-        <div class="event-placeholder">
-          <strong>No event selected</strong><br>
-          Select an event through Event Management to begin your event-day workflow.
+        <div id="eventList" class="event-list">
+          <div class="empty-state">Connecting to the event database...</div>
         </div>
 
         <div class="actions">
-
           <a class="action" href="operations.html">
             <strong>👋 Participant Check-In</strong>
             <span>Find registered players, manage the attendee roster, and check participants in.</span>
@@ -351,7 +419,6 @@
             <span>Review and verify qualifying official 100-foot shots and Hall of Drain records.</span>
             <span class="action-arrow">OPEN VERIFICATION →</span>
           </a>
-
         </div>
 
         <div class="quick-links">
@@ -360,19 +427,254 @@
           <a class="top-link" href="../hall-of-drain.html">PUBLIC HALL OF DRAIN ↗</a>
           <a class="top-link" href="../index.html">PUBLIC WEBSITE ↗</a>
         </div>
-
       </div>
 
       <div class="footer-note">
-        BmoreCorny Event Command Center · Administrative navigation
+        BmoreCorny Event Command Center · Live Supabase dashboard
         <br>
-        Live dashboard statistics and event selection are not yet connected.
+        Dashboard counts reflect records visible to the current session's database permissions.
+        <span id="lastUpdated"></span>
       </div>
-
     </main>
   </div>
 
   <script src="./config.js"></script>
   <script src="./admin.js"></script>
+
+  <script>
+    const ACTIVE_EVENT_STATUSES = [
+      "published",
+      "registration_open",
+      "in_progress"
+    ];
+
+    const ACTIVE_ATTENDANCE_STATUSES = [
+      "registered",
+      "checked_in",
+      "attended"
+    ];
+
+    const $ = (id) => document.getElementById(id);
+
+    function setConnectionStatus(message, type = "success") {
+      const element = $("connectionStatus");
+      element.textContent = message;
+      element.className = "status " + type;
+    }
+
+    function formatDate(value) {
+      if (!value) return "Date not set";
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) return "Date not set";
+
+      return date.toLocaleString([], {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+      });
+    }
+
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (character) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      })[character]);
+    }
+
+    function statusLabel(status) {
+      const labels = {
+        published: "Registration Available",
+        registration_open: "Registration Open",
+        in_progress: "In Progress",
+        completed: "Completed",
+        cancelled: "Cancelled",
+        draft: "Draft"
+      };
+
+      return labels[status] || status || "Unknown";
+    }
+
+    function renderEvents(events) {
+      const container = $("eventList");
+
+      if (!events || events.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <strong>No events found.</strong><br>
+            Create your first event or check back after publishing one.
+            <br><br>
+            <a class="top-link" href="events.html">OPEN EVENT MANAGEMENT →</a>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = events.map((event) => {
+        const location = [event.venue, event.city, event.state]
+          .filter(Boolean)
+          .join(" · ");
+
+        const eventId = encodeURIComponent(event.id);
+
+        return `
+          <div class="event-row">
+            <div>
+              <div class="event-name">${escapeHTML(event.name || "Untitled Event")}</div>
+              <div class="event-meta">
+                ${escapeHTML(formatDate(event.start_at))}
+                ${location ? " · " + escapeHTML(location) : ""}
+              </div>
+              <span class="event-status ${escapeHTML(event.status)}">
+                ${escapeHTML(statusLabel(event.status))}
+              </span>
+            </div>
+
+            <div class="event-actions">
+              <a href="events.html">MANAGE</a>
+              <a href="operations.html?event=${eventId}">CHECK-IN</a>
+              <a href="games.html?event=${eventId}">GAMES</a>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function loadDashboard() {
+      const refreshButton = $("refreshButton");
+      refreshButton.disabled = true;
+      setConnectionStatus("● REFRESHING DATA", "loading");
+
+      try {
+        const supabase = window.bmorecornySupabase;
+
+        if (!supabase) {
+          throw new Error("Supabase client is not initialized. Check the browser console.");
+        }
+
+        const [eventsResult, attendanceResult, gamesResult] = await Promise.all([
+          supabase
+            .from("events")
+            .select("id,name,status,start_at,venue,city,state")
+            .order("start_at", { ascending: false })
+            .limit(100),
+
+          supabase
+            .from("event_attendance")
+            .select("participant_id,attendance_status"),
+
+          supabase
+            .from("game_participant_balances")
+            .select("game_id,game_status")
+        ]);
+
+        if (eventsResult.error) {
+          throw new Error("Events: " + eventsResult.error.message);
+        }
+
+        const events = eventsResult.data || [];
+        const activeEvents = events.filter((event) =>
+          ACTIVE_EVENT_STATUSES.includes(event.status)
+        );
+
+        $("activeEventsCount").textContent = activeEvents.length;
+        renderEvents(events.slice(0, 8));
+
+        if (attendanceResult.error) {
+          $("participantCount").textContent = "—";
+          $("participantCount").title = attendanceResult.error.message;
+        } else {
+          const participantIds = new Set(
+            (attendanceResult.data || [])
+              .filter((row) =>
+                ACTIVE_ATTENDANCE_STATUSES.includes(row.attendance_status)
+              )
+              .map((row) => row.participant_id)
+              .filter(Boolean)
+          );
+
+          $("participantCount").textContent = participantIds.size;
+          $("participantCount").title = "";
+        }
+
+        if (gamesResult.error) {
+          $("gamesCount").textContent = "—";
+          $("gamesCount").title = gamesResult.error.message;
+        } else {
+          const activeGameIds = new Set(
+            (gamesResult.data || [])
+              .filter((row) => row.game_status === "in_progress")
+              .map((row) => row.game_id)
+              .filter(Boolean)
+          );
+
+          $("gamesCount").textContent = activeGameIds.size;
+          $("gamesCount").title = "";
+        }
+
+        const partialFailure = attendanceResult.error || gamesResult.error;
+
+        setConnectionStatus(
+          partialFailure
+            ? "● CONNECTED · SOME COUNTS UNAVAILABLE"
+            : "● LIVE DATABASE CONNECTED",
+          partialFailure ? "loading" : "success"
+        );
+
+        $("lastUpdated").textContent =
+          " · Last refreshed " + new Date().toLocaleTimeString();
+
+      } catch (error) {
+        console.error("Dashboard load failed:", error);
+
+        setConnectionStatus("● DASHBOARD ERROR", "error");
+
+        $("eventList").innerHTML = `
+          <div class="empty-state">
+            <strong>Dashboard data could not be loaded.</strong><br>
+            ${escapeHTML(error.message)}
+            <br><br>
+            Check the browser console for details.
+          </div>
+        `;
+
+        $("activeEventsCount").textContent = "—";
+        $("participantCount").textContent = "—";
+        $("gamesCount").textContent = "—";
+
+      } finally {
+        refreshButton.disabled = false;
+      }
+    }
+
+    $("refreshButton").addEventListener("click", loadDashboard);
+
+    function waitForSupabase(attempt = 0) {
+      if (window.bmorecornySupabase) {
+        loadDashboard();
+        return;
+      }
+
+      if (attempt >= 40) {
+        setConnectionStatus("● CONNECTION NOT READY", "error");
+        $("eventList").innerHTML = `
+          <div class="empty-state">
+            Supabase did not initialize. Check your configuration and browser console.
+          </div>
+        `;
+        return;
+      }
+
+      setTimeout(() => waitForSupabase(attempt + 1), 250);
+    }
+
+    waitForSupabase();
+  </script>
 </body>
 </html>
