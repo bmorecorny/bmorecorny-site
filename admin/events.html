@@ -12,11 +12,13 @@ header{background:#191a1f;border-bottom:1px solid #303137;padding:20px 28px;disp
 .brand{color:#f4bd35;font-size:22px;font-weight:900}
 main{max-width:1100px;margin:auto;padding:30px 20px}
 h1{margin:0 0 8px}h2{font-size:19px;margin:0 0 20px}
+h3{margin-top:0}
 .muted{color:#999ba5;font-size:13px}
 .panel{background:#191a1f;border:1px solid #303137;border-radius:12px;padding:24px;margin-top:22px}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 label{display:block;font-size:13px;color:#c7c8ce;margin-bottom:7px}
-input,select{width:100%;padding:12px;background:#101114;color:white;border:1px solid #41434c;border-radius:7px;font-size:14px}
+input,select,textarea{width:100%;padding:12px;background:#101114;color:white;border:1px solid #41434c;border-radius:7px;font-size:14px;font-family:Arial,sans-serif}
+textarea{min-height:120px;resize:vertical;line-height:1.5}
 .field{margin-bottom:16px}
 button,.button{background:#f4bd35;color:#171717;border:0;border-radius:7px;padding:12px 18px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-block;font-size:13px}
 button.secondary,.button.secondary{background:#303137;color:white}
@@ -39,6 +41,10 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .workspaceCard h3{margin-top:0}
 .backLink{color:#f4bd35;text-decoration:none;display:inline-block;margin-bottom:20px;font-size:13px}
 .backLink:hover{text-decoration:underline}
+.contentPreview{white-space:pre-wrap;line-height:1.6;color:#ddd;overflow-wrap:anywhere}
+.imagePreview{display:block;max-width:100%;max-height:400px;object-fit:contain;border-radius:9px;margin-top:12px;border:1px solid #383a43}
+.fieldHint{font-size:12px;color:#8d8f99;margin-top:6px;line-height:1.5}
+.sectionLabel{font-size:12px;font-weight:900;letter-spacing:1px;color:#f4bd35;text-transform:uppercase;margin:24px 0 14px}
 @media(max-width:650px){.grid{grid-template-columns:1fr}main{padding:20px 14px}.panel{padding:18px}}
 </style>
 </head>
@@ -87,12 +93,14 @@ button:disabled{opacity:.5;cursor:not-allowed}
           </div>
           <span class="status">ADMIN CONSOLE</span>
         </div>
+
         <form id="eventForm">
           <div class="grid">
             <div class="field">
               <label for="eventName">Event Name *</label>
               <input id="eventName" required maxlength="150" placeholder="Example: BmoreCorny Summer Showdown">
             </div>
+
             <div class="field">
               <label for="eventType">Event Type *</label>
               <select id="eventType" required>
@@ -105,9 +113,22 @@ button:disabled{opacity:.5;cursor:not-allowed}
                 <option value="fundraiser">Fundraiser</option>
               </select>
             </div>
-            <div class="field"><label for="venue">Venue</label><input id="venue" placeholder="Venue name"></div>
-            <div class="field"><label for="city">City</label><input id="city" placeholder="City"></div>
-            <div class="field"><label for="state">State</label><input id="state" placeholder="State"></div>
+
+            <div class="field">
+              <label for="venue">Venue</label>
+              <input id="venue" placeholder="Venue name">
+            </div>
+
+            <div class="field">
+              <label for="city">City</label>
+              <input id="city" placeholder="City">
+            </div>
+
+            <div class="field">
+              <label for="state">State</label>
+              <input id="state" placeholder="State">
+            </div>
+
             <div class="field">
               <label for="eventStatus">Event Status</label>
               <select id="eventStatus">
@@ -119,9 +140,51 @@ button:disabled{opacity:.5;cursor:not-allowed}
                 <option value="cancelled">Cancelled</option>
               </select>
             </div>
-            <div class="field"><label for="startAt">Start Date & Time</label><input id="startAt" type="datetime-local"></div>
-            <div class="field"><label for="endAt">End Date & Time</label><input id="endAt" type="datetime-local"></div>
+
+            <div class="field">
+              <label for="startAt">Start Date & Time</label>
+              <input id="startAt" type="datetime-local">
+            </div>
+
+            <div class="field">
+              <label for="endAt">End Date & Time</label>
+              <input id="endAt" type="datetime-local">
+            </div>
           </div>
+
+          <div class="sectionLabel">Public Event Content</div>
+
+          <div class="field">
+            <label for="publicDescription">Event Description</label>
+            <textarea id="publicDescription" maxlength="10000" placeholder="Tell the world what this event is all about. The vibe, activities, competition, entertainment, and why people should come."></textarea>
+            <div class="fieldHint">Displayed publicly on the Event Hub.</div>
+          </div>
+
+          <div class="field">
+            <label for="attendeeInformation">Attendee Information</label>
+            <textarea id="attendeeInformation" maxlength="10000" placeholder="Parking, what to bring, check-in instructions, rules, FAQs, age restrictions, weather details, and other helpful information."></textarea>
+            <div class="fieldHint">Information attendees need before arriving.</div>
+          </div>
+
+          <div class="grid">
+            <div class="field">
+              <label for="eventImageUrl">Event Image URL</label>
+              <input id="eventImageUrl" type="url" placeholder="https://example.com/event-image.jpg">
+              <div class="fieldHint">Paste a publicly accessible image URL.</div>
+            </div>
+
+            <div class="field">
+              <label for="registrationUrl">External Registration / Ticket Link</label>
+              <input id="registrationUrl" type="url" placeholder="https://example.com/tickets">
+              <div class="fieldHint">Optional link for external tickets or registration.</div>
+            </div>
+          </div>
+
+          <div id="eventImagePreviewContainer" class="field hidden">
+            <label>Image Preview</label>
+            <img id="eventImagePreview" class="imagePreview" alt="Event image preview">
+          </div>
+
           <button id="saveButton" type="submit">Create Event</button>
           <button id="cancelEditButton" type="button" class="secondary hidden">Cancel Edit</button>
           <div id="formMessage"></div>
@@ -130,7 +193,10 @@ button:disabled{opacity:.5;cursor:not-allowed}
 
       <div class="panel">
         <div class="toolbar">
-          <div><h2>Event Directory</h2><p class="muted">Select an event name to open its workspace.</p></div>
+          <div>
+            <h2>Event Directory</h2>
+            <p class="muted">Select an event name to open its workspace.</p>
+          </div>
           <button id="refreshButton" class="secondary" type="button">Refresh Events</button>
         </div>
         <div id="eventList"><p class="muted">Loading events...</p></div>
@@ -139,6 +205,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 
     <div id="eventWorkspace" class="hidden">
       <a href="events.html" class="backLink">← Back to Event Directory</a>
+
       <div class="panel">
         <div class="workspaceHeader">
           <div>
@@ -148,7 +215,9 @@ button:disabled{opacity:.5;cursor:not-allowed}
           </div>
           <button id="workspaceEditButton" type="button">Edit Event</button>
         </div>
+
         <hr style="border:0;border-top:1px solid #383a43;margin:22px 0">
+
         <div class="grid">
           <div class="workspaceCard">
             <h3>Event Details</h3>
@@ -156,13 +225,39 @@ button:disabled{opacity:.5;cursor:not-allowed}
             <p id="workspaceVenue" class="muted"></p>
             <p id="workspaceStatus" class="muted"></p>
           </div>
+
           <div class="workspaceCard">
             <h3>Event Management</h3>
             <p class="muted">Manage attendees, check-in, games and event-day activity.</p>
             <div class="workspaceLinks">
               <a id="operationsLink" class="button" href="#">Event Operations</a>
               <a id="gamesLink" class="button" href="#">Game Management</a>
+              <a id="publicEventLink" class="button secondary" href="#" target="_blank" rel="noopener">Public Event Hub ↗</a>
             </div>
+          </div>
+        </div>
+
+        <div id="workspaceContentPreview" class="hidden">
+          <hr style="border:0;border-top:1px solid #383a43;margin:22px 0">
+
+          <div class="workspaceCard">
+            <h3>Public Event Description</h3>
+            <div id="workspaceDescription" class="contentPreview"></div>
+          </div>
+
+          <div class="workspaceCard" style="margin-top:14px">
+            <h3>Attendee Information</h3>
+            <div id="workspaceAttendeeInfo" class="contentPreview"></div>
+          </div>
+
+          <div id="workspaceImageContainer" class="workspaceCard hidden" style="margin-top:14px">
+            <h3>Event Artwork</h3>
+            <img id="workspaceImage" class="imagePreview" alt="Event artwork">
+          </div>
+
+          <div id="workspaceRegistrationContainer" class="workspaceCard hidden" style="margin-top:14px">
+            <h3>External Registration</h3>
+            <a id="workspaceRegistrationLink" class="button" href="#" target="_blank" rel="noopener">Open Registration Link ↗</a>
           </div>
         </div>
       </div>
@@ -175,12 +270,15 @@ button:disabled{opacity:.5;cursor:not-allowed}
 <script>
 (() => {
 const config=window.BMORECORNY_CONFIG;
+
 if(!config?.SUPABASE_URL||!config?.SUPABASE_ANON_KEY){
   document.getElementById("loginMessage").textContent="Configuration missing. Check admin/config.js.";
   return;
 }
+
 const db=window.supabase.createClient(config.SUPABASE_URL,config.SUPABASE_ANON_KEY);
 const $=id=>document.getElementById(id);
+
 let editingId=null;
 let eventsCache=[];
 
@@ -190,35 +288,66 @@ function showMessage(id,text,type=""){
   $(id).textContent=text;
   $(id).className=type;
 }
+
 function dateForInput(value){
   if(!value)return "";
   const date=new Date(value);
   const local=new Date(date.getTime()-date.getTimezoneOffset()*60000);
   return local.toISOString().slice(0,16);
 }
+
 function formatDate(value){
   return value?new Date(value).toLocaleString():"Date not set";
 }
+
 function escapeHtml(value){
   return String(value??"").replace(/[&<>"']/g,char=>({
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
   })[char]);
 }
 
+function updateImagePreview(){
+  const url=$("eventImageUrl").value.trim();
+  const container=$("eventImagePreviewContainer");
+  const image=$("eventImagePreview");
+
+  if(!url){
+    container.classList.add("hidden");
+    image.removeAttribute("src");
+    return;
+  }
+
+  image.src=url;
+  container.classList.remove("hidden");
+
+  image.onerror=()=>{
+    container.classList.add("hidden");
+  };
+
+  image.onload=()=>{
+    container.classList.remove("hidden");
+  };
+}
+
 async function loadEvents(){
   $("eventList").textContent="Loading events...";
+
   const {data,error}=await db.from("events")
-    .select("id,event_name,event_type,venue_name,city,state,start_at,end_at,status")
+    .select("id,event_name,event_type,venue_name,city,state,start_at,end_at,status,public_description,attendee_information,event_image_url,registration_url")
     .order("start_at",{ascending:false});
+
   if(error){
     $("eventList").textContent="Could not load events: "+error.message;
     return;
   }
+
   eventsCache=data||[];
+
   if(!eventsCache.length){
     $("eventList").textContent="No events yet. Create your first event above.";
     return;
   }
+
   $("eventList").innerHTML=eventsCache.map(event=>`
     <div class="event">
       <div>
@@ -237,6 +366,7 @@ async function loadEvents(){
   $("eventList").querySelectorAll("[data-open]").forEach(button=>{
     button.addEventListener("click",()=>openEvent(button.dataset.open));
   });
+
   $("eventList").querySelectorAll("[data-edit]").forEach(button=>{
     button.addEventListener("click",()=>{
       const event=eventsCache.find(item=>item.id===button.dataset.edit);
@@ -248,15 +378,18 @@ async function loadEvents(){
 function openEvent(id){
   const event=eventsCache.find(item=>item.id===id);
   if(!event)return;
+
   const url=new URL(window.location.href);
   url.searchParams.set("event",id);
   history.pushState({eventId:id},"",url);
+
   renderWorkspace(event);
 }
 
 function renderWorkspace(event){
   $("directoryView").classList.add("hidden");
   $("eventWorkspace").classList.remove("hidden");
+
   $("workspaceName").textContent=event.event_name;
   $("workspaceMeta").textContent=[event.event_type.replaceAll("_"," "),event.city,event.state].filter(Boolean).join(" · ");
   $("workspaceDate").textContent="Start: "+formatDate(event.start_at)+" | End: "+formatDate(event.end_at);
@@ -266,7 +399,42 @@ function renderWorkspace(event){
   const query="?event="+encodeURIComponent(event.id);
   $("operationsLink").href="operations.html"+query;
   $("gamesLink").href="games.html"+query;
+
+  $("publicEventLink").href="../event.html?id="+encodeURIComponent(event.id);
+
   $("workspaceEditButton").onclick=()=>beginEdit(event);
+
+  const hasContent=Boolean(
+    event.public_description ||
+    event.attendee_information ||
+    event.event_image_url ||
+    event.registration_url
+  );
+
+  $("workspaceContentPreview").classList.toggle("hidden",!hasContent);
+
+  $("workspaceDescription").textContent=
+    event.public_description||"No public event description has been added.";
+
+  $("workspaceAttendeeInfo").textContent=
+    event.attendee_information||"No attendee information has been added.";
+
+  $("workspaceImageContainer").classList.toggle("hidden",!event.event_image_url);
+
+  if(event.event_image_url){
+    $("workspaceImage").src=event.event_image_url;
+    $("workspaceImage").onerror=()=>{
+      $("workspaceImageContainer").classList.add("hidden");
+    };
+  }else{
+    $("workspaceImage").removeAttribute("src");
+  }
+
+  $("workspaceRegistrationContainer").classList.toggle("hidden",!event.registration_url);
+
+  if(event.registration_url){
+    $("workspaceRegistrationLink").href=event.registration_url;
+  }
 }
 
 function showDirectory(){
@@ -276,7 +444,9 @@ function showDirectory(){
 
 function beginEdit(event){
   showDirectory();
+
   editingId=event.id;
+
   $("eventName").value=event.event_name||"";
   $("eventType").value=event.event_type||"tour_stop";
   $("venue").value=event.venue_name||"";
@@ -285,29 +455,48 @@ function beginEdit(event){
   $("eventStatus").value=event.status||"draft";
   $("startAt").value=dateForInput(event.start_at);
   $("endAt").value=dateForInput(event.end_at);
+
+  $("publicDescription").value=event.public_description||"";
+  $("attendeeInformation").value=event.attendee_information||"";
+  $("eventImageUrl").value=event.event_image_url||"";
+  $("registrationUrl").value=event.registration_url||"";
+
+  updateImagePreview();
+
   $("formHeading").textContent="Edit Event";
   $("saveButton").textContent="Save Event Changes";
   $("cancelEditButton").classList.remove("hidden");
+
   $("formHeading").scrollIntoView({behavior:"smooth"});
 }
 
 function resetForm(){
   editingId=null;
   $("eventForm").reset();
+
   $("formHeading").textContent="Create New Event";
   $("saveButton").textContent="Create Event";
   $("cancelEditButton").classList.add("hidden");
+
+  $("eventImagePreviewContainer").classList.add("hidden");
+  $("eventImagePreview").removeAttribute("src");
+
   showMessage("formMessage","");
 }
 
+$("eventImageUrl").addEventListener("input",updateImagePreview);
+
 $("eventForm").addEventListener("submit",async event=>{
   event.preventDefault();
+
   const start=$("startAt").value;
   const end=$("endAt").value;
+
   if(start&&end&&new Date(end)<new Date(start)){
     showMessage("formMessage","End date cannot be before start date.","error");
     return;
   }
+
   const payload={
     event_name:$("eventName").value.trim(),
     event_type:$("eventType").value,
@@ -316,26 +505,41 @@ $("eventForm").addEventListener("submit",async event=>{
     state:$("state").value.trim()||null,
     status:$("eventStatus").value,
     start_at:start?new Date(start).toISOString():null,
-    end_at:end?new Date(end).toISOString():null
+    end_at:end?new Date(end).toISOString():null,
+
+    // M50 public content fields
+    public_description:$("publicDescription").value.trim()||null,
+    attendee_information:$("attendeeInformation").value.trim()||null,
+    event_image_url:$("eventImageUrl").value.trim()||null,
+    registration_url:$("registrationUrl").value.trim()||null
   };
+
   $("saveButton").disabled=true;
   showMessage("formMessage","Saving event...");
+
   const result=editingId
     ?await db.from("events").update(payload).eq("id",editingId).select()
     :await db.from("events").insert(payload).select();
+
   $("saveButton").disabled=false;
+
   if(result.error){
     showMessage("formMessage","Could not save event: "+result.error.message,"error");
     return;
   }
+
   if(!result.data?.length){
     showMessage("formMessage","No event was returned. Check your account permissions.","error");
     return;
   }
+
   const savedId=result.data[0].id;
+
   showMessage("formMessage",editingId?"Event updated successfully!":"Event created successfully!","success");
+
   resetForm();
   await loadEvents();
+
   const saved=eventsCache.find(item=>item.id===savedId);
   if(saved)openEvent(savedId);
 });
@@ -345,41 +549,54 @@ $("refreshButton").addEventListener("click",loadEvents);
 
 $("forgotPasswordLink").addEventListener("click",async event=>{
   event.preventDefault();
+
   const email=$("email").value.trim();
+
   if(!email){
     showMessage("recoveryMessage","Enter your email address above first.","error");
     $("email").focus();
     return;
   }
+
   $("forgotPasswordLink").style.pointerEvents="none";
   $("forgotPasswordLink").textContent="Sending recovery email...";
   showMessage("recoveryMessage","");
+
   const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:recoveryRedirect});
+
   $("forgotPasswordLink").style.pointerEvents="";
   $("forgotPasswordLink").textContent="Forgot Password?";
+
   if(error){
     showMessage("recoveryMessage","Could not send recovery email: "+error.message,"error");
     return;
   }
+
   showMessage("recoveryMessage","If an account exists for this email, a recovery link has been sent. Check your inbox and spam folder.","success");
 });
 
 $("loginForm").addEventListener("submit",async event=>{
   event.preventDefault();
+
   showMessage("loginMessage","Signing in...");
   $("loginButton").disabled=true;
+
   const {error}=await db.auth.signInWithPassword({
     email:$("email").value.trim(),
     password:$("password").value
   });
+
   $("loginButton").disabled=false;
+
   if(error){
     showMessage("loginMessage","Sign-in failed: "+error.message,"error");
     return;
   }
+
   $("password").value="";
   showMessage("loginMessage","");
   showMessage("recoveryMessage","");
+
   await updateScreen();
 });
 
@@ -391,13 +608,18 @@ $("logoutButton").addEventListener("click",async()=>{
 
 async function updateScreen(){
   const {data:{session}}=await db.auth.getSession();
+
   $("loginPanel").classList.toggle("hidden",!!session);
   $("managementPanel").classList.toggle("hidden",!session);
   $("logoutButton").classList.toggle("hidden",!session);
+
   if(!session)return;
+
   await loadEvents();
+
   const eventId=new URLSearchParams(window.location.search).get("event");
   const requested=eventId&&eventsCache.find(event=>event.id===eventId);
+
   if(requested)renderWorkspace(requested);
   else showDirectory();
 }
@@ -405,6 +627,7 @@ async function updateScreen(){
 window.addEventListener("popstate",()=>{
   const eventId=new URLSearchParams(window.location.search).get("event");
   const event=eventsCache.find(item=>item.id===eventId);
+
   if(event)renderWorkspace(event);
   else showDirectory();
 });
