@@ -457,6 +457,18 @@
         const { data, error } = await supabaseClient.rpc("get_my_passport");
 
         if (error) {
+          // M45 raises P0001 when the authenticated account does not yet have
+          // an active participant profile. That is the normal first-time
+          // registration state, not a fatal lookup failure.
+          const noPlayerProfile =
+            error.code === "P0001" &&
+            /no active player profile linked to this account/i.test(error.message || "");
+
+          if (noPlayerProfile) {
+            showSection(profileSection);
+            return false;
+          }
+
           console.error("get_my_passport() failed:", error);
           const details = [
             error.message,
@@ -467,8 +479,6 @@
           throw new Error(details || "The passport lookup failed, but Supabase did not provide an error message.");
         }
 
-        // The RPC should return an object containing profile. Treat a missing
-        // profile as a new player who still needs to claim a passport.
         const profile = data && typeof data === "object" && data.profile
           ? data.profile
           : null;
