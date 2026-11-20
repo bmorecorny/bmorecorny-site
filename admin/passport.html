@@ -162,6 +162,44 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
 .event-location{font-size:13px;color:var(--muted);margin-top:5px}
 .event-date{color:var(--yellow);font-size:13px;font-weight:700}
 .event-section-actions{display:flex;gap:8px;flex-wrap:wrap}
+.event-status{
+  display:inline-block;
+  font-size:10px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.7px;
+  padding:5px 8px;
+  border-radius:20px;
+  margin-top:8px;
+  background:#302918;
+  border:1px solid #635020;
+  color:#ffe08a;
+}
+.event-status.checked-in{
+  background:#173324;
+  border-color:#286343;
+  color:#8debb5;
+}
+.event-status.registered{
+  background:#302918;
+  border-color:#635020;
+  color:#ffe08a;
+}
+.upcoming-event{
+  border-left:3px solid var(--yellow);
+}
+.upcoming-event.active-event{
+  border-left-color:var(--green);
+}
+.upcoming-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.upcoming-actions .nav-button{
+  white-space:nowrap;
+}
 .footer{
   text-align:center;color:var(--muted);
   padding:30px 10px;font-size:12px
@@ -188,6 +226,8 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
   .hero-actions{justify-content:flex-start}
   .badges{grid-template-columns:repeat(2,1fr)}
   .player-path{align-items:flex-start}
+  .upcoming-actions{width:100%}
+  .upcoming-actions .nav-button{flex:1;text-align:center}
 }
 </style>
 </head>
@@ -259,6 +299,21 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
       <div class="stat"><div class="stat-label">Furthest Hole</div><div class="stat-value highlight" id="hole">—</div></div>
       <div class="stat"><div class="stat-label">Badges</div><div class="stat-value" id="badgeCount">0</div></div>
       <div class="stat"><div class="stat-label">Event Stamps</div><div class="stat-value" id="eventCount">0</div></div>
+    </div>
+
+    <div class="section" id="upcomingSection">
+      <div class="section-head">
+        <div>
+          <h2>🎟️ My Upcoming Events</h2>
+          <span class="count">Your registrations and game-day check-ins</span>
+        </div>
+        <div class="event-section-actions">
+          <a class="nav-button" href="../events.html">FIND MORE EVENTS →</a>
+        </div>
+      </div>
+      <div id="upcomingEvents" class="event-list">
+        <div class="empty">Loading your event registrations...</div>
+      </div>
     </div>
 
     <div class="section">
@@ -396,6 +451,146 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
     return "🏅";
   }
 
+  function attendanceLabel(status) {
+    const labels = {
+      registered: "REGISTERED",
+      checked_in: "CHECKED IN",
+      attended: "ATTENDED",
+      cancelled: "CANCELLED",
+      no_show: "NO SHOW"
+    };
+    return labels[status] || String(status || "UNKNOWN").replaceAll("_"," ").toUpperCase();
+  }
+
+  function renderUpcomingEvents(rows) {
+    const container = $("upcomingEvents");
+
+    if (!rows.length) {
+      container.innerHTML = `
+        <div class="empty">
+          No upcoming registrations yet. Your next chapter is waiting.
+          <br><br>
+          <a href="../events.html">Browse upcoming events and claim your spot →</a>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = rows.map(row => {
+      const event = row.event;
+      const checkedIn = row.attendance_status === "checked_in";
+      const location = [
+        event.venue_name,
+        event.city,
+        event.state
+      ].filter(Boolean).join(" · ");
+
+      const dateLabel = event.start_at
+        ? date(event.start_at)
+        : "Date TBD";
+
+      const timeLabel = event.start_at
+        ? new Date(event.start_at).toLocaleTimeString([], {
+            hour:"numeric",
+            minute:"2-digit"
+          })
+        : "";
+
+      return `
+        <div class="event upcoming-event ${checkedIn ? "active-event" : ""}">
+          <div>
+            <div class="event-name">${safe(event.event_name)}</div>
+            <div class="event-location">${safe(location || "Location to be announced")}</div>
+            <div class="event-date">📅 ${safe(dateLabel)}${timeLabel ? " · "+safe(timeLabel) : ""}</div>
+            <span class="event-status ${checkedIn ? "checked-in" : "registered"}">
+              ${checkedIn ? "✓ CHECKED IN" : "✓ REGISTERED"}
+            </span>
+          </div>
+          <div class="upcoming-actions">
+            <a class="nav-button" href="../event.html?id=${encodeURIComponent(event.id)}">
+              OPEN EVENT HUB →
+            </a>
+          </div>
+        </div>`;
+    }).join("");
+  }
+
+  async function loadUpcomingEvents(participantId) {
+    const container = $("upcomingEvents");
+    container.innerHTML = `<div class="empty">Loading your event registrations...</div>`;
+
+    try {
+      const { data: attendance, error: attendanceError } = await db
+        .from("event_attendance")
+        .select("event_id,attendance_status,checked_in_at,created_at")
+        .eq("participant_id", participantId)
+        .in("attendance_status", ["registered","checked_in"]);
+
+      if (attendanceError) throw attendanceError;
+
+      if (!attendance || attendance.length === 0) {
+        renderUpcomingEvents([]);
+        return;
+      }
+
+      const eventIds = [...new Set(attendance.map(row => row.event_id))];
+
+      const { data: events, error: eventsError } = await db
+        .from("events")
+        .select("id,event_name,event_type,venue_name,city,state,start_at,end_at,status")
+        .in("id", eventIds);
+
+      if (eventsError) throw eventsError;
+
+      const now = Date.now();
+      const eventMap = new Map((events || []).map(event => [event.id,event]));
+
+      const upcoming = attendance
+        .map(row => ({
+          ...row,
+          event: eventMap.get(row.event_id)
+        }))
+        .filter(row => {
+          const event = row.event;
+          if (!event) return false;
+
+          if (["completed","cancelled","draft"].includes(event.status)) {
+            return false;
+          }
+
+          if (row.attendance_status === "checked_in") {
+            return true;
+          }
+
+          if (!event.start_at) return true;
+
+          const eventEnd = event.end_at
+            ? new Date(event.end_at).getTime()
+            : new Date(event.start_at).getTime();
+
+          return eventEnd >= now;
+        })
+        .sort((a,b) => {
+          const aTime = a.event.start_at
+            ? new Date(a.event.start_at).getTime()
+            : Number.MAX_SAFE_INTEGER;
+          const bTime = b.event.start_at
+            ? new Date(b.event.start_at).getTime()
+            : Number.MAX_SAFE_INTEGER;
+          return aTime - bTime;
+        });
+
+      renderUpcomingEvents(upcoming);
+    } catch (error) {
+      console.error("Upcoming event lookup failed:",error);
+      container.innerHTML = `
+        <div class="empty">
+          We couldn't load your upcoming events right now.
+          <br><br>
+          <span style="color:#ff8e8e">${safe(error.message || "Please refresh and try again.")}</span>
+        </div>`;
+    }
+  }
+
   function render(data) {
     if(!data || !data.profile) {
       $("passport").classList.add("hidden");
@@ -411,6 +606,7 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
 
     const editor = $("profileEditor");
     editor.classList.toggle("hidden", isPublic);
+    $("upcomingSection").classList.toggle("hidden", isPublic);
 
     if (!isPublic) {
       $("editDisplayName").value = data.profile.display_name || "";
@@ -477,6 +673,10 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
         </div>`;
 
     $("logoutBtn").classList.toggle("hidden",isPublic);
+
+    if (!isPublic && p.participant_id) {
+      loadUpcomingEvents(p.participant_id);
+    }
   }
 
   async function loadPublic(username) {
