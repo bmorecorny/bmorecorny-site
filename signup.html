@@ -1,0 +1,642 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#6d469b">
+  <meta name="description" content="Join BmoreCorny, create your Cornstar Passport, and become part of the cornhole community.">
+  <title>Join BmoreCorny — Cornstar Passport</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+
+  <style>
+    .signup-page {
+      min-height: 75vh;
+      padding: 64px 20px 90px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .signup-card {
+      width: 100%;
+      max-width: 560px;
+      padding: 38px;
+      background: #fff;
+      border: 3px solid #231b2e;
+      border-radius: 18px;
+      box-shadow: 9px 9px 0 #231b2e;
+    }
+
+    .signup-eyebrow {
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #6d469b;
+      margin-bottom: 12px;
+    }
+
+    .signup-card h1 {
+      font-family: "Archivo Black", sans-serif;
+      font-size: clamp(32px, 7vw, 48px);
+      line-height: 1.05;
+      margin: 0 0 14px;
+      color: #231b2e;
+    }
+
+    .signup-card h1 span {
+      color: #e5a900;
+    }
+
+    .signup-intro {
+      color: #625b69;
+      line-height: 1.6;
+      margin: 0 0 26px;
+    }
+
+    .signup-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .signup-tabs button {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid #231b2e;
+      border-radius: 8px;
+      background: #fff;
+      color: #231b2e;
+      font: inherit;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .signup-tabs button.active {
+      background: #6d469b;
+      color: #fff;
+    }
+
+    .signup-form {
+      display: grid;
+      gap: 16px;
+    }
+
+    .signup-field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .signup-field label {
+      font-size: 13px;
+      font-weight: 900;
+      color: #302738;
+    }
+
+    .signup-field input,
+    .signup-field textarea,
+    .signup-field select {
+      width: 100%;
+      padding: 13px 14px;
+      border: 2px solid #d9d2df;
+      border-radius: 8px;
+      background: #fff;
+      color: #231b2e;
+      font: inherit;
+      box-sizing: border-box;
+    }
+
+    .signup-field input:focus,
+    .signup-field textarea:focus,
+    .signup-field select:focus {
+      outline: 3px solid #e5a900;
+      border-color: #6d469b;
+    }
+
+    .signup-field textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .field-hint {
+      font-size: 12px;
+      color: #766d7e;
+    }
+
+    .signup-submit {
+      width: 100%;
+      border: 0;
+      border-radius: 8px;
+      padding: 15px 18px;
+      background: #e5a900;
+      color: #231b2e;
+      font: inherit;
+      font-weight: 900;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+
+    .signup-submit:hover {
+      background: #f2bd25;
+    }
+
+    .signup-submit:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    .signup-message {
+      display: none;
+      padding: 14px 16px;
+      border-radius: 8px;
+      line-height: 1.5;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      overflow-wrap: anywhere;
+    }
+
+    .signup-message.error {
+      display: block;
+      background: #fff0ee;
+      color: #922d20;
+      border: 1px solid #e9aaa2;
+    }
+
+    .signup-message.success {
+      display: block;
+      background: #eef8ed;
+      color: #285b2d;
+      border: 1px solid #b8dcb5;
+    }
+
+    .signup-message.info {
+      display: block;
+      background: #f1ebfa;
+      color: #503675;
+      border: 1px solid #d2c0eb;
+    }
+
+    .signup-divider {
+      border: 0;
+      border-top: 1px solid #e7e1eb;
+      margin: 25px 0;
+    }
+
+    .signup-footer {
+      text-align: center;
+      margin-top: 25px;
+      font-size: 13px;
+      color: #766d7e;
+    }
+
+    .signup-footer a {
+      color: #6d469b;
+      font-weight: 900;
+    }
+
+    .signup-benefits {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .signup-benefit {
+      padding: 13px 8px;
+      background: #f7f3fa;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 900;
+      color: #49365d;
+    }
+
+    .signup-benefit strong {
+      display: block;
+      font-size: 21px;
+      margin-bottom: 4px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 600px) {
+      .signup-page {
+        padding: 35px 14px 60px;
+      }
+
+      .signup-card {
+        padding: 25px 20px;
+        box-shadow: 6px 6px 0 #231b2e;
+      }
+
+      .signup-benefits {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="announcement">THE CORN IS CALLING. ANSWER IT.</div>
+
+  <header class="site-header wrap">
+    <a class="brand" href="index.html" aria-label="BmoreCorny home">
+      <span class="brand-kernel">✳</span>
+      <span>BMORECORNY</span>
+    </a>
+
+    <nav aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="hall-of-drain.html">Hall of Drain</a>
+      <a href="passport.html">Cornstar Passport</a>
+    </nav>
+
+    <a class="header-cta" href="index.html#connect">COME PLAY <span>↗</span></a>
+  </header>
+
+  <main class="signup-page">
+    <section class="signup-card">
+
+      <div id="authSection">
+        <p class="signup-eyebrow">YOUR CORNY STORY STARTS HERE</p>
+        <h1>JOIN THE<br><span>CORNHOUSE.</span></h1>
+        <p class="signup-intro">
+          Create your account, claim your player identity, and start building your very own Cornstar Passport.
+        </p>
+
+        <div id="authMessage" class="signup-message" role="status" aria-live="polite"></div>
+
+        <div class="signup-tabs">
+          <button type="button" id="signupTab" class="active">CREATE ACCOUNT</button>
+          <button type="button" id="signinTab">SIGN IN</button>
+        </div>
+
+        <form id="authForm" class="signup-form">
+          <div class="signup-field">
+            <label for="email">EMAIL ADDRESS</label>
+            <input id="email" type="email" autocomplete="email" required placeholder="you@example.com">
+          </div>
+
+          <div class="signup-field">
+            <label for="password">PASSWORD</label>
+            <input id="password" type="password" autocomplete="new-password" minlength="6" required placeholder="At least 6 characters">
+            <span class="field-hint">Use at least 6 characters.</span>
+          </div>
+
+          <button id="authSubmit" class="signup-submit" type="submit">
+            CREATE MY ACCOUNT →
+          </button>
+        </form>
+      </div>
+
+      <div id="profileSection" class="hidden">
+        <p class="signup-eyebrow">STEP 2 — CLAIM YOUR IDENTITY</p>
+        <h1>MEET YOUR<br><span>CORNSTAR.</span></h1>
+        <p class="signup-intro">
+          Your account is ready. Now give your player identity a name. This becomes your official digital passport profile.
+        </p>
+
+        <div id="profileMessage" class="signup-message" role="status" aria-live="polite"></div>
+
+        <form id="profileForm" class="signup-form">
+          <div class="signup-field">
+            <label for="displayName">PLAYER DISPLAY NAME</label>
+            <input id="displayName" type="text" maxlength="80" required placeholder="What should we call you?">
+            <span class="field-hint">This is the name people see on your passport.</span>
+          </div>
+
+          <div class="signup-field">
+            <label for="username">USERNAME</label>
+            <input id="username" type="text" minlength="3" maxlength="24" pattern="[A-Za-z0-9_]{3,24}" required placeholder="yourcornyname">
+            <span class="field-hint">3–24 characters. Letters, numbers, and underscores only. Your username creates your shareable passport address.</span>
+          </div>
+
+          <div class="signup-field">
+            <label for="bio">PLAYER BIO <span class="field-hint">(OPTIONAL)</span></label>
+            <textarea id="bio" maxlength="280" placeholder="Tell the world a little about yourself..."></textarea>
+          </div>
+
+          <div class="signup-field">
+            <label for="visibility">PASSPORT VISIBILITY</label>
+            <select id="visibility">
+              <option value="private" selected>Private — only you can view your passport</option>
+              <option value="public">Public — let everyone see your passport</option>
+            </select>
+          </div>
+
+          <button id="profileSubmit" class="signup-submit" type="submit">
+            CLAIM MY PASSPORT →
+          </button>
+        </form>
+      </div>
+
+      <div id="existingSection" class="hidden">
+        <p class="signup-eyebrow">WELCOME BACK, CORNSTAR</p>
+        <h1>YOU'RE<br><span>ALREADY IN.</span></h1>
+        <p class="signup-intro">
+          This account already has a BmoreCorny player identity. Your passport is waiting.
+        </p>
+        <a class="signup-submit" href="admin/passport.html" style="display:block;text-align:center;text-decoration:none;box-sizing:border-box;">
+          OPEN MY PASSPORT →
+        </a>
+      </div>
+
+      <div id="confirmationSection" class="hidden">
+        <p class="signup-eyebrow">ONE LAST THING</p>
+        <h1>CHECK YOUR<br><span>INBOX.</span></h1>
+        <p class="signup-intro">
+          Your account was created. If email confirmation is enabled, follow the link in your email. Then return here and sign in to claim your passport.
+        </p>
+        <button type="button" id="confirmationSignin" class="signup-submit">
+          GO TO SIGN IN →
+        </button>
+      </div>
+
+      <div class="signup-benefits">
+        <div class="signup-benefit"><strong>✳</strong>YOUR IDENTITY</div>
+        <div class="signup-benefit"><strong>🏆</strong>YOUR ACHIEVEMENTS</div>
+        <div class="signup-benefit"><strong>🌽</strong>YOUR COMMUNITY</div>
+      </div>
+
+      <div class="signup-footer">
+        Already part of the madness?
+        <a href="passport.html">Find your passport</a>
+        <br><br>
+        <a href="index.html">← Back to BmoreCorny</a>
+      </div>
+
+    </section>
+  </main>
+
+  <footer class="site-footer wrap">
+    <a class="brand footer-brand" href="index.html">
+      <span class="brand-kernel">✳</span><span>BMORECORNY</span>
+    </a>
+    <p>THROW BIG. STAY CORNY.</p>
+    <span>© <span id="year"></span> BMORECORNY</span>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="admin/config.js"></script>
+
+  <script>
+    (() => {
+      const config = window.BMORECORNY_CONFIG;
+
+      const authSection = document.getElementById("authSection");
+      const profileSection = document.getElementById("profileSection");
+      const existingSection = document.getElementById("existingSection");
+      const confirmationSection = document.getElementById("confirmationSection");
+
+      const authMessage = document.getElementById("authMessage");
+      const profileMessage = document.getElementById("profileMessage");
+
+      const signupTab = document.getElementById("signupTab");
+      const signinTab = document.getElementById("signinTab");
+      const authForm = document.getElementById("authForm");
+      const profileForm = document.getElementById("profileForm");
+
+      const authSubmit = document.getElementById("authSubmit");
+      const profileSubmit = document.getElementById("profileSubmit");
+
+      let supabaseClient = null;
+      let authMode = "signup";
+
+      document.getElementById("year").textContent = new Date().getFullYear();
+
+      function showMessage(element, message, type = "info") {
+        element.textContent = message;
+        element.className = "signup-message " + type;
+      }
+
+      function clearMessage(element) {
+        element.textContent = "";
+        element.className = "signup-message";
+      }
+
+      function showSection(section) {
+        [authSection, profileSection, existingSection, confirmationSection]
+          .forEach(item => item.classList.add("hidden"));
+
+        section.classList.remove("hidden");
+      }
+
+      function setAuthMode(mode) {
+        authMode = mode;
+
+        signupTab.classList.toggle("active", mode === "signup");
+        signinTab.classList.toggle("active", mode === "signin");
+
+        document.getElementById("password").autocomplete =
+          mode === "signup" ? "new-password" : "current-password";
+
+        authSubmit.textContent =
+          mode === "signup" ? "CREATE MY ACCOUNT →" : "SIGN IN →";
+
+        clearMessage(authMessage);
+      }
+
+      signupTab.addEventListener("click", () => setAuthMode("signup"));
+      signinTab.addEventListener("click", () => setAuthMode("signin"));
+
+      document.getElementById("confirmationSignin").addEventListener("click", () => {
+        showSection(authSection);
+        setAuthMode("signin");
+        clearMessage(authMessage);
+      });
+
+      async function checkExistingPassport() {
+        const { data, error } = await supabaseClient.rpc("get_my_passport");
+
+        if (error) {
+          throw new Error("We couldn't check your passport status. Please refresh and try again.");
+        }
+
+        const profile = data && data.profile ? data.profile : null;
+
+        if (profile && profile.participant_id) {
+          showSection(existingSection);
+          return true;
+        }
+
+        showSection(profileSection);
+        return false;
+      }
+
+      async function initialize() {
+        if (
+          !config ||
+          !config.SUPABASE_URL ||
+          !config.SUPABASE_ANON_KEY ||
+          !window.supabase
+        ) {
+          showSection(authSection);
+          showMessage(
+            authMessage,
+            "The registration service could not initialize. Please try again later.",
+            "error"
+          );
+          authSubmit.disabled = true;
+          return;
+        }
+
+        supabaseClient = window.supabase.createClient(
+          config.SUPABASE_URL,
+          config.SUPABASE_ANON_KEY
+        );
+
+        const { data, error } = await supabaseClient.auth.getSession();
+
+        if (error) {
+          showSection(authSection);
+          showMessage(authMessage, error.message, "error");
+          return;
+        }
+
+        if (data.session) {
+          try {
+            await checkExistingPassport();
+          } catch (err) {
+            showSection(authSection);
+            showMessage(authMessage, err.message, "error");
+          }
+        } else {
+          showSection(authSection);
+        }
+      }
+
+      authForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        if (!supabaseClient) return;
+
+        clearMessage(authMessage);
+
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+
+        authSubmit.disabled = true;
+        authSubmit.textContent = "PLEASE WAIT...";
+
+        try {
+          if (authMode === "signup") {
+            const { data, error } = await supabaseClient.auth.signUp({
+              email,
+              password,
+              options: {
+                emailRedirectTo: window.location.href.split("?")[0].split("#")[0]
+              }
+            });
+
+            if (error) throw error;
+
+            if (data.session) {
+              await checkExistingPassport();
+            } else {
+              showSection(confirmationSection);
+            }
+          } else {
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+              email,
+              password
+            });
+
+            if (error) throw error;
+
+            if (!data.session) {
+              throw new Error("Sign-in did not create a session. Please try again.");
+            }
+
+            await checkExistingPassport();
+          }
+        } catch (err) {
+          showSection(authSection);
+          showMessage(authMessage, err.message || "Something went wrong. Please try again.", "error");
+        } finally {
+          authSubmit.disabled = false;
+          authSubmit.textContent =
+            authMode === "signup" ? "CREATE MY ACCOUNT →" : "SIGN IN →";
+        }
+      });
+
+      profileForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        if (!supabaseClient) return;
+
+        clearMessage(profileMessage);
+
+        const displayName = document.getElementById("displayName").value.trim();
+        const username = document.getElementById("username").value.trim().toLowerCase();
+        const bio = document.getElementById("bio").value.trim();
+        const visibility = document.getElementById("visibility").value;
+
+        if (!/^[a-z0-9_]{3,24}$/.test(username)) {
+          showMessage(
+            profileMessage,
+            "Username must be 3–24 characters using letters, numbers, or underscores.",
+            "error"
+          );
+          return;
+        }
+
+        profileSubmit.disabled = true;
+        profileSubmit.textContent = "CLAIMING YOUR PASSPORT...";
+
+        try {
+          const { data: sessionData, error: sessionError } =
+            await supabaseClient.auth.getSession();
+
+          if (sessionError) throw sessionError;
+          if (!sessionData.session) {
+            throw new Error("Your session has expired. Please sign in again.");
+          }
+
+          const { data, error } = await supabaseClient.rpc(
+            "create_my_participant",
+            {
+              _display_name: displayName,
+              _username: username,
+              _bio: bio || null,
+              _profile_visibility: visibility
+            }
+          );
+
+          if (error) throw error;
+
+          if (!data || !data.success) {
+            throw new Error("Your passport could not be created. Please try again.");
+          }
+
+          showMessage(
+            profileMessage,
+            "Passport claimed! Welcome to BmoreCorny.",
+            "success"
+          );
+
+          window.location.href = "admin/passport.html";
+        } catch (err) {
+          showMessage(
+            profileMessage,
+            err.message || "We couldn't create your passport. Please try again.",
+            "error"
+          );
+        } finally {
+          profileSubmit.disabled = false;
+          profileSubmit.textContent = "CLAIM MY PASSPORT →";
+        }
+      });
+
+      initialize();
+    })();
+  </script>
+</body>
+</html>
