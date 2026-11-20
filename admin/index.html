@@ -526,7 +526,7 @@
         return `
           <div class="event-row">
             <div>
-              <div class="event-name">${escapeHTML(event.name || "Untitled Event")}</div>
+              <div class="event-name">${escapeHTML(event.title || "Untitled Event")}</div>
               <div class="event-meta">
                 ${escapeHTML(formatDate(event.start_at))}
                 ${location ? " · " + escapeHTML(location) : ""}
@@ -561,7 +561,7 @@
         const [eventsResult, attendanceResult, gamesResult] = await Promise.all([
           supabase
             .from("events")
-            .select("id,name,status,start_at,venue,city,state")
+            .select("id,title,status,start_at,venue,city,state")
             .order("start_at", { ascending: false })
             .limit(100),
 
