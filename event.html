@@ -143,6 +143,30 @@
       cursor: wait;
     }
 
+    .hub-verify-link {
+      display: inline-block;
+      margin-top: 17px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #f5b82e;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      cursor: pointer;
+    }
+
+    .hub-verify-link:hover {
+      color: #ffda79;
+    }
+
+    .hub-verify-link:disabled {
+      opacity: .55;
+      cursor: wait;
+    }
+
     .hub-message {
       display: none;
       padding: 15px 18px;
@@ -308,6 +332,7 @@
         const isLive = eventRecord.status === "in_progress";
         const isRegistered = attendance?.attendance_status === "registered";
         const isCheckedIn = ["checked_in", "attended"].includes(attendance?.attendance_status);
+        const hasActiveRegistration = isRegistered || isCheckedIn;
 
         let statusClass = "";
         if (isOpen) statusClass = "open";
@@ -353,6 +378,12 @@
             </button>
           `;
         }
+
+        const verifyLink = hasActiveRegistration ? `
+          <button class="hub-verify-link" id="verifyRegistrationButton">
+            VERIFY MY REGISTRATION ↗
+          </button>
+        ` : "";
 
         content.className = "";
         content.innerHTML = `
@@ -406,6 +437,7 @@
                 : "Sign in or create your Cornstar Passport to register for this event."}
             </p>
             ${action}
+            ${verifyLink}
           </section>
         `;
 
@@ -417,6 +449,11 @@
         const cancelButton = document.getElementById("cancelButton");
         if (cancelButton) {
           cancelButton.addEventListener("click", cancel);
+        }
+
+        const verifyButton = document.getElementById("verifyRegistrationButton");
+        if (verifyButton) {
+          verifyButton.addEventListener("click", verifyRegistration);
         }
       }
 
@@ -470,6 +507,45 @@
         if (attendanceError) throw attendanceError;
 
         attendance = records || null;
+      }
+
+      async function verifyRegistration() {
+        const button = document.getElementById("verifyRegistrationButton");
+        if (!button) return;
+
+        button.disabled = true;
+        button.textContent = "VERIFYING...";
+
+        try {
+          await loadPlayer();
+
+          if (!currentUser) {
+            showMessage("Please sign in to verify your registration.", "error");
+          } else if (!participantId) {
+            showMessage("No active Cornstar Passport is linked to this account.", "error");
+          } else if (!attendance) {
+            showMessage("No registration was found for this event on your Cornstar Passport.", "error");
+          } else {
+            const status = attendance.attendance_status;
+
+            const confirmations = {
+              registered: "Registration verified! You're officially on the attendee list.",
+              checked_in: "Registration verified! You're checked in for this event.",
+              attended: "Registration verified! Your attendance has been recorded.",
+              cancelled: "This registration was cancelled. You are not currently registered."
+            };
+
+            showMessage(
+              confirmations[status] || "A registration record was found with status: " + status + ".",
+              ["registered", "checked_in", "attended"].includes(status) ? "success" : "error"
+            );
+          }
+
+          renderPage();
+        } catch (error) {
+          showMessage("We couldn't verify your registration: " + error.message, "error");
+          renderPage();
+        }
       }
 
       async function register() {
