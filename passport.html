@@ -1,0 +1,290 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#6d469b">
+  <meta name="description" content="Find a BmoreCorny Cornstar Passport. Explore players, achievements, event stamps and cornhole history.">
+  <title>Cornstar Passport | BmoreCorny</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .passport-hub {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 75px 20px 90px;
+    }
+
+    .passport-hero {
+      text-align: center;
+      margin-bottom: 42px;
+    }
+
+    .passport-hero .overline {
+      font-weight: 900;
+      letter-spacing: 3px;
+    }
+
+    .passport-hero h1 {
+      font-family: "Archivo Black", sans-serif;
+      font-size: clamp(42px, 8vw, 76px);
+      line-height: 1;
+      margin: 14px 0;
+    }
+
+    .passport-hero h1 span { color: #f4c72e; }
+
+    .passport-intro {
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .passport-search {
+      max-width: 650px;
+      margin: 0 auto;
+      padding: 28px;
+      border-radius: 14px;
+      background: #f5f0e7;
+      color: #25202c;
+      box-shadow: 0 12px 35px rgba(0,0,0,.12);
+    }
+
+    .passport-search label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 900;
+      font-size: 14px;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .search-row input {
+      flex: 1;
+      min-width: 0;
+      padding: 15px;
+      border: 2px solid #d8d0c3;
+      border-radius: 7px;
+      background: white;
+      color: #25202c;
+      font: inherit;
+      font-weight: 700;
+    }
+
+    .search-row button {
+      padding: 15px 22px;
+      border: 0;
+      border-radius: 7px;
+      background: #6d469b;
+      color: white;
+      font: inherit;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .search-row button:hover { background: #56357e; }
+
+    .search-help {
+      margin: 11px 0 0;
+      color: #716b75;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .search-error {
+      min-height: 20px;
+      margin: 10px 0 0;
+      color: #a22e2e;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .featured {
+      max-width: 650px;
+      margin: 28px auto 0;
+      padding: 23px;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .featured-label {
+      margin-bottom: 9px;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 2px;
+    }
+
+    .featured a {
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .featured a:hover { text-decoration: underline; }
+
+    .passport-explainer {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 55px;
+    }
+
+    .passport-explainer article {
+      padding: 22px 17px;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 10px;
+    }
+
+    .passport-explainer h2 {
+      margin: 0 0 9px;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 17px;
+    }
+
+    .passport-explainer p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .passport-bottom {
+      margin-top: 45px;
+      text-align: center;
+    }
+
+    .passport-bottom p {
+      margin-bottom: 18px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 620px) {
+      .passport-hub { padding-top: 48px; }
+      .passport-search { padding: 20px; }
+      .search-row { flex-direction: column; }
+      .search-row button { width: 100%; }
+      .passport-explainer { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="announcement">YOUR GAME. YOUR STORY. YOUR PASSPORT.</div>
+
+  <header class="site-header wrap">
+    <a class="brand" href="index.html" aria-label="BmoreCorny home">
+      <span class="brand-kernel">✳</span><span>BMORECORNY</span>
+    </a>
+    <nav aria-label="Main navigation">
+      <a href="hall-of-drain.html">Hall of Drain</a>
+      <a href="index.html#100-footer">100-Footer</a>
+      <a href="index.html#connect">Come Play</a>
+    </nav>
+    <a class="header-cta" href="index.html">HOME <span>↗</span></a>
+  </header>
+
+  <main class="passport-hub">
+    <section class="passport-hero">
+      <p class="overline">THE PLAYER IDENTITY</p>
+      <h1>CORNSTAR <span>PASSPORT.</span></h1>
+      <p class="passport-intro">
+        Every player has a story. Every event is another chapter.
+        Find a Cornstar, explore their achievements, and show the world
+        where you've been.
+      </p>
+    </section>
+
+    <section class="passport-search">
+      <form id="passportSearchForm">
+        <label for="username">FIND A CORNSTAR BY USERNAME</label>
+        <div class="search-row">
+          <input
+            id="username"
+            name="username"
+            type="text"
+            placeholder="e.g. bmorecorny42"
+            minlength="3"
+            maxlength="24"
+            pattern="[A-Za-z0-9_]{3,24}"
+            autocomplete="off"
+            required
+          >
+          <button type="submit">FIND PASSPORT ↗</button>
+        </div>
+        <p class="search-help">
+          Enter a player's public username. Usernames use letters,
+          numbers and underscores.
+        </p>
+        <p id="searchError" class="search-error" role="alert"></p>
+      </form>
+    </section>
+
+    <section class="featured">
+      <div class="featured-label">FEATURED CORNSTAR</div>
+      <a href="admin/passport.html?username=bmorecorny42">
+        BMORECORNY · @bmorecorny42 ↗
+      </a>
+    </section>
+
+    <section class="passport-explainer">
+      <article>
+        <h2>YOUR IDENTITY</h2>
+        <p>A player profile with a unique participant number, display name and personal story.</p>
+      </article>
+      <article>
+        <h2>YOUR ACHIEVEMENTS</h2>
+        <p>Official badges and verified accomplishments earned through gameplay.</p>
+      </article>
+      <article>
+        <h2>YOUR JOURNEY</h2>
+        <p>Event history and digital stamps that document where you've played.</p>
+      </article>
+    </section>
+
+    <section class="passport-bottom">
+      <p>Already have an account? Head to your passport to view and manage your player profile.</p>
+      <a class="button button-dark" href="admin/passport.html">
+        OPEN MY PASSPORT ↗
+      </a>
+    </section>
+  </main>
+
+  <footer class="site-footer wrap">
+    <a class="brand footer-brand" href="index.html">
+      <span class="brand-kernel">✳</span><span>BMORECORNY</span>
+    </a>
+    <p>BE THERE. OR BE OTW.</p>
+    <span>© <span id="year"></span> BMORECORNY</span>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent =
+      new Date().getFullYear();
+
+    document.getElementById("passportSearchForm")
+      .addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const input = document.getElementById("username");
+        const error = document.getElementById("searchError");
+        const username = input.value.trim().toLowerCase();
+
+        error.textContent = "";
+
+        if (!/^[a-z0-9_]{3,24}$/.test(username)) {
+          error.textContent =
+            "Enter a valid username using 3–24 letters, numbers or underscores.";
+          return;
+        }
+
+        window.location.href =
+          "admin/passport.html?username=" + encodeURIComponent(username);
+      });
+  </script>
+</body>
+</html>
