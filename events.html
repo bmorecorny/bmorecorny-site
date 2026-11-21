@@ -6,26 +6,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Event Board | BmoreCorny</title>
   <meta name="description" content="Find BmoreCorny events, claim your spot, and get in on the action.">
-  <link rel="sheet" href="assets/.css">
+
+  <link rel="stylesheet" href="assets/style.css">
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="admin/config.js"></script>
 
   <style>
     html,
-body {
-  background: #10110f;
-  color: #fff9e9;
-  min-height: 100%;
-}
+    body {
+      background: #10110f !important;
+      color: #fff9e9;
+      min-height: 100%;
+    }
 
-body {
-  min-height: 100vh;
-}
+    body {
+      min-height: 100vh;
+    }
+
     .event-board {
       max-width: 1100px;
       margin: 0 auto;
       padding: 48px 22px 80px;
     }
+
     .event-hero {
       padding: 42px 30px;
       border-radius: 18px;
@@ -33,6 +37,7 @@ body {
       border: 1px solid #343434;
       margin-bottom: 32px;
     }
+
     .event-eyebrow {
       color: #f5b82e;
       font-size: 12px;
@@ -41,18 +46,21 @@ body {
       text-transform: uppercase;
       margin-bottom: 12px;
     }
+
     .event-hero h1 {
       color: #fff;
       font-size: clamp(34px, 6vw, 58px);
       line-height: 1.05;
       margin: 0 0 14px;
     }
+
     .event-hero p {
       color: #c8c8c8;
       max-width: 650px;
       line-height: 1.6;
       margin: 0;
     }
+
     .event-board-topline {
       display: flex;
       justify-content: space-between;
@@ -61,30 +69,36 @@ body {
       flex-wrap: wrap;
       margin-bottom: 20px;
     }
+
     .event-board-topline h2 {
       color: #fff;
       margin: 0;
       font-size: 25px;
     }
+
     .event-account {
       color: #bcbcbc;
       font-size: 13px;
     }
+
     .event-account a,
     .event-card a {
       color: #f5b82e;
       font-weight: 700;
       text-decoration: none;
     }
+
     .event-account a:hover,
     .event-card a:hover {
       text-decoration: underline;
     }
+
     .event-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
       gap: 18px;
     }
+
     .event-card {
       background: #191919;
       border: 1px solid #363636;
@@ -95,20 +109,24 @@ body {
       flex-direction: column;
       gap: 13px;
     }
+
     .event-card h3 {
       color: #fff;
       font-size: 23px;
       line-height: 1.2;
       margin: 0;
     }
+
     .event-title-link {
       color: #fff !important;
       text-decoration: none !important;
     }
+
     .event-title-link:hover {
       color: #f5b82e !important;
       text-decoration: underline !important;
     }
+
     .event-type {
       color: #f5b82e;
       font-size: 11px;
@@ -116,15 +134,18 @@ body {
       letter-spacing: 1.4px;
       text-transform: uppercase;
     }
+
     .event-details {
       color: #c3c3c3;
       font-size: 14px;
       line-height: 1.65;
     }
+
     .event-details strong {
       color: #fff;
       font-weight: 650;
     }
+
     .event-status {
       display: inline-flex;
       align-self: flex-start;
@@ -137,18 +158,22 @@ body {
       letter-spacing: .7px;
       text-transform: uppercase;
     }
+
     .event-status.open {
       background: #183d2a;
       color: #8ee0a9;
     }
+
     .event-status.registered {
       background: #3c3215;
       color: #ffd66e;
     }
+
     .event-status.live {
       background: #3c2020;
       color: #ffaaaa;
     }
+
     .event-action {
       margin-top: auto;
       padding-top: 8px;
@@ -156,6 +181,7 @@ body {
       flex-direction: column;
       gap: 13px;
     }
+
     .event-button {
       display: inline-block;
       width: 100%;
@@ -172,19 +198,23 @@ body {
       cursor: pointer;
       transition: opacity .15s ease, transform .15s ease;
     }
+
     .event-button:hover {
       opacity: .9;
       transform: translateY(-1px);
     }
+
     .event-button:disabled {
       opacity: .55;
       cursor: wait;
       transform: none;
     }
+
     .event-button.secondary {
       background: #333;
       color: #fff !important;
     }
+
     .event-details-link {
       display: block;
       text-align: center;
@@ -194,6 +224,7 @@ body {
       letter-spacing: .8px;
       padding: 5px;
     }
+
     .event-message {
       padding: 17px 19px;
       border-radius: 10px;
@@ -203,14 +234,17 @@ body {
       line-height: 1.5;
       margin-bottom: 20px;
     }
+
     .event-message.error {
       border-color: #874343;
       color: #ffb6b6;
     }
+
     .event-message.success {
       border-color: #39764c;
       color: #a5e6b6;
     }
+
     .event-empty {
       padding: 35px 20px;
       text-align: center;
@@ -219,10 +253,12 @@ body {
       border: 1px dashed #444;
       border-radius: 14px;
     }
+
     .event-empty h3 {
       color: #fff;
       margin: 0 0 8px;
     }
+
     .event-footer-links {
       margin-top: 45px;
       padding-top: 22px;
@@ -232,20 +268,23 @@ body {
       gap: 20px;
       font-size: 13px;
     }
+
     .event-footer-links a {
       color: #f5b82e;
       text-decoration: none;
       font-weight: 700;
     }
+
     @media (max-width: 600px) {
       .event-board {
         padding: 25px 15px 55px;
       }
+
       .event-hero {
         padding: 30px 21px;
       }
     }
-  </>
+  </style>
 </head>
 
 <body>
