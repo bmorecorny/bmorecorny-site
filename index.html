@@ -11,97 +11,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/style.css">
-
-  <style>
-    .footer-signup-form {
-      margin-top: 24px;
-      max-width: 520px;
-    }
-
-    .footer-signup-form label {
-      display: block;
-      color: #fff;
-      font-size: 13px;
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
-
-    .footer-signup-form input[type="email"] {
-      display: block;
-      width: 100%;
-      box-sizing: border-box;
-      padding: 15px 16px;
-      border: 2px solid #ded6e9;
-      border-radius: 9px;
-      background: #fff;
-      color: #171717;
-      font: inherit;
-      font-size: 16px;
-      margin-bottom: 14px;
-    }
-
-    .footer-signup-form input[type="email"]:focus {
-      outline: 3px solid #f5b82e;
-      outline-offset: 2px;
-    }
-
-    .footer-consent {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      margin: 12px 0 18px;
-      color: #e4e0e9;
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .footer-consent input {
-      flex: 0 0 auto;
-      width: 17px;
-      height: 17px;
-      margin-top: 1px;
-      accent-color: #f5b82e;
-    }
-
-    .footer-signup-form button:disabled {
-      opacity: .6;
-      cursor: wait;
-    }
-
-    .footer-signup-message {
-      display: none;
-      margin-top: 16px;
-      padding: 13px 15px;
-      border-radius: 9px;
-      background: #29202f;
-      border: 1px solid #80669a;
-      color: #fff;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .footer-signup-message.show {
-      display: block;
-    }
-
-    .footer-signup-message.success {
-      border-color: #63b981;
-      color: #baf0ca;
-    }
-
-    .footer-signup-message.error {
-      border-color: #d66b6b;
-      color: #ffc0c0;
-    }
-
-    .footer-honeypot {
-      position: absolute;
-      left: -10000px;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-    }
-  </style>
 </head>
 
 <body>
@@ -168,7 +77,7 @@
         <div class="feature-copy">
           <p id="challengeText">One big idea. One unforgettable shot. The official challenge details, submission process and leaderboard are coming soon.</p>
 
-          <form class="footer-signup-form" id="footerSignupForm">
+          <form class="footer-signup-form" id="footerSignupForm" novalidate>
             <label for="footerSignupEmail">YOUR EMAIL ADDRESS</label>
             <input
               type="email"
@@ -210,6 +119,7 @@
               id="footerSignupMessage"
               role="status"
               aria-live="polite"
+              aria-atomic="true"
             ></div>
           </form>
 
@@ -240,7 +150,7 @@
 
     <section class="experience-section wrap" id="experiences">
       <div class="experience-heading">
-        <p class="overline">THE WHOLE POINT</p>
+        <p class="overline">THE HOLE POINT</p>
         <h2 id="experienceTitle">MORE THAN<br><span>A GAME.</span></h2>
       </div>
 
