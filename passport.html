@@ -1,290 +1,755 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#6d469b">
-  <meta name="description" content="Find a BmoreCorny Cornstar Passport. Explore players, achievements, event stamps and cornhole history.">
-  <title>Cornstar Passport | BmoreCorny</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/style.css">
-  <style>
-    .passport-hub {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 75px 20px 90px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BmoreCorny | Cornstar Passport</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./config.js"></script>
+<style>
+:root {
+  --bg:#101114;--panel:#1b1a1f;--panel2:#242229;
+  --border:#34313a;--yellow:#ffc928;--orange:#ff7b22;
+  --text:#f7f5f0;--muted:#aaa5b0;--green:#65d69a;
+  --purple:#bd83ff;--purple-dark:#51267f;
+  --gold:#ffc15a;--gold-dark:#88500e;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+button,input,select{font:inherit}
+button{border:0;border-radius:9px;padding:11px 15px;background:var(--yellow);color:#17130a;font-weight:800;cursor:pointer}
+button:hover{filter:brightness(1.08)}
+button.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--border)}
+button:disabled{opacity:.45;cursor:not-allowed}
+input,select{background:#121116;border:1px solid var(--border);color:var(--text);padding:12px;border-radius:8px;width:100%}
+a{color:var(--yellow)}
+header{border-bottom:1px solid var(--border);padding:15px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{font-weight:900;letter-spacing:1px}
+.brand span{color:var(--yellow)}
+.header-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.nav-button{display:inline-block;text-decoration:none;border-radius:9px;padding:11px 15px;background:var(--yellow);color:#17130a;font-weight:900;font-size:13px}
+.nav-button:hover{filter:brightness(1.08)}
+.nav-button.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--border)}
+main{max-width:1100px;margin:auto;padding:24px 18px 60px}
+.hidden{display:none!important}
+.notice{background:#302918;border:1px solid #635020;padding:12px;border-radius:9px;color:#ffe08a;margin-bottom:16px}
+.login{max-width:430px;margin:40px auto;background:var(--panel);border:1px solid var(--border);padding:24px;border-radius:14px}
+.login h2{margin-top:0}
+.login input{margin:8px 0}
+.hero{background:linear-gradient(120deg,#29241b,#1c1a20);border:1px solid #51442b;border-radius:16px;padding:25px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.hero-left{display:flex;align-items:center;gap:18px}
+.avatar{width:88px;height:88px;border-radius:50%;background:linear-gradient(145deg,var(--yellow),var(--orange));color:#17130a;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:900;border:3px solid #fff3bf;flex-shrink:0}
+.name{font-size:30px;font-weight:900;margin:0 0 5px}
+.username{color:var(--yellow);font-weight:700}
+.bio{color:var(--muted);margin-top:10px;max-width:550px}
+.passport-number{color:var(--muted);font-size:13px;margin-top:8px}
+.hero-right{text-align:right}
+.hero-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.hero-value{font-size:26px;font-weight:900;color:var(--yellow);margin-top:5px}
+.hero-actions{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end;margin-top:14px}
+.player-path{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;background:#201d17;border:1px solid #554326;border-radius:12px;padding:17px 19px;margin-top:16px}
+.player-path strong{display:block;margin-bottom:5px}
+.player-path p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin:16px 0}
+.stat{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;min-height:100px}
+.stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.stat-value{font-size:27px;font-weight:900;margin-top:9px}
+.stat-value.highlight{color:var(--yellow)}
+.section{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:19px;margin-top:16px}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.section h2{margin:0;font-size:19px}
+.count{color:var(--muted);font-size:13px}
 
-    .passport-hero {
-      text-align: center;
-      margin-bottom: 42px;
-    }
+/* Badge collection: earned is vivid; locked is intentionally subdued. */
+.badge-family{margin-top:18px;padding-top:15px;border-top:1px solid #3c3942}
+.badge-family:first-child{margin-top:0;padding-top:0;border-top:0}
+.badge-family-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.badge-family-title{font-size:13px;font-weight:950;letter-spacing:1.1px;text-transform:uppercase}
+.badge-family-description{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.45}
+.badge-family-count{font-size:11px;color:var(--muted);white-space:nowrap}
+.badge-family.player .badge-family-title{color:#bd83ff}
+.badge-family.collector .badge-family-title{color:#45d6b0}
+.badge-family.community .badge-family-title{color:#f08bb5}
+.badge-family.event .badge-family-title{color:#55c8f2}
+.badges{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.badge-card,.catalog-card{
+  --badge-accent:#aaa5b0;--badge-glow:rgba(170,165,176,.12);
+  position:relative;overflow:hidden;min-width:0;text-align:center;
+  background:linear-gradient(150deg,#302d36,#211f26);
+  border:1px solid #514d58;border-radius:13px;
+}
+.badge-card{min-height:180px;padding:17px 13px;display:flex;flex-direction:column;justify-content:center;align-items:center}
+.badge-card.clickable{width:100%;color:var(--text);font:inherit;cursor:pointer;transition:transform .16s,border-color .16s,box-shadow .16s}
+.badge-card.clickable:hover{transform:translateY(-3px);border-color:var(--badge-accent);box-shadow:0 8px 25px var(--badge-glow)}
+.badge-card:focus-visible,.catalog-card:focus-visible{outline:2px solid var(--yellow);outline-offset:3px}
+.badge-card.board,.catalog-card.board,.modal-badge.board{--badge-accent:#bd83ff;--badge-glow:rgba(169,106,255,.25)}
+.badge-card.hole,.catalog-card.hole,.modal-badge.hole{--badge-accent:#ffc15a;--badge-glow:rgba(255,181,46,.25)}
+.badge-card.official,.catalog-card.official,.modal-badge.official{--badge-accent:#ffc928;--badge-glow:rgba(255,201,40,.3)}
+.badge-card.general,.catalog-card.general,.modal-badge.general{--badge-accent:#ffc928;--badge-glow:rgba(255,201,40,.2)}
+/* Collector badges use their own premium ownership palette, never the community palette. */
+.badge-card.collector,.catalog-card.collector,.modal-badge.collector{--badge-accent:#45d6b0;--badge-glow:rgba(69,214,176,.28)}
+.badge-card.collector-custom,.catalog-card.collector-custom,.modal-badge.collector-custom{--badge-accent:#ffd166;--badge-glow:rgba(255,209,102,.3)}
+.badge-card.community,.catalog-card.community,.modal-badge.community{--badge-accent:#f08bb5;--badge-glow:rgba(240,139,181,.22)}
+.badge-card.event,.catalog-card.event,.modal-badge.event{--badge-accent:#55c8f2;--badge-glow:rgba(85,200,242,.25)}
+.badge-card.player-tier-1,.catalog-card.player-tier-1,.modal-badge.player-tier-1{--badge-accent:#79d69a;--badge-glow:rgba(121,214,154,.2)}
+.badge-card.player-tier-2,.catalog-card.player-tier-2,.modal-badge.player-tier-2{--badge-accent:#4dc8c0;--badge-glow:rgba(77,200,192,.22)}
+.badge-card.player-tier-3,.catalog-card.player-tier-3,.modal-badge.player-tier-3{--badge-accent:#5da9f6;--badge-glow:rgba(93,169,246,.24)}
+.badge-card.player-tier-4,.catalog-card.player-tier-4,.modal-badge.player-tier-4{--badge-accent:#a78bfa;--badge-glow:rgba(167,139,250,.25)}
+.badge-card.player-tier-5,.catalog-card.player-tier-5,.modal-badge.player-tier-5{--badge-accent:#ed8bd5;--badge-glow:rgba(237,139,213,.25)}
+.badge-card.player-tier-6,.catalog-card.player-tier-6,.modal-badge.player-tier-6{--badge-accent:#ff9b65;--badge-glow:rgba(255,155,101,.26)}
+.badge-card.earned,.catalog-card.earned{
+  opacity:1;filter:none;border:2px solid var(--badge-accent);
+  background:linear-gradient(145deg,color-mix(in srgb,var(--badge-accent) 18%,#292630),#211f26 75%);
+  box-shadow:inset 0 0 18px var(--badge-glow),0 0 12px var(--badge-glow);
+}
+.badge-card.locked,.catalog-card.locked{
+  opacity:1;filter:saturate(.12);border:1px solid #514d58;
+  background:linear-gradient(145deg,#29272d,#1c1b20 75%);box-shadow:none;
+}
+.badge-card.locked .badge-art,.catalog-card.locked .badge-art{opacity:.34;filter:grayscale(1);border:1px solid #77727d;background:linear-gradient(145deg,#39363e,#222127);box-shadow:none}
+.badge-card.locked .badge-name,.catalog-card.locked .badge-name{color:#aaa5b0}
+.badge-card.locked .badge-desc,.catalog-card.locked .badge-desc{color:#77727d}
+.badge-art{width:65px;height:65px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:31px;margin:0 auto 11px;border:2px solid var(--badge-accent);background:radial-gradient(circle at 35% 25%,color-mix(in srgb,var(--badge-accent) 32%,#302d36),#17161b 75%);box-shadow:0 0 18px var(--badge-glow),inset 0 0 12px var(--badge-glow);flex-shrink:0}
+.badge-name{font-weight:900;line-height:1.25}
+.badge-desc{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.45}
+.badge-rarity{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--badge-accent);margin-top:10px;font-weight:900}
+.badge-open-hint{font-size:10px;color:var(--badge-accent);margin-top:10px;font-weight:900;letter-spacing:.7px}
+.badge-state{display:inline-flex;align-items:center;gap:5px;border-radius:30px;padding:5px 9px;margin-top:11px;font-size:9px;font-weight:900;letter-spacing:.8px;border:1px solid var(--badge-accent);color:var(--badge-accent)}
+.locked .badge-state{border-color:#77727d;color:#aaa5b0}
+.badge-type{font-size:9px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--badge-accent);margin-bottom:8px}
+.catalog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
+.catalog-card{padding:16px 12px;min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:var(--text);font:inherit;transition:transform .16s,border-color .16s,box-shadow .16s}
+.catalog-card:hover{transform:translateY(-2px);border-color:var(--badge-accent)}
+.catalog-card .badge-art{width:58px;height:58px;font-size:27px}
+.catalog-card .badge-name{font-size:14px}
+.catalog-card .badge-desc{font-size:11px}
+.catalog-status{font-size:10px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;margin-top:11px;color:var(--muted)}
+.catalog-card.earned .catalog-status{color:var(--green)}
+.catalog-card.locked .catalog-status{color:#aaa5b0}
+.empty{padding:28px;text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:10px;line-height:1.6}
+.event-list{display:flex;flex-direction:column;gap:10px}
+.event{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;padding:14px;background:var(--panel2);border:1px solid var(--border);border-radius:10px}
+.event-name{font-weight:800}
+.event-location{font-size:13px;color:var(--muted);margin-top:5px}
+.event-date{color:var(--yellow);font-size:13px;font-weight:700}
+.event-section-actions{display:flex;gap:8px;flex-wrap:wrap}
+.event-status{display:inline-block;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.7px;padding:5px 8px;border-radius:20px;margin-top:8px;background:#302918;border:1px solid #635020;color:#ffe08a}
+.event-status.checked-in{background:#173324;border-color:#286343;color:#8debb5}
+.event-status.registered{background:#302918;border-color:#635020;color:#ffe08a}
+.upcoming-event{border-left:3px solid var(--yellow)}
+.upcoming-event.active-event{border-left-color:var(--green)}
+.upcoming-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.upcoming-actions .nav-button{white-space:nowrap}
+.footer{text-align:center;color:var(--muted);padding:30px 10px;font-size:12px}
+.error{color:#ff8e8e;margin-top:12px}
+.success{color:var(--green);margin-top:12px}
+.share-row{display:flex;gap:8px;flex-wrap:wrap}
 
-    .passport-hero .overline {
-      font-weight: 900;
-      letter-spacing: 3px;
-    }
+/* Badge detail and catalog modals */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:1000;display:flex;align-items:center;justify-content:center;padding:18px}
+.modal{width:min(100%,650px);max-height:88vh;overflow:auto;background:var(--panel);border:1px solid #51442b;border-radius:16px;padding:22px;box-shadow:0 20px 70px #0009}
+.modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:18px}
+.modal-head h2{margin:0;font-size:22px}
+.modal-close{background:var(--panel2);color:var(--text);border:1px solid var(--border);padding:8px 12px}
+.modal-badge{--badge-accent:#aaa5b0;text-align:center;padding:20px 14px;border:2px solid var(--badge-accent);border-radius:14px;background:linear-gradient(145deg,#302d36,#1d1b22);box-shadow:inset 0 0 18px var(--badge-glow,rgba(170,165,176,.12))}
+.modal-badge.locked{filter:saturate(.15);border:1px solid #77727d;background:linear-gradient(145deg,#29272d,#1c1b20);box-shadow:none}
+.modal-badge .badge-art{width:86px;height:86px;font-size:43px;margin:0 auto 14px}
+.modal-badge.locked .badge-art{opacity:.35;filter:grayscale(1);border-color:#77727d}
+.modal-title{text-align:center;font-size:25px;font-weight:900}
+.modal-description{text-align:center;color:var(--muted);line-height:1.6;margin:10px auto 18px;max-width:480px}
+.detail-list{display:grid;gap:9px;margin:18px 0}
+.detail-row{display:flex;justify-content:space-between;gap:14px;padding:11px;background:var(--panel2);border-radius:8px}
+.detail-row span:first-child{color:var(--muted)}
+.detail-row span:last-child{text-align:right;font-weight:700}
+.modal-actions{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:18px}
+.catalog-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.catalog-toolbar input{flex:1;min-width:180px}
+.catalog-meta{color:var(--muted);font-size:12px}
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 15px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+.legend-dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.legend-dot.board{background:var(--purple)}
+.legend-dot.hole{background:var(--gold)}
+.legend-dot.collector{background:#45d6b0}
+.legend-dot.community{background:#f08bb5}
+.legend-dot.event{background:#55c8f2}
+.legend-dot.locked{background:#77727d}
+@media(max-width:850px){.stats{grid-template-columns:repeat(3,1fr)}.badges{grid-template-columns:repeat(2,1fr)}.catalog-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){
+ header{padding:13px 14px}.header-actions{width:100%}.header-actions>*{flex:1;text-align:center}
+ main{padding:15px 12px 40px}.stats{grid-template-columns:repeat(2,1fr);gap:8px}
+ .stat{padding:12px;min-height:85px}.stat-value{font-size:23px}
+ .hero{padding:18px}.avatar{width:65px;height:65px;font-size:25px}
+ .name{font-size:24px}.hero-right{text-align:left}.hero-actions{justify-content:flex-start}
+ .badges{grid-template-columns:repeat(2,1fr)}.player-path{align-items:flex-start}
+ .upcoming-actions{width:100%}.upcoming-actions .nav-button{flex:1;text-align:center}
+ .catalog-grid{grid-template-columns:1fr 1fr}.modal{padding:17px}
+ .badge-card{padding:13px 8px;min-height:170px}.badge-art{width:55px;height:55px;font-size:27px}
+}
 
-    .passport-hero h1 {
-      font-family: "Archivo Black", sans-serif;
-      font-size: clamp(42px, 8vw, 76px);
-      line-height: 1;
-      margin: 14px 0;
-    }
+/* Passport book redesign */
+.passport-book{margin-top:18px}
+.passport-page{display:none;animation:pageIn .22s ease-out}
+.passport-page.active{display:block}
+@keyframes pageIn{from{opacity:.65;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.cover-badge{position:relative;overflow:hidden;background:radial-gradient(circle at 12% 8%,#47371c 0,#29231a 28%,#1b1a20 68%);border:1px solid #79602c;border-radius:22px;padding:clamp(20px,4vw,38px);box-shadow:0 18px 45px #0005,inset 0 0 0 5px #201c16,inset 0 0 0 6px #6c5428}
+.cover-badge:after{content:"CORNSTAR PASSPORT";position:absolute;right:20px;top:16px;color:#d6b46c;font-size:10px;letter-spacing:2.5px;font-weight:900;opacity:.55}
+.cover-badge .avatar{width:108px;height:108px;font-size:37px;box-shadow:0 0 0 5px #33291a,0 0 0 7px #9b793a,0 10px 28px #0007}
+.cover-badge .name{font-size:clamp(28px,4vw,42px);letter-spacing:-.8px}
+.cover-badge .hero-left{gap:24px}
+.cover-badge .hero-right{min-width:200px}
+.cover-badge .hero-value{font-size:30px;letter-spacing:1px}
+.cover-badge .passport-number{color:#c7b58d}
+.cover-badge .bio{max-width:470px}
+.cover-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.cover-chip{display:inline-flex;align-items:center;gap:7px;border:1px solid #68532b;background:#221e17;color:#e6d4a8;border-radius:30px;padding:8px 12px;font-size:11px;font-weight:800;letter-spacing:.5px}
+.cover-chip.live{color:#9df0bf;border-color:#286343;background:#173324}
+.book-nav{background:#1b1a1f;border:1px solid var(--border);border-radius:15px;padding:12px;margin:18px 0 4px;display:grid;gap:10px}
+.page-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.page-tab{background:#242229;color:#c5c0ca;border:1px solid #393640;padding:10px 8px;border-radius:10px;font-size:11px;letter-spacing:.5px}
+.page-tab.active{background:linear-gradient(135deg,#ffc928,#ff8a27);color:#17130a;border-color:#ffda67;box-shadow:0 4px 14px #ffc92822}
+.page-tab .tab-number{display:block;font-size:9px;opacity:.75;margin-bottom:4px}
+.page-controls{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.page-progress{height:4px;background:#302d35;border-radius:9px;overflow:hidden;flex:1;margin:0 8px}
+.page-progress-fill{height:100%;width:20%;background:linear-gradient(90deg,var(--yellow),var(--orange));transition:width .2s}
+.page-counter{font-size:11px;color:var(--muted);min-width:72px;text-align:center;font-weight:800;letter-spacing:.7px}
+.page-control{min-width:100px}
+.page-intro{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:4px 2px 14px;flex-wrap:wrap}
+.page-intro h2{font-size:25px;margin:0;letter-spacing:-.5px}
+.page-intro p{color:var(--muted);font-size:13px;margin:6px 0 0}
+.stats-page .stats{grid-template-columns:repeat(3,1fr);gap:14px;margin:0}
+.stats-page .stat{min-height:135px;padding:20px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(145deg,#26232b,#1b1a1f)}
+.stats-page .stat:nth-child(1),.stats-page .stat:nth-child(2){border-color:#665127}
+.stats-page .stat-value{font-size:clamp(28px,4vw,38px)}
+.stats-page .stat-label{letter-spacing:1px}
+.stats-page .stat:nth-child(3) .stat-value,.stats-page .stat:nth-child(4) .stat-value{color:var(--purple)}
+.stats-page .stat:nth-child(5) .stat-value{color:var(--gold)}
+.stats-page .stat:nth-child(6) .stat-value{color:var(--green)}
+.passport-page .section{margin-top:0}
+.events-page .section+.section{margin-top:16px}
+.profile-page .section+.section{margin-top:16px}
+.cover-cta{margin-top:16px;border:1px solid #544326;background:linear-gradient(120deg,#282217,#201d17);border-radius:15px;padding:18px 20px}
+.cover-cta strong{font-size:15px}
+.cover-cta p{color:var(--muted);margin:7px 0 13px;line-height:1.5;font-size:13px}
+@media(max-width:650px){
+ .page-tabs{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+ .page-tab{padding:9px 3px;font-size:9px;letter-spacing:0}
+ .page-tab .tab-number{font-size:8px}
+ .cover-badge{padding:24px 18px 20px}
+ .cover-badge:after{right:12px;top:12px;font-size:8px;letter-spacing:1.5px}
+ .cover-badge .hero-left{align-items:flex-start;gap:15px}
+ .cover-badge .avatar{width:75px;height:75px;font-size:27px}
+ .cover-badge .hero-right{width:100%;padding-top:14px;border-top:1px solid #51442b}
+ .cover-badge .hero-actions{justify-content:flex-start}
+ .stats-page .stats{grid-template-columns:repeat(2,1fr);gap:8px}
+ .stats-page .stat{min-height:112px;padding:14px}
+ .page-control{min-width:82px;padding:10px 9px;font-size:12px}
+ .page-intro h2{font-size:22px}
+}
+@media(max-width:380px){.page-counter{min-width:55px;font-size:10px}.page-control{min-width:70px}.cover-meta{gap:6px}.cover-chip{font-size:9px;padding:7px 9px}}
 
-    .passport-hero h1 span { color: #f4c72e; }
 
-    .passport-intro {
-      max-width: 600px;
-      margin: 0 auto;
-      line-height: 1.7;
-    }
+/* Fixed passport page frame: same viewport for the cover and every content page. */
+.passport-book{display:flex;flex-direction:column;gap:14px}
+.passport-frame{height:560px;min-height:560px;max-height:560px;position:relative;overflow:hidden;border:1px solid var(--border);border-radius:18px;background:linear-gradient(145deg,#1b1a1f,#17161a)}
+.passport-frame>.passport-page{display:none!important;position:absolute;inset:0;width:100%;height:100%;min-height:0;max-height:none;overflow-y:auto;overscroll-behavior:contain;padding:16px;border:0;border-radius:0;background:transparent;scrollbar-width:thin;scrollbar-color:#514d58 #201e23}
+.passport-frame>.passport-page.active{display:block!important}
+#coverPage{padding:0!important;background:transparent;border:0;overflow-y:auto}
+#coverPage .cover-badge{min-height:100%;height:100%;display:flex;align-content:center;justify-content:center;border:0;border-radius:0}
+#coverPage .cover-meta,#coverPage .cover-cta{flex-shrink:0}
+.book-nav{margin:0}
+.account-tools{margin-top:22px}
+.account-tools .profile-page{display:block;height:auto;min-height:0;max-height:none;overflow:visible;padding:0;border:0;background:transparent}
+@media(max-width:650px){
+ .passport-frame{height:620px;min-height:620px;max-height:620px}
+ .passport-frame>.passport-page{padding:12px}
+ #coverPage{padding:0!important}
+ #coverPage .cover-badge{padding:20px 16px;align-content:flex-start}
+}
 
-    .passport-search {
-      max-width: 650px;
-      margin: 0 auto;
-      padding: 28px;
-      border-radius: 14px;
-      background: #f5f0e7;
-      color: #25202c;
-      box-shadow: 0 12px 35px rgba(0,0,0,.12);
-    }
-
-    .passport-search label {
-      display: block;
-      margin-bottom: 10px;
-      font-weight: 900;
-      font-size: 14px;
-    }
-
-    .search-row {
-      display: flex;
-      gap: 10px;
-    }
-
-    .search-row input {
-      flex: 1;
-      min-width: 0;
-      padding: 15px;
-      border: 2px solid #d8d0c3;
-      border-radius: 7px;
-      background: white;
-      color: #25202c;
-      font: inherit;
-      font-weight: 700;
-    }
-
-    .search-row button {
-      padding: 15px 22px;
-      border: 0;
-      border-radius: 7px;
-      background: #6d469b;
-      color: white;
-      font: inherit;
-      font-weight: 900;
-      cursor: pointer;
-    }
-
-    .search-row button:hover { background: #56357e; }
-
-    .search-help {
-      margin: 11px 0 0;
-      color: #716b75;
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .search-error {
-      min-height: 20px;
-      margin: 10px 0 0;
-      color: #a22e2e;
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .featured {
-      max-width: 650px;
-      margin: 28px auto 0;
-      padding: 23px;
-      border: 1px solid rgba(255,255,255,.2);
-      border-radius: 12px;
-      text-align: center;
-    }
-
-    .featured-label {
-      margin-bottom: 9px;
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: 2px;
-    }
-
-    .featured a {
-      font-weight: 900;
-      text-decoration: none;
-    }
-
-    .featured a:hover { text-decoration: underline; }
-
-    .passport-explainer {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-top: 55px;
-    }
-
-    .passport-explainer article {
-      padding: 22px 17px;
-      border: 1px solid rgba(255,255,255,.18);
-      border-radius: 10px;
-    }
-
-    .passport-explainer h2 {
-      margin: 0 0 9px;
-      font-family: "Archivo Black", sans-serif;
-      font-size: 17px;
-    }
-
-    .passport-explainer p {
-      margin: 0;
-      font-size: 13px;
-      line-height: 1.65;
-    }
-
-    .passport-bottom {
-      margin-top: 45px;
-      text-align: center;
-    }
-
-    .passport-bottom p {
-      margin-bottom: 18px;
-      line-height: 1.6;
-    }
-
-    @media (max-width: 620px) {
-      .passport-hub { padding-top: 48px; }
-      .passport-search { padding: 20px; }
-      .search-row { flex-direction: column; }
-      .search-row button { width: 100%; }
-      .passport-explainer { grid-template-columns: 1fr; }
-    }
-  </style>
+</style>
 </head>
-
 <body>
-  <div class="announcement">YOUR GAME. YOUR STORY. YOUR PASSPORT.</div>
-
-  <header class="site-header wrap">
-    <a class="brand" href="index.html" aria-label="BmoreCorny home">
-      <span class="brand-kernel">✳</span><span>BMORECORNY</span>
-    </a>
-    <nav aria-label="Main navigation">
-      <a href="hall-of-drain.html">Hall of Drain</a>
-      <a href="index.html#100-footer">100-Footer</a>
-      <a href="index.html#connect">Come Play</a>
+<header>
+  <div class="brand">Bmore<span>Corny</span> · PASSPORT</div>
+  <div class="header-actions">
+    <a class="nav-button" href="../events.html">🌽 FIND EVENTS</a>
+    <button class="secondary" id="shareBtn">Share Passport</button>
+    <button class="secondary hidden" id="logoutBtn">Log Out</button>
+  </div>
+</header>
+<main>
+  <div id="status" class="notice">Connecting to passport system...</div>
+  <section id="loginPanel" class="login hidden">
+    <h2>Access Your Passport</h2>
+    <p style="color:var(--muted)">Sign in to access your personal Cornstar Passport.</p>
+    <input id="email" type="email" placeholder="Email address" autocomplete="email">
+    <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+    <button id="loginBtn" style="width:100%;margin-top:8px">Sign In</button>
+    <button id="resetBtn" class="secondary" style="width:100%;margin-top:10px">Forgot Password?</button>
+    <div id="loginMessage"></div>
+    <div style="text-align:center;margin-top:18px;color:var(--muted);font-size:13px">New to BmoreCorny? <a href="../signup.html">Create your Cornstar Passport</a></div>
+    <a class="nav-button" href="../events.html" style="display:block;text-align:center;margin-top:16px">BROWSE UPCOMING EVENTS →</a>
+  </section>
+  <section id="passport" class="hidden">
+    
+    <div class="passport-book">
+      <div class="passport-frame">
+    <div class="passport-page active" data-passport-page="0" id="coverPage">
+    <div class="hero cover-badge">
+      <div class="hero-left">
+        <div class="avatar" id="avatar">BC</div>
+        <div><h1 class="name" id="displayName">Cornstar</h1><div class="username" id="username"></div><div class="bio" id="bio"></div><div class="passport-number" id="passportNumber"></div></div>
+      </div>
+      <div class="hero-right">
+        <div class="hero-label">Passport Status</div><div class="hero-value">🌽 ACTIVE</div><div class="passport-number" id="memberSince"></div>
+        <div class="hero-actions"><a class="nav-button" href="../events.html">FIND EVENTS</a><button class="secondary" id="heroShareBtn">SHARE PASSPORT</button></div>
+      </div>
+    </div>
+    <div class="cover-meta"><span class="cover-chip live">● PASSPORT ACTIVE</span><span class="cover-chip" id="coverJoined">MEMBER SINCE —</span><span class="cover-chip" id="coverNumber">CORNSTAR #—</span></div>
+    <div class="cover-cta"><strong>🌽 Ready for your next BmoreCorny event?</strong><p>Find an event, claim your spot, show up, and add another chapter to your Cornstar story.</p><a class="nav-button" href="../events.html">BROWSE UPCOMING EVENTS →</a></div>
+    </div>
+    <section class="passport-page stats-page" data-passport-page="1">
+      <div class="page-intro"><div><h2>Player Stats</h2><p>Your numbers. Your game. Your Cornstar story.</p></div></div>
+    <div class="stats">
+      <div class="stat"><div class="stat-label">Games Played</div><div class="stat-value" id="games">0</div></div>
+      <div class="stat"><div class="stat-label">Throws</div><div class="stat-value" id="throws">0</div></div>
+      <div class="stat"><div class="stat-label">Furthest Board</div><div class="stat-value" id="board">—</div></div>
+      <div class="stat"><div class="stat-label">Furthest Hole</div><div class="stat-value highlight" id="hole">—</div></div>
+      <div class="stat"><div class="stat-label">Badges</div><div class="stat-value" id="badgeCount">0</div></div>
+      <div class="stat"><div class="stat-label">Event Stamps</div><div class="stat-value" id="eventCount">0</div></div>
+    </div>
+    </section>
+    <section class="passport-page" data-passport-page="2">
+      <div class="page-intro"><div><h2>Achievement Vault</h2><p>Every badge tells part of the story. Browse what you've earned and what's still out there.</p></div></div>
+    <div class="section">
+      <div class="section-head"><div><h2>🏆 Achievement Vault</h2><span class="count" id="badgeSubtitle"></span></div><button id="catalogBtn" class="secondary">VIEW FULL BADGE CATALOG →</button></div>
+      <div class="legend"><span class="legend-item"><i class="legend-dot board"></i> PLAYER · ON BOARD</span><span class="legend-item"><i class="legend-dot hole"></i> PLAYER · IN HOLE</span><span class="legend-item"><i class="legend-dot collector"></i> COLLECTOR</span><span class="legend-item"><i class="legend-dot community"></i> COMMUNITY</span><span class="legend-item"><i class="legend-dot event"></i> EVENTS</span><span class="legend-item"><i class="legend-dot locked"></i> NOT YET EARNED</span></div>
+      <div id="badges"></div>
+    </div>
+    </section>
+    <section class="passport-page events-page" data-passport-page="3">
+      <div class="page-intro"><div><h2>Event Passport</h2><p>Upcoming registrations and the events you've officially stamped into your history.</p></div></div>
+    <div class="section" id="upcomingSection">
+      <div class="section-head"><div><h2>🎟️ My Upcoming Events</h2><span class="count">Your registrations and game-day check-ins</span></div><div class="event-section-actions"><a class="nav-button" href="../events.html">FIND MORE EVENTS →</a></div></div>
+      <div id="upcomingEvents" class="event-list"><div class="empty">Loading your event registrations...</div></div>
+    </div>
+    <div class="section">
+      <div class="section-head"><div><h2>📍 Event Passport</h2><span class="count">Your official event history</span></div><div class="event-section-actions"><a class="nav-button" href="../events.html">FIND EVENTS →</a></div></div>
+      <div id="events" class="event-list"></div>
+      <div style="margin-top:14px;color:var(--muted);font-size:13px">Your next event stamp starts with showing up. <a href="../events.html">Explore upcoming events.</a></div>
+    </div>
+    </section>
+      </div>
+    <nav class="book-nav" aria-label="Passport pages">
+      <div class="page-tabs">
+        <button type="button" class="page-tab active" data-page="0"><span class="tab-number">COVER</span>🌽 ID</button>
+        <button type="button" class="page-tab" data-page="1"><span class="tab-number">PAGE 01</span>STATS</button>
+        <button type="button" class="page-tab" data-page="2"><span class="tab-number">PAGE 02</span>VAULT</button>
+        <button type="button" class="page-tab" data-page="3"><span class="tab-number">PAGE 03</span>EVENTS</button>
+      </div>
+      <div class="page-controls"><button type="button" class="secondary page-control" id="prevPage">← PREVIOUS</button><div class="page-progress"><div class="page-progress-fill" id="pageProgress"></div></div><div class="page-counter" id="pageCounter">COVER · 1/4</div><button type="button" class="page-control" id="nextPage">NEXT →</button></div>
     </nav>
-    <a class="header-cta" href="index.html">HOME <span>↗</span></a>
-  </header>
-
-  <main class="passport-hub">
-    <section class="passport-hero">
-      <p class="overline">THE PLAYER IDENTITY</p>
-      <h1>CORNSTAR <span>PASSPORT.</span></h1>
-      <p class="passport-intro">
-        Every player has a story. Every event is another chapter.
-        Find a Cornstar, explore their achievements, and show the world
-        where you've been.
-      </p>
+    </div>
+    <section class="account-tools" id="accountTools">
+    <section class="profile-page" id="profilePage">
+      <div class="page-intro"><div><h2>Player Profile</h2><p>Make your Cornstar identity yours, then share the passport.</p></div></div>
+    <div class="section" id="profileEditor">
+      <div class="section-head"><h2>⚙️ My Cornstar Profile</h2><span class="count">Manage your player identity</span></div>
+      <div style="display:grid;gap:12px;max-width:600px">
+        <label><div class="stat-label" style="margin-bottom:6px">Display Name</div><input id="editDisplayName" maxlength="80" placeholder="Your player name"></label>
+        <label><div class="stat-label" style="margin-bottom:6px">Username</div><input id="editUsername" maxlength="24" placeholder="your_username"><div class="badge-desc">3–24 characters. Letters, numbers, and underscores.</div></label>
+        <label><div class="stat-label" style="margin-bottom:6px">Bio</div><input id="editBio" maxlength="280" placeholder="Tell the world a little about yourself"></label>
+        <label><div class="stat-label" style="margin-bottom:6px">Profile Visibility</div><select id="editVisibility"><option value="private">Private — only you can view your passport</option><option value="public">Public — anyone with your link can view it</option></select></label>
+        <div><button id="saveProfileBtn">Save My Profile</button></div><div id="profileMessage"></div>
+      </div>
+    </div>
+    <div class="section" id="legacyClaimSection">
+      <div class="section-head"><div><h2>🏆 Legacy Board Ownership</h2><span class="count">Recognize your place in BmoreCorny history</span></div></div>
+      <p style="color:var(--muted);line-height:1.6;margin-top:0">Bought a BmoreCorny board in the past? Submit a claim to have your ownership reviewed and, once verified, added permanently to your Cornstar Passport. Older purchases are welcome, even if you no longer have an order number.</p>
+      <div style="display:grid;gap:12px;max-width:600px">
+        <label><div class="stat-label" style="margin-bottom:6px">What are you claiming?</div><select id="legacyClaimType"><option value="board_purchase">I purchased a BmoreCorny board</option><option value="custom_painted_board">I purchased a custom-painted BmoreCorny board</option></select></label>
+        <label><div class="stat-label" style="margin-bottom:6px">Approximate purchase date (optional)</div><input id="legacyPurchaseDate" type="date"></label>
+        <label><div class="stat-label" style="margin-bottom:6px">Order number or reference (optional)</div><input id="legacyOrderReference" maxlength="160" placeholder="Order number, receipt reference, etc."></label>
+        <label><div class="stat-label" style="margin-bottom:6px">Tell us about your board (recommended)</div><input id="legacyProductDescription" maxlength="1000" placeholder="Board design, year purchased, name on order, etc."></label>
+        <label><div class="stat-label" style="margin-bottom:6px">Evidence link (optional)</div><input id="legacyEvidenceUrl" type="url" maxlength="2000" placeholder="Link to a receipt, photo, or other proof"></label>
+        <div><button id="submitLegacyClaimBtn">Submit Ownership Claim</button></div>
+        <div id="legacyClaimMessage" aria-live="polite"></div>
+        <div class="badge-desc">Claims are reviewed by the BmoreCorny team. Submitting a claim does not immediately award an achievement. Verified ownership is added to your passport automatically.</div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-head"><h2>📣 Share Your Passport</h2></div><p style="color:var(--muted)">Your passport is your proof that you were there.</p>
+      <div class="share-row"><button id="copyLink">Copy Passport Link</button><button class="secondary" id="copyStats">Copy Stats</button><a class="nav-button" href="../events.html">FIND YOUR NEXT EVENT</a></div><div id="shareMessage"></div>
+    </div>
     </section>
-
-    <section class="passport-search">
-      <form id="passportSearchForm">
-        <label for="username">FIND A CORNSTAR BY USERNAME</label>
-        <div class="search-row">
-          <input
-            id="username"
-            name="username"
-            type="text"
-            placeholder="e.g. bmorecorny42"
-            minlength="3"
-            maxlength="24"
-            pattern="[A-Za-z0-9_]{3,24}"
-            autocomplete="off"
-            required
-          >
-          <button type="submit">FIND PASSPORT ↗</button>
-        </div>
-        <p class="search-help">
-          Enter a player's public username. Usernames use letters,
-          numbers and underscores.
-        </p>
-        <p id="searchError" class="search-error" role="alert"></p>
-      </form>
     </section>
+    </div>
+  </section>
+</main>
+<div class="footer">BE THERE. OR BE OTW. · BmoreCorny</div>
+<div id="achievementModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="achievementTitle">
+  <div class="modal"><div class="modal-head"><h2>Achievement Details</h2><button class="modal-close" data-close-modal="achievementModal" aria-label="Close">✕</button></div><div id="achievementContent"></div></div>
+</div>
+<div id="catalogModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="catalogTitle">
+  <div class="modal">
+    <div class="modal-head"><div><h2 id="catalogTitle">🏆 BmoreCorny Badge Catalog</h2><div class="catalog-meta" id="catalogSummary">Loading official badge catalog...</div></div><button class="modal-close" data-close-modal="catalogModal" aria-label="Close">✕</button></div>
+    <div class="legend"><span class="legend-item"><i class="legend-dot board"></i> PLAYER · ON BOARD</span><span class="legend-item"><i class="legend-dot hole"></i> PLAYER · IN HOLE</span><span class="legend-item"><i class="legend-dot collector"></i> COLLECTOR</span><span class="legend-item"><i class="legend-dot community"></i> COMMUNITY</span><span class="legend-item"><i class="legend-dot event"></i> EVENTS</span><span class="legend-item"><i class="legend-dot locked"></i> NOT YET EARNED</span></div>
+    <div class="catalog-toolbar"><input id="catalogSearch" type="search" placeholder="Search badges..."><select id="catalogFilter" style="width:auto;min-width:145px"><option value="all">All badges</option><option value="earned">Earned</option><option value="locked">Not yet earned</option></select></div>
+    <div id="catalogGrid" class="catalog-grid"></div>
+  </div>
+</div>
+<script>
+(() => {
+  const cfg=window.BMORECORNY_CONFIG;
+  if(!cfg?.SUPABASE_URL||!cfg?.SUPABASE_ANON_KEY){document.getElementById("status").textContent="Supabase configuration missing.";return;}
+  const db=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
+  const $=id=>document.getElementById(id);
+  const params=new URLSearchParams(location.search);
+  const publicUsername=params.get("username");
+  let passportData=null,isPublic=Boolean(publicUsername),catalogRows=[],catalogLoaded=false;
+  let activePage=0;
+  const pageNames=["COVER","STATS","VAULT","EVENTS"];
+  function setPassportPage(index,shouldScroll=false){
+    const target=Math.max(0,Math.min(3,Number(index)||0));
+    activePage=target;
+    document.querySelectorAll(".passport-frame [data-passport-page]").forEach(page=>page.classList.toggle("active",Number(page.dataset.passportPage)===target));
+    document.querySelectorAll("[data-page]").forEach(tab=>tab.classList.toggle("active",Number(tab.dataset.page)===target));
+    $("pageCounter").textContent=pageNames[target]+" · "+(target+1)+"/"+4;
+    $("pageProgress").style.width=((target+1)/4*100)+"%";
+    $("prevPage").disabled=target===0;
+    $("nextPage").textContent=target===3?"COVER ↺":"NEXT →";
+    $("nextPage").dataset.next=target===3?"0":String(target+1);
+  }
 
-    <section class="featured">
-      <div class="featured-label">FEATURED CORNSTAR</div>
-      <a href="admin/passport.html?username=bmorecorny42">
-        BMORECORNY · @bmorecorny42 ↗
-      </a>
-    </section>
+  function safe(value){return String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));}
+  function date(value){if(!value)return "Date TBD";const d=new Date(value);if(isNaN(d))return "Date TBD";return d.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});}
+  function showStatus(text,type="notice"){$("status").textContent=text;$("status").className=type;}
+  function showLogin(message=""){$("passport").classList.add("hidden");$("loginPanel").classList.remove("hidden");$("logoutBtn").classList.add("hidden");showStatus("Sign in to access your personal passport.");if(message)$("loginMessage").textContent=message;}
+  function badgeCode(badge){return String(badge?.badge_code||badge?.code||"").toUpperCase();}
+  function badgeName(badge){return String(badge?.badge_name||badge?.name||badge?.title||"Achievement");}
 
-    <section class="passport-explainer">
-      <article>
-        <h2>YOUR IDENTITY</h2>
-        <p>A player profile with a unique participant number, display name and personal story.</p>
-      </article>
-      <article>
-        <h2>YOUR ACHIEVEMENTS</h2>
-        <p>Official badges and verified accomplishments earned through gameplay.</p>
-      </article>
-      <article>
-        <h2>YOUR JOURNEY</h2>
-        <p>Event history and digital stamps that document where you've played.</p>
-      </article>
-    </section>
+  // Keep gameplay performance separate from ownership, community milestones, and event collectibles.
+  function isOfficialHundredFooter(badge){
+    const code=badgeCode(badge),name=badgeName(badge).toUpperCase();
+    if(code==="HOD-100"||name.includes("HALL OF DRAIN"))return true;
+    const hundred=name.includes("100-FOOT")||name.includes("100 FOOT")||code.includes("100-100");
+    const inHole=code.endsWith("-M")||name.includes("IN HOLE");
+    const onBoard=code.endsWith("-B")||name.includes("ON BOARD");
+    return hundred&&inHole&&!onBoard;
+  }
+  function badgeFamily(badge){
+    const code=badgeCode(badge),category=String(badge.category||"").toLowerCase(),name=badgeName(badge).toLowerCase();
+    if(code.startsWith("CUSTOM-")||name.includes("custom-painted")||name.includes("custom board"))return "collector";
+    if(code.startsWith("LEGACY-")||category==="collector"||name.includes("board owner")||name.includes("board collector"))return "collector";
+    if(code.startsWith("EVT-")||badge.is_event_specific===true||category==="event_attendance"||category==="event")return "event";
+    if(code.startsWith("100-")||code==="HOD-100"||code.startsWith("GAMES-")||code.startsWith("THROWS-")||code.startsWith("BAGS-")||name.includes("on board")||name.includes("in hole")||name.includes("hall of drain"))return "player";
+    return "community";
+  }
+  function milestoneValue(badge){
+    const code=badgeCode(badge),match=code.match(/(?:-|_)(\d{3,4})(?:-[A-Z])?$/);
+    if(match)return Number(match[1]);
+    const name=badgeName(badge),named=name.match(/\b(1,?000|500|250|100|50|25|20|10|5|1)\b/);
+    return named?Number(named[1].replace(",","")):0;
+  }
+  function badgeType(badge){
+    const family=badgeFamily(badge),code=badgeCode(badge),name=badgeName(badge).toUpperCase();
+    if(family==="collector"&&(code.startsWith("CUSTOM-")||name.includes("CUSTOM")))return "collector-custom";
+    if(family==="player"){
+      if(code.endsWith("-B")||name.includes("ON BOARD"))return "board";
+      if(code.endsWith("-M")||name.includes("IN HOLE"))return "hole";
+      if(isOfficialHundredFooter(badge))return "official";
+      const value=milestoneValue(badge);
+      if(value>=500)return "player-tier-6";
+      if(value>=100)return "player-tier-5";
+      if(value>=25)return "player-tier-4";
+      if(value>=10)return "player-tier-3";
+      if(value>=5)return "player-tier-2";
+      return "player-tier-1";
+    }
+    return family;
+  }
+  function isHallBadge(badge){
+    const code=badgeCode(badge),name=badgeName(badge).toUpperCase();
+    return code==="HOD-100"||name.includes("HALL OF DRAIN")||isOfficialHundredFooter(badge);
+  }
+  function badgeIcon(badge){
+    if(isOfficialHundredFooter(badge))return "💯";
+    const family=badgeFamily(badge),type=badgeType(badge),name=badgeName(badge).toUpperCase();
+    if(type==="board")return "🪵";
+    if(type==="hole")return "🎯";
+    if(family==="collector"&&type==="collector-custom")return "🎨";
+    if(family==="collector")return "🏆";
+    if(family==="event")return "📍";
+    if(family==="player")return name.includes("GAME")?"🎮":name.includes("THROW")||name.includes("BAG")?"🫘":"🏅";
+    if(name.includes("FIRST"))return "🌽";
+    if(name.includes("PROFILE"))return "🪪";
+    return "🤝";
+  }
+  function badgeTypeLabel(badge){
+    const family=badgeFamily(badge),type=badgeType(badge);
+    if(type==="board")return "PLAYER · ON BOARD";
+    if(type==="hole")return "PLAYER · IN HOLE";
+    if(isOfficialHundredFooter(badge))return "OFFICIAL 100-FOOTER";
+    if(type==="collector-custom")return "COLLECTOR · CUSTOM COMMISSION";
+    if(family==="collector")return "COLLECTOR · VERIFIED BOARD OWNER";
+    if(family==="event")return "EVENTS & EXPERIENCES";
+    if(family==="player")return "PLAYER · GAMEPLAY";
+    return "COMMUNITY · PARTICIPATION";
+  }
+  function attendanceLabel(status){
+    const labels={registered:"REGISTERED",checked_in:"CHECKED IN",attended:"ATTENDED",cancelled:"CANCELLED",no_show:"NO SHOW"};
+    return labels[status]||String(status||"UNKNOWN").replaceAll("_"," ").toUpperCase();
+  }
 
-    <section class="passport-bottom">
-      <p>Already have an account? Head to your passport to view and manage your player profile.</p>
-      <a class="button button-dark" href="admin/passport.html">
-        OPEN MY PASSPORT ↗
-      </a>
-    </section>
-  </main>
+  function renderUpcomingEvents(rows){
+    const container=$("upcomingEvents");
+    if(!rows.length){container.innerHTML=`<div class="empty">No upcoming registrations yet. Your next chapter is waiting.<br><br><a href="../events.html">Browse upcoming events and claim your spot →</a></div>`;return;}
+    container.innerHTML=rows.map(row=>{
+      const event=row.event,checkedIn=row.attendance_status==="checked_in";
+      const location=[event.venue_name,event.city,event.state].filter(Boolean).join(" · ");
+      const dateLabel=event.start_at?date(event.start_at):"Date TBD";
+      const timeLabel=event.start_at?new Date(event.start_at).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):"";
+      return `<div class="event upcoming-event ${checkedIn?"active-event":""}"><div><div class="event-name">${safe(event.event_name)}</div><div class="event-location">${safe(location||"Location to be announced")}</div><div class="event-date">📅 ${safe(dateLabel)}${timeLabel?" · "+safe(timeLabel):""}</div><span class="event-status ${checkedIn?"checked-in":"registered"}">${checkedIn?"✓ CHECKED IN":"✓ REGISTERED"}</span></div><div class="upcoming-actions"><a class="nav-button" href="../event.html?id=${encodeURIComponent(event.id)}">OPEN EVENT HUB →</a></div></div>`;
+    }).join("");
+  }
 
-  <footer class="site-footer wrap">
-    <a class="brand footer-brand" href="index.html">
-      <span class="brand-kernel">✳</span><span>BMORECORNY</span>
-    </a>
-    <p>BE THERE. OR BE OTW.</p>
-    <span>© <span id="year"></span> BMORECORNY</span>
-  </footer>
+  async function loadUpcomingEvents(participantId){
+    const container=$("upcomingEvents");container.innerHTML=`<div class="empty">Loading your event registrations...</div>`;
+    try{
+      const {data:attendance,error:attendanceError}=await db.from("event_attendance").select("event_id,attendance_status,checked_in_at,created_at").eq("participant_id",participantId).in("attendance_status",["registered","checked_in"]);
+      if(attendanceError)throw attendanceError;
+      if(!attendance?.length){renderUpcomingEvents([]);return;}
+      const eventIds=[...new Set(attendance.map(row=>row.event_id))];
+      const {data:events,error:eventsError}=await db.from("events").select("id,event_name,event_type,venue_name,city,state,start_at,end_at,status").in("id",eventIds);
+      if(eventsError)throw eventsError;
+      const now=Date.now(),eventMap=new Map((events||[]).map(event=>[event.id,event]));
+      const upcoming=attendance.map(row=>({...row,event:eventMap.get(row.event_id)})).filter(row=>{
+        const event=row.event;if(!event||["completed","cancelled","draft"].includes(event.status))return false;
+        if(row.attendance_status==="checked_in"||event.status==="in_progress")return true;
+        if(!event.start_at)return true;
+        const eventEnd=event.end_at?new Date(event.end_at).getTime():new Date(event.start_at).getTime();
+        return eventEnd>=now;
+      }).sort((a,b)=>(a.event.start_at?new Date(a.event.start_at).getTime():Number.MAX_SAFE_INTEGER)-(b.event.start_at?new Date(b.event.start_at).getTime():Number.MAX_SAFE_INTEGER));
+      renderUpcomingEvents(upcoming);
+    }catch(error){console.error("Upcoming event lookup failed:",error);container.innerHTML=`<div class="empty">We couldn't load your upcoming events right now.<br><br><span style="color:#ff8e8e">${safe(error.message||"Please refresh and try again.")}</span></div>`;}
+  }
 
-  <script>
-    document.getElementById("year").textContent =
-      new Date().getFullYear();
+  function showModal(id){$(id).classList.remove("hidden");document.body.style.overflow="hidden";}
+  function hideModal(id){$(id).classList.add("hidden");if($("achievementModal").classList.contains("hidden")&&$("catalogModal").classList.contains("hidden"))document.body.style.overflow="";}
 
-    document.getElementById("passportSearchForm")
-      .addEventListener("submit", function(event) {
-        event.preventDefault();
+  function renderBadgeDetail(badge,earned){
+    const hall=earned&&isHallBadge(badge),type=badgeType(badge);
+    const eventLink=earned&&badge.event_id?"../event.html?id="+encodeURIComponent(badge.event_id):null;
+    const description=badge.description||"Keep playing and collecting your BmoreCorny story.";
+    $("achievementContent").innerHTML=`
+      <div class="modal-badge ${type} ${earned?"earned":"locked"}">
+        <div class="badge-art">${earned?badgeIcon(badge):"🔒"}</div>
+        <div class="badge-type">${safe(badgeTypeLabel(badge))}</div>
+        <div class="modal-title" id="achievementTitle">${safe(badgeName(badge))}</div>
+        <div class="badge-state">${earned?"✓ EARNED":"🔒 LOCKED"}</div>
+      </div>
+      <div class="modal-description">${safe(description)}</div>
+      <div class="detail-list">
+        <div class="detail-row"><span>Status</span><span style="color:${earned?"var(--green)":"var(--muted)"}">${earned?"✓ EARNED":"🔒 LOCKED"}</span></div>
+        <div class="detail-row"><span>Achievement Type</span><span>${safe(badgeTypeLabel(badge))}</span></div>
+        <div class="detail-row"><span>Category</span><span>${safe(badge.category||"Achievement")}</span></div>
+        <div class="detail-row"><span>Rarity</span><span>${safe(badge.rarity||"Standard")}</span></div>
+        ${earned&&badge.awarded_at?`<div class="detail-row"><span>Earned</span><span>${safe(date(badge.awarded_at))}</span></div>`:""}
+        ${earned&&badge.verification_status?`<div class="detail-row"><span>Verification</span><span>${safe(badge.verification_status)}</span></div>`:""}
+        ${badge.badge_code||badge.code?`<div class="detail-row"><span>Badge Code</span><span>${safe(badge.badge_code||badge.code)}</span></div>`:""}
+      </div>
+      <div class="modal-actions">
+        ${hall?`<a class="nav-button" href="../hall-of-drain.html">VIEW OFFICIAL HALL OF DRAIN →</a>`:""}
+        ${eventLink?`<a class="nav-button secondary" href="${eventLink}">VIEW RELATED EVENT →</a>`:""}
+      </div>
+      ${hall?`<p class="catalog-meta" style="text-align:center;margin-top:14px">The official verified 100-foot IN-HOLE record. Visit the Hall of Drain to view the permanent public record and available evidence.</p>`:""}
+      ${!earned?`<p class="catalog-meta" style="text-align:center;margin-top:14px">Not yet earned. This achievement has not been unlocked on this passport.</p>`:""}
+    `;
+    showModal("achievementModal");
+  }
+  function renderAchievementDetail(badge){renderBadgeDetail(badge,true);}
 
-        const input = document.getElementById("username");
-        const error = document.getElementById("searchError");
-        const username = input.value.trim().toLowerCase();
+  function renderBadges(badges){
+    const families=[
+      {key:"player",title:"Player Achievements",description:"Earned through gameplay, throws, distance, and competitive milestones."},
+      {key:"collector",title:"Collector Achievements",description:"Verified ownership and custom BmoreCorny pieces. These recognize customer history and commissioned work."},
+      {key:"community",title:"Community Achievements",description:"Your passport, profile, and participation milestones."},
+      {key:"event",title:"Events & Experiences",description:"Official event attendance milestones and event-specific passport stamps."}
+    ];
+    const groups=Object.fromEntries(families.map(f=>[f.key,[]]));
+    badges.forEach((badge,index)=>{badge.__passportIndex=index;groups[badgeFamily(badge)].push(badge);});
+    const total=badges.length;
+    $("badgeSubtitle").textContent=total+" earned · "+families.filter(f=>groups[f.key].length).length+" achievement families";
+    $("badges").innerHTML=total?families.filter(f=>groups[f.key].length).map(f=>`
+      <section class="badge-family ${f.key}">
+        <div class="badge-family-head"><div><div class="badge-family-title">${f.title}</div><div class="badge-family-description">${f.description}</div></div><span class="badge-family-count">${groups[f.key].length} EARNED</span></div>
+        <div class="badges">${groups[f.key].map(b=>{
+          const type=badgeType(b),index=b.__passportIndex;
+          return `<button type="button" class="badge-card clickable earned ${type}" data-earned-badge="${index}" aria-label="View ${safe(badgeName(b))} achievement details">
+            <div class="badge-art">${badgeIcon(b)}</div><div class="badge-type">${safe(badgeTypeLabel(b))}</div>
+            <div class="badge-name">${safe(badgeName(b))}</div><div class="badge-desc">${safe(b.description||"Achievement unlocked")}</div>
+            <div class="badge-rarity">${safe(b.rarity||"Achievement")}</div><div class="badge-desc">${safe(date(b.awarded_at))}</div>
+            <div class="badge-state">✓ EARNED</div><div class="badge-open-hint">VIEW DETAILS ↗</div>
+          </button>`;
+        }).join("")}</div>
+      </section>`).join(""):`<div class="empty">No badges earned yet. Your story starts with your first throw.</div>`;
+  }
 
-        error.textContent = "";
+  function earnedBadgeFor(code){return (passportData?.badges||[]).find(row=>badgeCode(row)===code);}
+  function earnedCodeSet(){return new Set((passportData?.badges||[]).map(b=>badgeCode(b)).filter(Boolean));}
 
-        if (!/^[a-z0-9_]{3,24}$/.test(username)) {
-          error.textContent =
-            "Enter a valid username using 3–24 letters, numbers or underscores.";
-          return;
-        }
+  function renderCatalog(){
+    const earned=earnedCodeSet(),query=$("catalogSearch").value.trim().toLowerCase(),filter=$("catalogFilter").value;
+    const filtered=catalogRows.filter(b=>{
+      const isEarned=earned.has(badgeCode(b));
+      if(filter==="earned"&&!isEarned)return false;
+      if(filter==="locked"&&isEarned)return false;
+      const haystack=[badgeName(b),badgeCode(b),b.description,b.category,b.rarity].join(" ").toLowerCase();
+      return !query||haystack.includes(query);
+    });
+    const earnedCount=catalogRows.filter(b=>earned.has(badgeCode(b))).length;
+    $("catalogSummary").textContent=`${earnedCount} of ${catalogRows.length} catalog badges earned`;
+    $("catalogGrid").innerHTML=filtered.length?filtered.map(b=>{
+      const isEarned=earned.has(badgeCode(b)),type=badgeType(b);
+      return `<button type="button" class="catalog-card ${isEarned?"earned":"locked"} ${type}" data-catalog-badge="${safe(badgeCode(b))}" aria-label="${isEarned?"View earned":"View locked"} badge: ${safe(badgeName(b))}">
+        <div class="badge-art">${isEarned?badgeIcon(b):"🔒"}</div><div class="badge-type">${safe(badgeTypeLabel(b))}</div>
+        <div class="badge-name">${safe(badgeName(b))}</div><div class="badge-desc">${safe(b.description||"Achievement")}</div>
+        <div class="badge-rarity">${safe(b.rarity||"Standard")}</div><div class="badge-state">${isEarned?"✓ EARNED":"🔒 LOCKED"}</div>
+        <div class="badge-open-hint">VIEW DETAILS ↗</div>
+      </button>`;
+    }).join(""):`<div class="empty" style="grid-column:1/-1">No badges match this search.</div>`;
+  }
 
-        window.location.href =
-          "admin/passport.html?username=" + encodeURIComponent(username);
-      });
-  </script>
+  async function openCatalog(){
+    showModal("catalogModal");$("catalogGrid").innerHTML=`<div class="empty" style="grid-column:1/-1">Loading the official badge catalog...</div>`;
+    if(!catalogLoaded){
+      const {data,error}=await db.from("badge_catalog").select("badge_code,badge_name,description,category,rarity,is_active,achievement_type,trigger_source,criteria,progression_group,progression_level,is_event_specific,metadata,sponsor_name").eq("is_active",true).order("badge_name",{ascending:true});
+      if(error){console.error("Badge catalog lookup failed:",error);$("catalogSummary").textContent="The catalog could not be loaded."; $("catalogGrid").innerHTML=`<div class="empty" style="grid-column:1/-1">We couldn't load the official badge catalog. ${safe(error.message)}<br><br>Your earned badges remain available in your Achievement Vault.</div>`;return;}
+      catalogRows=data||[];catalogLoaded=true;
+    }
+    renderCatalog();
+  }
+
+  function render(data){
+    if(!data||!data.profile){$("passport").classList.add("hidden");showStatus(isPublic?"Passport not found, or this player has not made their passport public.":"No player profile is linked to this account.");return;}
+    passportData=data;
+    $("profileEditor").classList.toggle("hidden",isPublic);$("upcomingSection").classList.toggle("hidden",isPublic);$("accountTools").classList.toggle("hidden",isPublic);
+    if(!isPublic){$("editDisplayName").value=data.profile.display_name||"";$("editUsername").value=data.profile.username||"";$("editBio").value=data.profile.bio||"";$("editVisibility").value=data.profile.profile_visibility||"private";}
+    $("loginPanel").classList.add("hidden");$("passport").classList.remove("hidden");$("status").classList.add("hidden");
+    const p=data.profile,s=data.stats||{};
+    $("displayName").textContent=p.display_name||"Cornstar";$("username").textContent=p.username?"@"+p.username:"";
+    $("bio").textContent=p.bio||"Out here making memories and throwing bags.";
+    const cornstarNumber=String(p.participant_number||"").padStart(6,"0");
+    $("passportNumber").textContent="Cornstar #"+cornstarNumber;
+    $("coverNumber").textContent="CORNSTAR #"+cornstarNumber;
+    $("coverJoined").textContent="MEMBER SINCE "+date(p.created_at).toUpperCase();
+    $("avatar").textContent=(p.display_name||"BC").trim().slice(0,2).toUpperCase();$("memberSince").textContent="Joined "+date(p.created_at);
+    $("games").textContent=s.games_played??0;$("throws").textContent=s.throws_recorded??0;
+    $("board").textContent=s.furthest_board?s.furthest_board+" FT":"—";$("hole").textContent=s.furthest_hole?s.furthest_hole+" FT":"—";
+    $("badgeCount").textContent=s.badges_earned??0;$("eventCount").textContent=s.events_attended??0;
+    renderBadges(data.badges||[]);
+    setPassportPage(activePage);
+    const events=data.events||[];
+    $("events").innerHTML=events.length?events.map(e=>`<div class="event"><div><div class="event-name">${safe(e.event_name)}</div><div class="event-location">${safe(e.venue_name||"")}${e.city?" · "+safe(e.city):""}${e.state?", "+safe(e.state):""}</div></div><div class="event-date">📍 ${safe(date(e.start_at))}</div></div>`).join(""):`<div class="empty">Your first event stamp is waiting.<br><br><a href="../events.html">Browse upcoming events and register for your next experience →</a></div>`;
+    $("logoutBtn").classList.toggle("hidden",isPublic);
+    if(!isPublic&&p.participant_id)loadUpcomingEvents(p.participant_id);
+  }
+
+  async function loadPublic(username){showStatus("Loading public passport...");const {data,error}=await db.rpc("get_public_passport",{_username:username});if(error){showStatus("Unable to load passport: "+error.message);return;}render(data);}
+  async function loadMyPassport(){showStatus("Loading your passport...");const {data,error}=await db.rpc("get_my_passport");if(error){showStatus(error.message);return;}render(data);}
+  async function init(){if(publicUsername){await loadPublic(publicUsername);return;}const {data:{session}}=await db.auth.getSession();if(!session){showLogin();return;}await loadMyPassport();}
+
+  $("loginBtn").onclick=async()=>{
+    $("loginMessage").textContent="Signing in...";
+    const {error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});
+    if(error){$("loginMessage").textContent=error.message;return;}isPublic=false;await loadMyPassport();
+  };
+  $("resetBtn").onclick=async()=>{
+    const email=$("email").value.trim();if(!email){$("loginMessage").textContent="Enter your email address first.";return;}
+    const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname.replace("passport.html","reset-password.html")});
+    $("loginMessage").textContent=error?error.message:"Password reset email sent.";
+  };
+  $("saveProfileBtn").onclick=async()=>{
+    const button=$("saveProfileBtn"),message=$("profileMessage");button.disabled=true;button.textContent="Saving...";message.textContent="";
+    const {error}=await db.rpc("update_my_passport_profile",{_display_name:$("editDisplayName").value.trim(),_username:$("editUsername").value.trim(),_bio:$("editBio").value.trim(),_profile_visibility:$("editVisibility").value});
+    button.disabled=false;button.textContent="Save My Profile";
+    if(error){message.textContent=error.message;message.className="error";return;}
+    message.textContent="Profile saved successfully!";message.className="success";await loadMyPassport();
+    $("profileMessage").textContent="Profile saved successfully!";$("profileMessage").className="success";
+  };
+  $("submitLegacyClaimBtn").onclick=async()=>{
+    const button=$("submitLegacyClaimBtn"),message=$("legacyClaimMessage");
+    const orderReference=$("legacyOrderReference").value.trim();
+    const productDescription=$("legacyProductDescription").value.trim();
+    const evidenceUrl=$("legacyEvidenceUrl").value.trim();
+    if(!orderReference&&!productDescription&&!evidenceUrl){
+      message.textContent="Please provide at least an order reference, a board description, or an evidence link.";
+      message.className="error";return;
+    }
+    button.disabled=true;button.textContent="Submitting...";message.textContent="";
+    const {data,error}=await db.rpc("submit_legacy_board_claim",{
+      _verification_type:$("legacyClaimType").value,
+      _order_reference:orderReference||null,
+      _purchase_date:$("legacyPurchaseDate").value||null,
+      _product_description:productDescription||null,
+      _evidence_url:evidenceUrl||null
+    });
+    button.disabled=false;button.textContent="Submit Ownership Claim";
+    if(error){message.textContent=error.message||"We couldn't submit your claim. Please try again.";message.className="error";return;}
+    $("legacyClaimType").value="board_purchase";
+    $("legacyPurchaseDate").value="";
+    $("legacyOrderReference").value="";
+    $("legacyProductDescription").value="";
+    $("legacyEvidenceUrl").value="";
+    message.textContent="Your ownership claim has been submitted for review. Claim reference: "+data+". Your passport will be updated automatically if ownership is verified.";
+    message.className="success";
+  };
+  $("logoutBtn").onclick=async()=>{await db.auth.signOut();location.reload();};
+
+  function passportUrl(){const p=passportData?.profile;if(!p?.username)return location.href;return location.origin+location.pathname+"?username="+encodeURIComponent(p.username);}
+  async function sharePassport(){
+    if(!passportData)return;const url=passportUrl();
+    if(navigator.share){try{await navigator.share({title:passportData.profile.display_name+"'s Cornstar Passport",url});}catch(e){}}
+    else{try{await navigator.clipboard.writeText(url);showStatus("Passport link copied!");$("status").classList.remove("hidden");}catch(e){showStatus("Unable to copy automatically. Use the Copy Passport Link button.");}}
+  }
+  $("shareBtn").onclick=sharePassport;$("heroShareBtn").onclick=sharePassport;
+  $("copyLink").onclick=async()=>{if(!passportData)return;try{await navigator.clipboard.writeText(passportUrl());$("shareMessage").textContent="Passport link copied!";$("shareMessage").className="success";}catch(e){$("shareMessage").textContent="Unable to copy link automatically.";$("shareMessage").className="error";}};
+  $("copyStats").onclick=async()=>{
+    if(!passportData)return;const p=passportData.profile,s=passportData.stats||{};
+    const text=[p.display_name+" | BmoreCorny Cornstar Passport","Games: "+(s.games_played||0),"Throws: "+(s.throws_recorded||0),"Furthest ON BOARD: "+(s.furthest_board||"—")+" ft","Furthest IN HOLE: "+(s.furthest_hole||"—")+" ft","Badges: "+(s.badges_earned||0),"Events: "+(s.events_attended||0),passportUrl()].join("\n");
+    try{await navigator.clipboard.writeText(text);$("shareMessage").textContent="Stats copied!";$("shareMessage").className="success";}catch(e){$("shareMessage").textContent="Unable to copy stats automatically.";$("shareMessage").className="error";}
+  };
+
+
+  document.querySelectorAll("[data-page]").forEach(tab=>tab.addEventListener("click",()=>setPassportPage(tab.dataset.page,true)));
+  $("prevPage").onclick=()=>setPassportPage(activePage-1,true);
+  $("nextPage").onclick=()=>setPassportPage($("nextPage").dataset.next,true);
+  let touchStartX=0,touchStartY=0;
+  const book=document.querySelector(".passport-book");
+  book.addEventListener("touchstart",event=>{if(event.touches.length===1){touchStartX=event.touches[0].clientX;touchStartY=event.touches[0].clientY;}},{passive:true});
+  book.addEventListener("touchend",event=>{if(!touchStartX)return;const dx=event.changedTouches[0].clientX-touchStartX,dy=event.changedTouches[0].clientY-touchStartY;touchStartX=0;if(Math.abs(dx)>65&&Math.abs(dx)>Math.abs(dy)*1.3)setPassportPage(activePage+(dx<0?1:-1),true);},{passive:true});
+  document.addEventListener("keydown",event=>{if(event.altKey||event.ctrlKey||event.metaKey||["INPUT","TEXTAREA","SELECT"].includes(document.activeElement?.tagName))return;if(!$("achievementModal").classList.contains("hidden")||!$("catalogModal").classList.contains("hidden"))return;if(event.key==="ArrowRight")setPassportPage(activePage+1,true);if(event.key==="ArrowLeft")setPassportPage(activePage-1,true);});
+  $("badges").addEventListener("click",event=>{
+    const card=event.target.closest("[data-earned-badge]");if(!card)return;
+    const badge=(passportData?.badges||[])[Number(card.dataset.earnedBadge)];if(badge)renderAchievementDetail(badge);
+  });
+  $("catalogGrid").addEventListener("click",event=>{
+    const card=event.target.closest("[data-catalog-badge]");if(!card)return;
+    const code=card.dataset.catalogBadge,badge=catalogRows.find(row=>badgeCode(row)===code);if(!badge)return;
+    const earnedBadge=earnedBadgeFor(code);
+    renderBadgeDetail(earnedBadge?{...badge,...earnedBadge}:badge,Boolean(earnedBadge));
+  });
+  $("catalogBtn").onclick=openCatalog;
+  $("catalogSearch").addEventListener("input",renderCatalog);
+  $("catalogFilter").addEventListener("change",renderCatalog);
+  document.querySelectorAll("[data-close-modal]").forEach(button=>button.addEventListener("click",()=>hideModal(button.dataset.closeModal)));
+  document.querySelectorAll(".modal-backdrop").forEach(backdrop=>backdrop.addEventListener("click",event=>{if(event.target===backdrop)hideModal(backdrop.id);}));
+  document.addEventListener("keydown",event=>{if(event.key==="Escape"){hideModal("achievementModal");hideModal("catalogModal");}});
+  if(isPublic)$("accountTools").classList.add("hidden");
+  setPassportPage(0);
+  init();
+})();
+</script>
 </body>
 </html>
