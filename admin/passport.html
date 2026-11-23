@@ -182,7 +182,6 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
 .cover-chip.live{color:#9df0bf;border-color:#286343;background:#173324}
 .book-nav{background:#1b1a1f;border:1px solid var(--border);border-radius:15px;padding:12px;margin:18px 0 4px;display:grid;gap:10px}
 .page-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
-.page-tabs:has(#profileTab.hidden){grid-template-columns:repeat(4,1fr)}
 .page-tab{background:#242229;color:#c5c0ca;border:1px solid #393640;padding:10px 8px;border-radius:10px;font-size:11px;letter-spacing:.5px}
 .page-tab.active{background:linear-gradient(135deg,#ffc928,#ff8a27);color:#17130a;border-color:#ffda67;box-shadow:0 4px 14px #ffc92822}
 .page-tab .tab-number{display:block;font-size:9px;opacity:.75;margin-bottom:4px}
@@ -225,6 +224,21 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
 }
 @media(max-width:380px){.page-counter{min-width:55px;font-size:10px}.page-control{min-width:70px}.cover-meta{gap:6px}.cover-chip{font-size:9px;padding:7px 9px}}
 
+
+/* Fixed passport page frame: same viewport for the cover and every content page. */
+.passport-book{display:flex;flex-direction:column;gap:14px}
+.passport-page{height:560px;min-height:560px;max-height:560px;overflow-y:auto;overscroll-behavior:contain;padding:16px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(145deg,#1b1a1f,#17161a);scrollbar-width:thin;scrollbar-color:#514d58 #201e23}
+#coverPage{padding:0;background:transparent;border:0;overflow:hidden}
+#coverPage .cover-badge{min-height:100%;height:100%;display:flex;align-content:center;justify-content:center}
+#coverPage .cover-meta,#coverPage .cover-cta{flex-shrink:0}
+.book-nav{margin:0}
+.passport-page.active{display:block}
+@media(max-width:650px){
+ .passport-page{height:620px;min-height:620px;max-height:620px;padding:12px}
+ #coverPage{padding:0}
+ #coverPage .cover-badge{padding:20px 16px;align-content:flex-start}
+}
+
 </style>
 </head>
 <body>
@@ -250,16 +264,7 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
     <a class="nav-button" href="../events.html" style="display:block;text-align:center;margin-top:16px">BROWSE UPCOMING EVENTS →</a>
   </section>
   <section id="passport" class="hidden">
-    <nav class="book-nav" aria-label="Passport pages">
-      <div class="page-tabs">
-        <button type="button" class="page-tab active" data-page="0"><span class="tab-number">COVER</span>🌽 ID</button>
-        <button type="button" class="page-tab" data-page="1"><span class="tab-number">PAGE 01</span>STATS</button>
-        <button type="button" class="page-tab" data-page="2"><span class="tab-number">PAGE 02</span>VAULT</button>
-        <button type="button" class="page-tab" data-page="3"><span class="tab-number">PAGE 03</span>EVENTS</button>
-        <button type="button" class="page-tab" data-page="4" id="profileTab"><span class="tab-number">PAGE 04</span>PROFILE</button>
-      </div>
-      <div class="page-controls"><button type="button" class="secondary page-control" id="prevPage">← PREVIOUS</button><div class="page-progress"><div class="page-progress-fill" id="pageProgress"></div></div><div class="page-counter" id="pageCounter">COVER · 1/5</div><button type="button" class="page-control" id="nextPage">NEXT →</button></div>
-    </nav>
+    
     <div class="passport-book">
     <div class="passport-page active" data-passport-page="0" id="coverPage">
     <div class="hero cover-badge">
@@ -276,6 +281,16 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
     <div class="cover-cta"><strong>🌽 Ready for your next BmoreCorny event?</strong><p>Find an event, claim your spot, show up, and add another chapter to your Cornstar story.</p><a class="nav-button" href="../events.html">BROWSE UPCOMING EVENTS →</a></div>
     </div>
     </div>
+    <nav class="book-nav" aria-label="Passport pages">
+      <div class="page-tabs">
+        <button type="button" class="page-tab active" data-page="0"><span class="tab-number">COVER</span>🌽 ID</button>
+        <button type="button" class="page-tab" data-page="1"><span class="tab-number">PAGE 01</span>STATS</button>
+        <button type="button" class="page-tab" data-page="2"><span class="tab-number">PAGE 02</span>VAULT</button>
+        <button type="button" class="page-tab" data-page="3"><span class="tab-number">PAGE 03</span>EVENTS</button>
+        <button type="button" class="page-tab" data-page="4" id="profileTab"><span class="tab-number">PAGE 04</span>PROFILE</button>
+      </div>
+      <div class="page-controls"><button type="button" class="secondary page-control" id="prevPage">← PREVIOUS</button><div class="page-progress"><div class="page-progress-fill" id="pageProgress"></div></div><div class="page-counter" id="pageCounter">COVER · 1/5</div><button type="button" class="page-control" id="nextPage">NEXT →</button></div>
+    </nav>
     <section class="passport-page stats-page" data-passport-page="1">
       <div class="page-intro"><div><h2>Player Stats</h2><p>Your numbers. Your game. Your Cornstar story.</p></div></div>
     <div class="stats">
