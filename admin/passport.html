@@ -228,14 +228,15 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
 /* Fixed passport page frame: same viewport for the cover and every content page. */
 .passport-book{display:flex;flex-direction:column;gap:14px}
 .passport-page{height:560px;min-height:560px;max-height:560px;overflow-y:auto;overscroll-behavior:contain;padding:16px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(145deg,#1b1a1f,#17161a);scrollbar-width:thin;scrollbar-color:#514d58 #201e23}
-#coverPage{padding:0;background:transparent;border:0;overflow:hidden}
-#coverPage .cover-badge{min-height:100%;height:100%;display:flex;align-content:center;justify-content:center}
+#coverPage{height:560px;min-height:560px;max-height:560px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+#coverPage .cover-badge{min-height:0;height:auto;flex:1;display:flex;align-content:center;justify-content:center}
+#coverPage .cover-meta,#coverPage .cover-cta{flex-shrink:0}
 #coverPage .cover-meta,#coverPage .cover-cta{flex-shrink:0}
 .book-nav{margin:0}
 .passport-page.active{display:block}
 @media(max-width:650px){
  .passport-page{height:620px;min-height:620px;max-height:620px;padding:12px}
- #coverPage{padding:0}
+ #coverPage{height:620px;min-height:620px;max-height:620px}
  #coverPage .cover-badge{padding:20px 16px;align-content:flex-start}
 }
 
@@ -266,7 +267,7 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
   <section id="passport" class="hidden">
     
     <div class="passport-book">
-    <div class="passport-page active" data-passport-page="0" id="coverPage">
+    <div id="coverPage">
     <div class="hero cover-badge">
       <div class="hero-left">
         <div class="avatar" id="avatar">BC</div>
@@ -283,15 +284,14 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
     </div>
     <nav class="book-nav" aria-label="Passport pages">
       <div class="page-tabs">
-        <button type="button" class="page-tab active" data-page="0"><span class="tab-number">COVER</span>🌽 ID</button>
-        <button type="button" class="page-tab" data-page="1"><span class="tab-number">PAGE 01</span>STATS</button>
-        <button type="button" class="page-tab" data-page="2"><span class="tab-number">PAGE 02</span>VAULT</button>
-        <button type="button" class="page-tab" data-page="3"><span class="tab-number">PAGE 03</span>EVENTS</button>
-        <button type="button" class="page-tab" data-page="4" id="profileTab"><span class="tab-number">PAGE 04</span>PROFILE</button>
+        <button type="button" class="page-tab active" data-page="0"><span class="tab-number">PAGE 01</span>STATS</button>
+        <button type="button" class="page-tab" data-page="1"><span class="tab-number">PAGE 02</span>VAULT</button>
+        <button type="button" class="page-tab" data-page="2"><span class="tab-number">PAGE 03</span>EVENTS</button>
+        <button type="button" class="page-tab" data-page="3" id="profileTab"><span class="tab-number">PAGE 04</span>PROFILE</button>
       </div>
       <div class="page-controls"><button type="button" class="secondary page-control" id="prevPage">← PREVIOUS</button><div class="page-progress"><div class="page-progress-fill" id="pageProgress"></div></div><div class="page-counter" id="pageCounter">COVER · 1/5</div><button type="button" class="page-control" id="nextPage">NEXT →</button></div>
     </nav>
-    <section class="passport-page stats-page" data-passport-page="1">
+    <section class="passport-page stats-page" data-passport-page="0">
       <div class="page-intro"><div><h2>Player Stats</h2><p>Your numbers. Your game. Your Cornstar story.</p></div></div>
     <div class="stats">
       <div class="stat"><div class="stat-label">Games Played</div><div class="stat-value" id="games">0</div></div>
@@ -302,7 +302,7 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
       <div class="stat"><div class="stat-label">Event Stamps</div><div class="stat-value" id="eventCount">0</div></div>
     </div>
     </section>
-    <section class="passport-page" data-passport-page="2">
+    <section class="passport-page" data-passport-page="1">
       <div class="page-intro"><div><h2>Achievement Vault</h2><p>Every badge tells part of the story. Browse what you've earned and what's still out there.</p></div></div>
     <div class="section">
       <div class="section-head"><div><h2>🏆 Achievement Vault</h2><span class="count" id="badgeSubtitle"></span></div><button id="catalogBtn" class="secondary">VIEW FULL BADGE CATALOG →</button></div>
@@ -310,7 +310,7 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
       <div id="badges" class="badges"></div>
     </div>
     </section>
-    <section class="passport-page events-page" data-passport-page="3">
+    <section class="passport-page events-page" data-passport-page="2">
       <div class="page-intro"><div><h2>Event Passport</h2><p>Upcoming registrations and the events you've officially stamped into your history.</p></div></div>
     <div class="section" id="upcomingSection">
       <div class="section-head"><div><h2>🎟️ My Upcoming Events</h2><span class="count">Your registrations and game-day check-ins</span></div><div class="event-section-actions"><a class="nav-button" href="../events.html">FIND MORE EVENTS →</a></div></div>
@@ -322,7 +322,7 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
       <div style="margin-top:14px;color:var(--muted);font-size:13px">Your next event stamp starts with showing up. <a href="../events.html">Explore upcoming events.</a></div>
     </div>
     </section>
-    <section class="passport-page profile-page" data-passport-page="4" id="profilePage">
+    <section class="passport-page profile-page" data-passport-page="3" id="profilePage">
       <div class="page-intro"><div><h2>Player Profile</h2><p>Make your Cornstar identity yours, then share the passport.</p></div></div>
     <div class="section" id="profileEditor">
       <div class="section-head"><h2>⚙️ My Cornstar Profile</h2><span class="count">Manage your player identity</span></div>
@@ -364,19 +364,19 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
   const publicUsername=params.get("username");
   let passportData=null,isPublic=Boolean(publicUsername),catalogRows=[],catalogLoaded=false;
   let activePage=0;
-  const pageNames=["COVER","STATS","VAULT","EVENTS","PROFILE"];
+  const pageNames=["STATS","VAULT","EVENTS","PROFILE"];
   function setPassportPage(index,shouldScroll=false){
-    const target=Math.max(0,Math.min(4,Number(index)||0));
-    if(isPublic&&target===4)return;
+    const target=Math.max(0,Math.min(3,Number(index)||0));
+    if(isPublic&&target===3)return;
     activePage=target;
     document.querySelectorAll("[data-passport-page]").forEach(page=>page.classList.toggle("active",Number(page.dataset.passportPage)===target));
     document.querySelectorAll("[data-page]").forEach(tab=>tab.classList.toggle("active",Number(tab.dataset.page)===target));
-    $("pageCounter").textContent=pageNames[target]+" · "+(target+1)+"/"+(isPublic?4:5);
-    $("pageProgress").style.width=((target+1)/(isPublic?4:5)*100)+"%";
+    $("pageCounter").textContent=pageNames[target]+" · "+(target+1)+"/"+(isPublic?3:4);
+    $("pageProgress").style.width=((target+1)/(isPublic?3:4)*100)+"%";
     $("prevPage").disabled=target===0;
-    $("nextPage").textContent=target===(isPublic?3:4)?"COVER ↺":"NEXT →";
-    $("nextPage").dataset.next=target===(isPublic?3:4)?"0":String(target+1);
-    if(shouldScroll&&!$("passport").classList.contains("hidden"))window.scrollTo({top:document.querySelector(".book-nav").getBoundingClientRect().top+window.scrollY-12,behavior:"smooth"});
+    $("nextPage").textContent=target===(isPublic?2:3)?"PAGE 01 ↺":"NEXT →";
+    $("nextPage").dataset.next=target===(isPublic?2:3)?"0":String(target+1);
+    if(shouldScroll&&!$("passport").classList.contains("hidden"))window.scrollTo({top:document.querySelector("#coverPage").getBoundingClientRect().top+window.scrollY-12,behavior:"smooth"});
   }
 
   function safe(value){return String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));}
@@ -551,7 +551,7 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
     if(!data||!data.profile){$("passport").classList.add("hidden");showStatus(isPublic?"Passport not found, or this player has not made their passport public.":"No player profile is linked to this account.");return;}
     passportData=data;
     $("profileEditor").classList.toggle("hidden",isPublic);$("upcomingSection").classList.toggle("hidden",isPublic);$("profileTab").classList.toggle("hidden",isPublic);$("profilePage").classList.toggle("hidden",isPublic);
-    if(isPublic&&activePage===4)activePage=0;
+    if(isPublic&&activePage===3)activePage=0;
     if(!isPublic){$("editDisplayName").value=data.profile.display_name||"";$("editUsername").value=data.profile.username||"";$("editBio").value=data.profile.bio||"";$("editVisibility").value=data.profile.profile_visibility||"private";}
     $("loginPanel").classList.add("hidden");$("passport").classList.remove("hidden");$("status").classList.add("hidden");
     const p=data.profile,s=data.stats||{};
