@@ -340,6 +340,20 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
         <div><button id="saveProfileBtn">Save My Profile</button></div><div id="profileMessage"></div>
       </div>
     </div>
+    <div class="section" id="legacyClaimSection">
+      <div class="section-head"><div><h2>🏆 Legacy Board Ownership</h2><span class="count">Recognize your place in BmoreCorny history</span></div></div>
+      <p style="color:var(--muted);line-height:1.6;margin-top:0">Bought a BmoreCorny board in the past? Submit a claim to have your ownership reviewed and, once verified, added permanently to your Cornstar Passport. Older purchases are welcome, even if you no longer have an order number.</p>
+      <div style="display:grid;gap:12px;max-width:600px">
+        <label><div class="stat-label" style="margin-bottom:6px">What are you claiming?</div><select id="legacyClaimType"><option value="board_purchase">I purchased a BmoreCorny board</option><option value="custom_painted_board">I purchased a custom-painted BmoreCorny board</option></select></label>
+        <label><div class="stat-label" style="margin-bottom:6px">Approximate purchase date (optional)</div><input id="legacyPurchaseDate" type="date"></label>
+        <label><div class="stat-label" style="margin-bottom:6px">Order number or reference (optional)</div><input id="legacyOrderReference" maxlength="160" placeholder="Order number, receipt reference, etc."></label>
+        <label><div class="stat-label" style="margin-bottom:6px">Tell us about your board (recommended)</div><input id="legacyProductDescription" maxlength="1000" placeholder="Board design, year purchased, name on order, etc."></label>
+        <label><div class="stat-label" style="margin-bottom:6px">Evidence link (optional)</div><input id="legacyEvidenceUrl" type="url" maxlength="2000" placeholder="Link to a receipt, photo, or other proof"></label>
+        <div><button id="submitLegacyClaimBtn">Submit Ownership Claim</button></div>
+        <div id="legacyClaimMessage" aria-live="polite"></div>
+        <div class="badge-desc">Claims are reviewed by the BmoreCorny team. Submitting a claim does not immediately award an achievement. Verified ownership is added to your passport automatically.</div>
+      </div>
+    </div>
     <div class="section">
       <div class="section-head"><h2>📣 Share Your Passport</h2></div><p style="color:var(--muted)">Your passport is your proof that you were there.</p>
       <div class="share-row"><button id="copyLink">Copy Passport Link</button><button class="secondary" id="copyStats">Copy Stats</button><a class="nav-button" href="../events.html">FIND YOUR NEXT EVENT</a></div><div id="shareMessage"></div>
@@ -598,6 +612,33 @@ main{max-width:1100px;margin:auto;padding:24px 18px 60px}
     if(error){message.textContent=error.message;message.className="error";return;}
     message.textContent="Profile saved successfully!";message.className="success";await loadMyPassport();
     $("profileMessage").textContent="Profile saved successfully!";$("profileMessage").className="success";
+  };
+  $("submitLegacyClaimBtn").onclick=async()=>{
+    const button=$("submitLegacyClaimBtn"),message=$("legacyClaimMessage");
+    const orderReference=$("legacyOrderReference").value.trim();
+    const productDescription=$("legacyProductDescription").value.trim();
+    const evidenceUrl=$("legacyEvidenceUrl").value.trim();
+    if(!orderReference&&!productDescription&&!evidenceUrl){
+      message.textContent="Please provide at least an order reference, a board description, or an evidence link.";
+      message.className="error";return;
+    }
+    button.disabled=true;button.textContent="Submitting...";message.textContent="";
+    const {data,error}=await db.rpc("submit_legacy_board_claim",{
+      _verification_type:$("legacyClaimType").value,
+      _order_reference:orderReference||null,
+      _purchase_date:$("legacyPurchaseDate").value||null,
+      _product_description:productDescription||null,
+      _evidence_url:evidenceUrl||null
+    });
+    button.disabled=false;button.textContent="Submit Ownership Claim";
+    if(error){message.textContent=error.message||"We couldn't submit your claim. Please try again.";message.className="error";return;}
+    $("legacyClaimType").value="board_purchase";
+    $("legacyPurchaseDate").value="";
+    $("legacyOrderReference").value="";
+    $("legacyProductDescription").value="";
+    $("legacyEvidenceUrl").value="";
+    message.textContent="Your ownership claim has been submitted for review. Claim reference: "+data+". Your passport will be updated automatically if ownership is verified.";
+    message.className="success";
   };
   $("logoutBtn").onclick=async()=>{await db.auth.signOut();location.reload();};
 
